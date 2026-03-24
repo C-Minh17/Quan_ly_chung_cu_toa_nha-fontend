@@ -1,0 +1,13 @@
+@border-color: #d9d9d9;
+
+.monaco-wrapper {
+	border: 1px solid @border-color !important;
+	border-radius: var(--border-radius) !important;
+	transition: 0.3s;
+
+	&:hover,
+	&.tox-edit-focus {
+		border-color: var(--color-primary) !important;
+		transition: 0.3s;
+	}
+}

@@ -1,0 +1,62 @@
+.module-view {
+	width: 400px;
+	max-width: 100%;
+
+	.module-header {
+		padding: 16px 16px 12px;
+		font-weight: 600;
+		font-size: 16px;
+
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.module-container {
+		max-height: calc(100vh - 130px);
+		overflow-y: scroll;
+	}
+
+	.module-item {
+		padding: 5px;
+		text-align: center;
+		border-radius: var(--border-radius);
+		cursor: pointer;
+		transition: 0.3s;
+
+		&:hover {
+			background-color: rgba(0, 0, 0, 0.05);
+			transition: 0.3s;
+
+			.anticon,
+			img {
+				transform: scale(1.2);
+			}
+		}
+
+		.anticon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 56px;
+			margin: 12px;
+
+			color: #bbb;
+			font-size: 44px;
+			transition: 0.3s;
+		}
+
+		img {
+			height: 60px;
+			margin: 10px;
+			transition: 0.3s;
+		}
+
+		.module-name {
+			display: block;
+			height: 35px;
+			font-weight: 600;
+			line-height: 1.2;
+			color: #333;
+		}
+	}
+}

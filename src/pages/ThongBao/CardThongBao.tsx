@@ -1,0 +1,321 @@
+import ExpandText from '@/components/ExpandText';
+import TableBase from '@/components/Table';
+import ButtonExtend from '@/components/Table/ButtonExtend';
+import { EOperatorType } from '@/components/Table/constant';
+import ModalExpandable from '@/components/Table/ModalExpandable';
+import { type IColumn } from '@/components/Table/typing';
+import { type ESourceTypeNotification, mapModuleKeyToSourceType, NotificationType } from '@/services/ThongBao/constant';
+import { type ThongBao } from '@/services/ThongBao/typing';
+import dayjs from '@/utils/dayjs';
+import { currentRole } from '@/utils/ip';
+import { DeleteOutlined, EyeOutlined, LeftOutlined, PlusCircleOutlined, RightOutlined } from '@ant-design/icons';
+import { Button, DatePicker, Popconfirm, Segmented, Space } from 'antd';
+import { useState } from 'react';
+import { useModel } from 'umi';
+import news from '../../assets/new6.gif';
+import { kiemTraPhanVung } from '../../utils/constants';
+import Form from './components/Form';
+import CardFormThongBaoTuyChinh from './ThongBaoTuyChinh/CardForm';
+import ViewThongBao from './ViewThongBao/CardView';
+import TableReceiverThongBao from './ViewThongBao/TableReceiver';
+
+const CardThongBao = (props: { notiType: NotificationType; activeKey: string }) => {
+	const { notiType, activeKey } = props;
+	const {
+		page,
+		limit,
+		setRecord,
+		record,
+		getModel,
+		deleteModel,
+		setSortTime,
+		setVisibleThongBaoDanhSach,
+		setRecordThongBaoDanhSach,
+		setEdit,
+		setIsView,
+		setVisibleForm,
+	} = useModel('thongbao.thongbao');
+	const [visible, setVisible] = useState<boolean>(false);
+	const [type, setType] = useState<string>('MONTH');
+	const [startDate, setStartDate] = useState<any>(dayjs());
+	const startDay = startDate?.format('DD/MM');
+	const endDay = startDate.clone()?.add(6, 'day')?.format('DD/MM');
+	const [visibleNguoiNhan, setVisibleNguoiNhan] = useState<boolean>(false);
+
+	const onCell = (recordThongBao: ThongBao.IRecord) => ({
+		onClick: () => {
+			setVisible(true);
+			setRecord(recordThongBao);
+		},
+		style: { cursor: 'pointer' },
+	});
+
+	const getData = () => {
+		const value =
+			type === 'DAY'
+				? [startDate.startOf('day').toISOString(), startDate.endOf('day').toISOString()]
+				: type === 'WEEK'
+					? [
+						startDate.startOf('week').startOf('day').toISOString(),
+						startDate.startOf('week').add(6, 'day').endOf('day').toISOString(),
+					]
+					: [
+						startDate.startOf('month').startOf('day').toISOString(),
+						startDate.startOf('month').add(1, 'month').endOf('day').toISOString(),
+					];
+
+		setSortTime([{ field: 'createdAt', operator: 'between', values: value }]);
+
+		//@ts-ignore
+		getModel(
+			{
+				notificationInternal: activeKey === 'tu_dong',
+				type: notiType,
+				sourceType: mapModuleKeyToSourceType[currentRole] as ESourceTypeNotification,
+			},
+			[{ active: true, field: 'createdAt', operator: EOperatorType.BETWEEN, values: value }],
+		);
+	};
+
+	const columns: IColumn<ThongBao.IRecord>[] = [
+		{
+			title: 'Người gửi',
+			dataIndex: 'senderName',
+			width: 150,
+			filterType: 'string',
+			onCell,
+		},
+		{
+			title: 'Tiêu đề',
+			dataIndex: 'title',
+			width: 200,
+			filterType: 'string',
+			onCell,
+			render: (val, recordVal) => (
+				<>
+					<ExpandText>
+						{val}{' '}
+						{dayjs().diff(dayjs(recordVal?.createdAt), 'days') < 3 ? (
+							<img style={{ width: 30, height: 20 }} src={news} />
+						) : (
+							''
+						)}
+					</ExpandText>
+				</>
+			),
+		},
+		{
+			title: 'Nhãn dán',
+			dataIndex: 'idTagEmail',
+			width: 150,
+			render: (val, recordVal) => recordVal?.tagEmail?.ten,
+			onCell,
+			hide: notiType === NotificationType.ONESIGNAL,
+		},
+		{
+			title: 'Mô tả',
+			dataIndex: 'description',
+			width: 280,
+			filterType: 'string',
+			onCell,
+			render: (val) => <ExpandText>{val}</ExpandText>,
+		},
+		{
+			title: 'Danh sách người nhận',
+			align: 'center',
+			width: 90,
+			render: (val, rec) => (
+				<a
+					onClick={() => {
+						setRecord(rec);
+						setVisibleNguoiNhan(true);
+					}}
+				>
+					Xem
+				</a>
+			),
+		},
+		{
+			title: 'Thời gian gửi',
+			dataIndex: 'createdAt',
+			width: 120,
+			align: 'center',
+			filterType: 'datetime',
+			sortable: true,
+			onCell,
+			render: (val) => dayjs(val).format('HH:mm DD/MM/YYYY'),
+		},
+		{
+			title: 'Thao tác',
+			align: 'center',
+			width: 90,
+			fixed: 'right',
+			render: (recordThongBao: ThongBao.IRecord) => {
+				const isPhanVung = kiemTraPhanVung(recordThongBao?.dataPartitionCode ?? null);
+
+				return (
+					<>
+						<ButtonExtend
+							tooltip='Xem chi tiết'
+							onClick={() => {
+								setRecord(recordThongBao);
+								setVisible(true);
+							}}
+							type='link'
+							icon={<EyeOutlined />}
+						/>
+						{notiType === NotificationType.ONESIGNAL ? (
+							<Popconfirm
+								onConfirm={() => {
+									deleteModel(recordThongBao._id, getData);
+								}}
+								title='Bạn có chắc chắn muốn xóa?'
+							>
+								<ButtonExtend
+									tooltip='Xóa'
+									disabled={activeKey === 'tu_dong' || !isPhanVung}
+									shape='circle'
+									type='link'
+									danger
+									icon={<DeleteOutlined />}
+								/>
+							</Popconfirm>
+						) : null}
+					</>
+				);
+			},
+		},
+	];
+
+	return (
+		<>
+			<Space wrap style={{ marginBottom: 12 }}>
+				<Segmented
+					value={type}
+					onChange={(key: any) => {
+						if (key === 'WEEK') setStartDate(dayjs().startOf('week'));
+						if (key === 'DAY') setStartDate(dayjs());
+						if (key === 'MONTH') setStartDate(dayjs());
+						setType(key);
+					}}
+					options={[
+						{ value: 'MONTH', label: 'Theo tháng' },
+						{ value: 'WEEK', label: 'Theo tuần' },
+						{ value: 'DAY', label: 'Theo ngày' },
+					]}
+				/>
+
+				{type === 'WEEK' && (
+					<Space>
+						<Button onClick={() => setStartDate(startDate.subtract(7, 'day'))}>
+							<LeftOutlined /> Tuần trước
+						</Button>
+						<span>
+							Tuần: {startDay} - {endDay}
+						</span>
+						<Button onClick={() => setStartDate(startDate.add(7, 'day'))}>
+							Tuần sau <RightOutlined />
+						</Button>
+						<a onClick={() => setStartDate(dayjs().startOf('week'))}>Tuần này</a>
+					</Space>
+				)}
+				{type === 'DAY' && (
+					<DatePicker
+						allowClear={false}
+						format={'DD/MM/YYYY'}
+						style={{ width: 150 }}
+						value={startDate}
+						onChange={(val) => {
+							setStartDate(val);
+						}}
+					/>
+				)}
+				{type === 'MONTH' && (
+					<DatePicker
+						allowClear={false}
+						picker={'month'}
+						format={'MM/YYYY'}
+						style={{ width: 150 }}
+						value={startDate}
+						onChange={(val) => {
+							setStartDate(val);
+						}}
+					/>
+				)}
+			</Space>
+
+			<TableBase
+				title={notiType === NotificationType.ONESIGNAL ? 'Thông báo' : 'Gửi Email'}
+				columns={columns}
+				modelName='thongbao.thongbao'
+				widthDrawer={1000}
+				dependencies={[page, limit, type, startDate, activeKey]}
+				Form={Form}
+				getData={getData}
+				formProps={{ getData, notiType }}
+				destroyModal
+				buttons={{ create: false }}
+				hideCard
+				otherButtons={[
+					activeKey === 'ban_hanh' ? (
+						<>
+							<ButtonExtend
+								onClick={() => {
+									setRecord({} as ThongBao.IRecord);
+									setEdit(false);
+									setIsView(false);
+									setVisibleForm(true);
+								}}
+								icon={<PlusCircleOutlined />}
+								type='primary'
+								notHideText
+								tooltip='Thêm mới dữ liệu'
+							>
+								Thêm mới
+							</ButtonExtend>
+							<ButtonExtend
+								key='1'
+								onClick={() => {
+									setRecordThongBaoDanhSach(undefined);
+									setVisibleThongBaoDanhSach(true);
+								}}
+							>
+								Thông báo tùy chỉnh
+							</ButtonExtend>
+						</>
+					) : (
+						<></>
+					),
+				]}
+			/>
+
+			<ModalExpandable
+				width={800}
+				styles={{ body: { padding: 0 } }}
+				okButtonProps={{ hidden: true }}
+				cancelText='Đóng'
+				open={visible}
+				onCancel={() => setVisible(false)}
+				destroyOnClose
+			>
+				{/* <ViewThongBao record={record} /> */}
+			</ModalExpandable>
+
+			<ModalExpandable
+				title='Danh sách người nhận'
+				width={800}
+				okButtonProps={{ hidden: true }}
+				cancelText='Đóng'
+				open={visibleNguoiNhan}
+				onCancel={() => setVisibleNguoiNhan(false)}
+				destroyOnClose
+			>
+				<TableReceiverThongBao record={record} />
+			</ModalExpandable>
+
+			<CardFormThongBaoTuyChinh getData={getData} type={notiType} />
+		</>
+	);
+};
+
+export default CardThongBao;

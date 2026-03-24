@@ -1,0 +1,153 @@
+@pro-header-hover-bg: rgba(122, 127, 141, 0.1);
+
+.menu_right {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	float: right;
+	margin-left: auto;
+	font-size: 14px;
+
+	:global(.header-menu-item) {
+		height: 36px;
+		width: 36px;
+		background-color: white;
+		border-radius: 4px;
+		padding: 8px;
+		// box-shadow: var(--box-shadow-tertiary);
+		box-shadow:
+			0 1px 2px 0 rgba(0, 0, 0, 0.03),
+			0 1px 6px -1px rgba(0, 0, 0, 0.02),
+			0 2px 4px 0 rgba(0, 0, 0, 0.02);
+
+		cursor: pointer;
+		transition: 0.3s;
+		display: flex;
+
+		&:hover {
+			background-color: @pro-header-hover-bg;
+			transition: 0.3s;
+		}
+	}
+
+	:global(.anticon),
+	a > img {
+		display: flex;
+
+		&:hover {
+			background-color: @pro-header-hover-bg;
+			transition: 0.3s;
+		}
+	}
+
+	a > img {
+		padding: 12px 8px;
+	}
+
+	.action {
+		display: flex;
+		align-items: center;
+
+		cursor: pointer;
+		transition: all 0.3s;
+
+		> span {
+			vertical-align: middle;
+		}
+
+		&:hover {
+			background: @pro-header-hover-bg;
+		}
+
+		&:global(.opened) {
+			background: @pro-header-hover-bg;
+		}
+	}
+
+	.account {
+		padding: 0 5px;
+
+		.avatar {
+			width: 42px;
+			height: 42px;
+			margin-right: 8px;
+			font-size: 22px;
+			line-height: 42px;
+
+			img {
+				object-fit: cover;
+			}
+
+			:global(.anticon) {
+				height: 32px;
+				font-size: 32px;
+			}
+		}
+	}
+}
+
+.dark {
+	.action {
+		&:hover {
+			background: #252a3d;
+		}
+
+		&:global(.opened) {
+			background: #252a3d;
+		}
+	}
+}
+
+.avatarWrapper {
+	position: relative;
+	display: inline-block;
+
+	.partitionBadge {
+		position: absolute;
+		right: 8px;
+		bottom: 5px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		width: 16px;
+		height: 16px;
+
+		color: #fff;
+		font-size: 10px;
+
+		border-radius: 50%;
+		box-shadow: 0 0 0 2px #fff;
+	}
+}
+
+@media only screen and (max-width: @screen-md) {
+	:global(.ant-divider-vertical) {
+		vertical-align: unset;
+	}
+
+	.name {
+		display: none;
+	}
+
+	.menu_right {
+		position: absolute;
+		right: 0;
+
+		.account {
+			padding: 0;
+		}
+	}
+
+	.avatarWrapper {
+		.partitionBadge {
+			right: 0px;
+		}
+	}
+}
+
+@media (max-width: @screen-xs) {
+	.right {
+		gap: 0;
+	}
+}

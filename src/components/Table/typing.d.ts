@@ -1,0 +1,276 @@
+import { Namespaces } from '@/pages/TienIch/AuditLog/Modal';
+import { TableProps } from 'antd';
+import type { ColumnType } from 'antd/lib/table';
+import React, { JSX } from 'react';
+import { type EOperatorType } from './constant/constant';
+
+export interface IColumn<T> extends Omit<ColumnType<T>, 'dataIndex' | 'width' | 'children'> {
+	/** Ẩn cột khi hiển thị trên table, nhưng vẫn có trong filter, import, export */
+	hide?: boolean;
+
+	children?: IColumn<T>[];
+
+	/** Cho phép sắp xếp hay ko, thường chỉ nên cho sắp xêp các trường: Mã, tên (ngắn), số lượng, ngày */
+	sortable?: boolean;
+
+	/** Data để filter với trường họp chọn filterType là 'select' */
+	filterData?: string[] | TDataOption[];
+
+	/** Các loại filter, đối với
+	 * - 'customselect' thì phải có 'filterCustomSelect'
+	 * - 'select' thì phải có 'filterData' */
+	filterType?: 'string' | 'number' | 'date' | 'datetime' | 'select' | 'customselect';
+
+	/** JSX Element trả về 1 mảng value, thường là id */
+	filterCustomSelect?: JSX.Element;
+
+	handleFilter?: (value: any) => void;
+
+	/** Bắt buộc phải có để dùng custom Filter hoặc Import dữ liệu
+	 * Có thể filter 'string' với các trường populated
+	 */
+	dataIndex?: keyof T | 'index' | [keyof T, string];
+
+	/** Bắt buộc phải có
+	 * Lưu ý: độ rộng phải fit tương đối với nội dung của column, ko để quá rộng, hẹp
+	 * Phải check cả ở mobile view
+	 */
+	width: number;
+
+	/** CHỈ DÙNG TRONG TABLE STATIC
+	 * Hàm sort tùy chỉnh (có thể dùng để sắp xếp họ tên theo AB)
+	 */
+	customSort?: (value1: any, value2: any) => number;
+}
+
+export type TDataOption = {
+	label: string;
+	value: string | number;
+};
+
+export type TableBaseProps = {
+	/** Tên model */
+	modelName: Namespaces;
+
+	/** Import dùng model khác? */
+	modelImportName?: Namespaces;
+	/** Export dùng model khác? */
+	modelExportName?: Namespaces;
+
+	Form?: React.FC;
+	formType?: 'Modal' | 'Drawer';
+	columns: IColumn<any>[];
+	title?: React.ReactNode;
+	widthDrawer?: number | 'full';
+
+	/** Title cho modal Thêm mới, chỉnh sửa (nên dùng thay cho dùng card trong Form) */
+	modalTitle?: string;
+
+	/** Hàm getData tùy chỉnh, nếu ko có thì 'getModel' của model sẽ là mặc định */
+	getData?: (params: any) => void;
+
+	/** Tham số phụ thuộc để getData được gọi */
+	dependencies?: any[];
+
+	/** Tham số để truyền vào hàm getData, ModalImport, ModalExport */
+	params?: any;
+
+	/** Các nội dung hiển thị trên header, bên cạnh button thêm mới */
+	children?: React.ReactNode;
+
+	border?: boolean;
+
+	/** Tùy chọn các nút mặc định */
+	buttons?: {
+		/** Được thêm mới ko? Mặc định: Có */
+		create?: boolean;
+		/** Được nhập dữ liệu ko? Mặc định: Không */
+		import?: boolean;
+		/** Được xuất dữ liệu ko? Mặc định: Không */
+		export?: boolean;
+		/** Được lọc tùy chỉnh ko? Mặc định: Có */
+		filter?: boolean;
+		/** Có nút tải lại ko? Mặc định: Có */
+		reload?: boolean;
+	};
+
+	/** Danh sách các nút khác bên cạnh Thêm mới */
+	otherButtons?: JSX.Element[];
+
+	/** Biến lưu dữ liệu trong model, Mặc định: danhSach */
+	dataState?: string;
+
+	otherProps?: TableProps<any>;
+
+	/** Click vào mask để đóng form ko? Mặc định: Không */
+	maskCloseableForm?: boolean;
+
+	noCleanUp?: boolean;
+
+	rowSelection?: boolean;
+	/** View antd Row Selection */
+	detailRow?: any;
+
+	/** Cho phép xóa nhiều, đi kèm với props `rowSelection` */
+	deleteMany?: boolean;
+
+	hideTotal?: boolean;
+	pageable?: boolean;
+	hideCard?: boolean;
+
+	/** Text hiển thị khi ko có dữ liệu */
+	emptyText?: string;
+
+	/** Ko cần thiết */
+	scroll?: { x?: number; y?: number };
+
+	formProps?: any;
+
+	/** Có destroy Modal sau khi thêm mới, chỉnh sửa ko? Mặc định: Không */
+	destroyModal?: boolean;
+
+	/** Có thêm cột STT ko? Mặc định: Có */
+	addStt?: boolean;
+
+	/** Có hiển thị thị kéo thả sắp xêp hàng ko? Mặc định: Không */
+	rowSortable?: boolean;
+
+	/**
+	 * Sự kiện khi hàng được kéo đến vị trí mới
+	 * @param record Record ứng với hàng được kéo thả
+	 * @param newIndex Vị trí mới được kéo đến: 0 -> (limit-1)
+	 * @returns
+	 */
+	onSortEnd?: (record: any, newIndex: number) => void;
+
+	hideChildrenRows?: boolean;
+
+	/** Có hiển thị modal title không? Mặc định: `Không` */
+	showModalTitle?: boolean;
+
+	/** Modal title thay thế, mặc định `Thêm mới`, `Chỉnh sửa`, `Chi tiết` + title */
+	modalTitle?: React.ReactNode;
+
+	/** Hàm reload dữ liệu
+	 * @default getData
+	 */
+	onReload?: (params?: any) => void;
+
+	cardExtra?: React.ReactNode;
+};
+
+export type TFilter<T> = {
+	field?: keyof T | [keyof T, string];
+	operator?: EOperatorType;
+	values?: (string | number)[];
+	active?: boolean;
+	filters?: TFilter<T>[];
+	logicOperator?: 'or' | 'and';
+	readOnly?: boolean;
+};
+
+export type RowFilterProps = {
+	name: string | number;
+	formOwner: FormInstance;
+	parentPath?: (string | number)[];
+	allowGrouping?: boolean;
+	level?: number;
+	onRemove?: () => void;
+};
+
+export type ConditionCriteria<T> = {
+	/** Giá trị nằm trong danh sách */
+	$in?: T[];
+	/** Giá trị không nằm trong danh sách */
+	$nin?: T[];
+	/** Bằng giá trị */
+	$eq?: T;
+	/** Khác giá trị */
+	$ne?: T;
+	/** Lớn hơn giá trị */
+	$gt?: T;
+	/** Lớn hơn hoặc bằng giá trị */
+	$gte?: T;
+	/** Nhỏ hơn giá trị */
+	$lt?: T;
+	/** Nhỏ hơn hoặc bằng giá trị */
+	$lte?: T;
+	/** Trường tồn tại hay không */
+	$exist?: boolean;
+	/** Chứa chuỗi hoặc khớp biểu thức chính quy (RegExp) */
+	$like?: string | RegExp;
+	/** Khớp biểu thức chính quy (RegExp) */
+	$regex?: string | RegExp;
+	/** Phủ định điều kiện con bên trong */
+	$not?: ConditionCriteria<T>;
+};
+
+export type QueryCondition<E extends object = any> = {
+	[P in keyof E]?: E[P] | ConditionCriteria<E[P]>;
+};
+
+export type TableStaticProps = Pick<
+	TableBaseProps,
+	| 'emptyText'
+	| 'columns'
+	| 'title'
+	| 'Form'
+	| 'formProps'
+	| 'addStt'
+	| 'children'
+	| 'otherProps'
+	| 'formType'
+	| 'widthDrawer'
+	| 'rowSortable'
+	| 'onSortEnd'
+	| 'hideChildrenRows'
+	| 'onReload'
+	| 'otherButtons'
+> & {
+	data: any[];
+	loading?: boolean;
+
+	showEdit?: boolean;
+	setShowEdit?: (vi: boolean) => void;
+
+	hasCreate?: boolean;
+	hasTotal?: boolean;
+	size?: 'small' | 'middle';
+};
+
+// IMPORT HEADER
+
+export type TImportHeader = {
+	field: string;
+	label: string;
+	required: boolean;
+	type: TImportDataType;
+};
+
+export type TImportDataType = 'String' | 'Number' | 'Boolean' | 'Date';
+
+export type TImportResponse = {
+	error: boolean;
+	validate?: TImportRowResponse[];
+};
+
+export type TImportRowResponse = {
+	index: number;
+	rowIndex: number;
+	row: { row: number };
+	rowErrors?: string[];
+};
+
+// EXPORT FIELD
+
+export type TExportField = {
+	_id: string;
+	label: string;
+	fields: string[];
+	labels: string[];
+	required: boolean;
+	type: string;
+	children?: TExportField[];
+	selected?: boolean;
+	disableImport?: boolean;
+};

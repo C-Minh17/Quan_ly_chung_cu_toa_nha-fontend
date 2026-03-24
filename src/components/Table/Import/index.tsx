@@ -1,0 +1,122 @@
+import { Empty, Steps } from 'antd';
+import { useEffect, useState } from 'react';
+import { useIntl, useModel } from 'umi';
+import ModalExpandable from '../ModalExpandable';
+import ChooseFileImport from './ChooseFileImport';
+import MatchColumns from './MatchColumns';
+import PreviewDataImport from './PreviewDataImport';
+import ValidateDataImport from './ValidateDataImport';
+import { type ModalImportProps } from './typing';
+
+const ModalImport = (props: ModalImportProps) => {
+	const intl = useIntl();
+	const {
+		visible,
+		onCancel,
+		onOk,
+		modelName,
+		maskCloseableForm,
+		extendData,
+		getTemplate,
+		titleTemplate,
+		dependenciesHeader = [],
+		getHeader,
+	} = props;
+	const { setFileData, setMatchedColumns, setDataImport, loading, setLoading } = useModel('import');
+	const { getImportHeaderModel, getImportTemplateModel, importHeaders, setImportHeaders } = useModel(modelName) as any;
+	const [currentStep, setCurrentStep] = useState(0);
+	const [isGetHeader, setIsGetHeader] = useState<boolean>(false);
+
+	const getHeaders = async () => {
+		setLoading(true);
+		try {
+			if (getHeader)
+				await getHeader().then((headers) => {
+					setImportHeaders(headers);
+				});
+			else if (getImportHeaderModel) await getImportHeaderModel(extendData);
+			setIsGetHeader(true);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		setIsGetHeader(false);
+	}, [modelName, ...dependenciesHeader]);
+
+	useEffect(() => {
+		if (visible && !isGetHeader) {
+			getHeaders();
+		}
+	}, [visible, isGetHeader]);
+
+	const onCancelModal = () => {
+		onCancel();
+		setMatchedColumns(undefined);
+		setFileData(undefined);
+		setDataImport(undefined);
+		setCurrentStep(0);
+	};
+
+	return (
+		<ModalExpandable
+			title={intl.formatMessage({ id: 'global.table.import.index.title' })}
+			open={visible}
+			onCancel={() => onCancelModal()}
+			footer={null}
+			width={800}
+			destroyOnClose
+			maskClosable={maskCloseableForm || false}
+			loading={loading}
+		>
+			{!!importHeaders.length ? (
+				<>
+					<Steps current={currentStep} style={{ marginBottom: 18 }}>
+						<Steps.Step title={intl.formatMessage({ id: 'global.table.import.index.step.chontaptin' })} />
+						<Steps.Step title={intl.formatMessage({ id: 'global.table.import.index.step.ghepcotdulieu' })} />
+						<Steps.Step title={intl.formatMessage({ id: 'global.table.import.index.step.xemtruocdulieu' })} />
+						<Steps.Step title={intl.formatMessage({ id: 'global.table.import.index.step.ketquaxuly' })} />
+					</Steps>
+
+					{currentStep === 0 ? (
+						<ChooseFileImport
+							onChange={() => setCurrentStep(1)}
+							onCancel={onCancelModal}
+							getTemplate={getTemplate || getImportTemplateModel}
+							fileName={titleTemplate}
+						/>
+					) : currentStep === 1 ? (
+						<MatchColumns
+							onChange={() => setCurrentStep(2)}
+							onBack={() => {
+								setCurrentStep(0);
+								setMatchedColumns(undefined);
+							}}
+							importHeaders={importHeaders}
+						/>
+					) : currentStep === 2 ? (
+						<PreviewDataImport
+							onChange={() => setCurrentStep(3)}
+							onBack={() => setCurrentStep(1)}
+							importHeaders={importHeaders}
+							extendData={extendData}
+						/>
+					) : (
+						<ValidateDataImport
+							onOk={onOk}
+							onCancel={onCancelModal}
+							onBack={() => setCurrentStep(2)}
+							modelName={modelName}
+							importHeaders={importHeaders}
+						/>
+					)}
+				</>
+			) : (
+				<Empty description={intl.formatMessage({ id: 'global.table.import.index.empty' })} />
+			)}
+		</ModalExpandable>
+	);
+};
+
+export default ModalImport;

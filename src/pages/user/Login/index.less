@@ -1,0 +1,123 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	overflow: hidden;
+	background-color: var(--color-primary);
+}
+
+:global(.login-footer .ant-layout-footer) {
+	background-color: var(--color-primary);
+}
+
+.content {
+	flex: 1;
+	padding: 32px 12px;
+}
+
+.top {
+	text-align: center;
+	// min-height: 300px;
+}
+
+.header {
+	margin-top: 50px;
+	line-height: 60px;
+
+	a {
+		text-decoration: none;
+	}
+}
+
+.logo {
+	width: 100%;
+	max-width: 400px;
+	vertical-align: top;
+}
+
+.main {
+	position: relative;
+	z-index: 99;
+	width: 440px;
+	margin: 0 auto;
+	margin-top: 32px;
+	padding: 24px;
+	background: #fff;
+	border-radius: 4px;
+
+	&::before {
+		position: absolute;
+		top: -65px;
+		left: -424px;
+		z-index: -1;
+		width: 600px;
+		height: 300px;
+		background-image: url('/frame1.svg');
+		background-size: 100%;
+		content: '';
+	}
+
+	&::after {
+		position: absolute;
+		top: -56px;
+		right: -443px;
+		z-index: -1;
+		width: 600px;
+		height: 300px;
+		background-image: url('/frame2.svg');
+		background-repeat: no-repeat;
+		background-size: 100%;
+		content: '';
+	}
+
+	@media screen and (max-width: @screen-sm) {
+		max-width: 100%;
+
+		&::before {
+			display: none;
+		}
+
+		&::after {
+			top: 300px;
+			right: -66px;
+		}
+	}
+
+	:global {
+		.@{ant-prefix}-tabs-nav-list {
+			margin: auto;
+			font-size: 16px;
+		}
+	}
+
+	.icon {
+		margin-left: 16px;
+		color: rgba(0, 0, 0, 0.2);
+		font-size: 24px;
+		vertical-align: middle;
+		cursor: pointer;
+		transition: color 0.3s;
+
+		&:hover {
+			color: var(--color-primary);
+		}
+	}
+
+	.prefixIcon {
+		margin-right: 6px;
+		color: var(--color-primary);
+		font-size: @font-size-base;
+	}
+}
+
+@media screen and (max-width: 695px) {
+	.header {
+		margin-bottom: 30px;
+	}
+}
+
+@media screen and (max-width: 377px) {
+	.header {
+		margin-bottom: 80px;
+	}
+}
