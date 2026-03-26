@@ -1,9 +1,11 @@
 import { AppModules, EModuleKey } from '@/services/base/constant';
 
-const ipRoot = APP_CONFIG_IP_ROOT; // ip dev
+const ipRoot = typeof APP_CONFIG_IP_ROOT !== 'undefined' ? APP_CONFIG_IP_ROOT : 'http://localhost:3456'; // ip dev
+// console.log('IP Root:', ipRoot);
 
 // Ip Chính => Mặc định dùng trong các useInitModel
-const ip3 = ipRoot + 'tcns'; // ip dev
+const ip3 = ipRoot + '/api'; // ip dev
+// console.log('IP3:', ip3);
 
 // Ip khác
 const ipNotif = ipRoot + 'notification'; // ip dev
@@ -27,6 +29,7 @@ const oneSignalClient = APP_CONFIG_ONE_SIGNAL_ID;
 export {
 	currentRole,
 	replaceRole,
+	ipRoot,
 	ip3,
 	ipCore,
 	ipNotif,

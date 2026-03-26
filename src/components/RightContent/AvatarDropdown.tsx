@@ -1,11 +1,10 @@
-import { landingUrl } from '@/services/base/constant';
+import { useAuthActions } from '@/hooks/useAuthActions';
 import { DatabaseOutlined, FileWordOutlined, GlobalOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, Spin } from 'antd';
 import { ItemType } from 'antd/es/menu/interface';
 import { rgba } from 'polished';
 import { useEffect } from 'react';
 import { useIntl, useModel } from 'umi';
-import { OIDCBounder } from '../OIDCBounder';
 import styles from './index.less';
 
 const AvatarDropdown = () => {
@@ -25,7 +24,8 @@ const AvatarDropdown = () => {
 		}
 	}, [initialState?.currentUser?.ssoId]);
 
-	const loginOut = () => OIDCBounder?.getActions()?.dangXuat();
+	const { dangXuat } = useAuthActions();
+	const loginOut = () => dangXuat();
 
 	if (!initialState || !initialState.currentUser)
 		return (
@@ -88,19 +88,19 @@ const AvatarDropdown = () => {
 		// 		window.location.href = `${keycloakAuthEndpoint}?client_id=${AppModules[currentRole].clientId}&redirect_uri=${redirect}&response_type=code&scope=openid&kc_action=UPDATE_PASSWORD`;
 		// 	},
 		// },
-		{
-			key: 'office',
-			icon: <FileWordOutlined />,
-			label: 'Office 365',
-			onClick: () => window.open('https://office.com/'),
-		},
-		{
-			key: 'portal',
-			icon: <GlobalOutlined />,
-			label:
-				`${intl.formatMessage({ id: `modules.cong-thong-tin` }) ?? intl.formatMessage({ id: 'app.header.portal', defaultMessage: 'Cổng thông tin' })}`,
-			onClick: () => window.open(landingUrl),
-		},
+		// {
+		// 	key: 'office',
+		// 	icon: <FileWordOutlined />,
+		// 	label: 'Office 365',
+		// 	onClick: () => window.open('https://office.com/'),
+		// },
+		// {
+		// 	key: 'portal',
+		// 	icon: <GlobalOutlined />,
+		// 	label:
+		// 		`${intl.formatMessage({ id: `modules.cong-thong-tin` }) ?? intl.formatMessage({ id: 'app.header.portal', defaultMessage: 'Cổng thông tin' })}`,
+		// 	onClick: () => window.open(landingUrl),
+		// },
 		{ type: 'divider', key: 'divider' },
 		{
 			key: 'logout',

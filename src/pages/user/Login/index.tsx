@@ -1,5 +1,4 @@
 import Footer from '@/components/Footer';
-import LoginWithKeycloak from '@/pages/user/Login/KeycloakLogin';
 import { adminlogin, getUserInfo } from '@/services/base/api';
 import { keycloakAuthority } from '@/utils/ip';
 import rules from '@/utils/rules';
@@ -7,14 +6,13 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Tabs, message } from 'antd';
 import React, { useState } from 'react';
 // import Recaptcha from 'react-recaptcha';
-import { OIDCBounder } from '@/components/OIDCBounder';
 import { history, useIntl, useModel } from 'umi';
 import styles from './index.less';
 
 const Login: React.FC = () => {
 	const [count, setCount] = useState<number>(Number(localStorage?.getItem('failed')) || 0);
 	const [submitting, setSubmitting] = useState(false);
-	const [type, setType] = useState<string>('account');
+	const [type, setType] = useState<string>('accountAdmin');
 	const { initialState, setInitialState } = useModel('@@initialState');
 	const [isVerified, setIsverified] = useState<boolean>(true);
 	const [visibleCaptcha, setVisibleCaptcha] = useState<boolean>(false);
@@ -82,82 +80,72 @@ const Login: React.FC = () => {
 	// };
 
 	return (
-		<OIDCBounder>
-			<div className={styles.container}>
-				<div className={styles.content}>
-					<div className={styles.top}>
-						<div className={styles.header}>
-							<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-								<img alt='logo' className={styles.logo} src='/logo-full-white.svg' />
-							</div>
+		<div className={styles.container}>
+			<div className={styles.content}>
+				<div className={styles.top}>
+					<div className={styles.header}>
+						<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+							<img alt='logo' className={styles.logo} src='/logo-full-white.svg' />
 						</div>
 					</div>
+				</div>
 
-					<div className={styles.main}>
-						<Tabs activeKey={type} onChange={setType}>
-							<Tabs.TabPane
-								key='account'
-								tab={intl.formatMessage({
-									id: 'pages.login.accountLogin.tab',
-									defaultMessage: 'tab',
-								})}
-							/>
-							{/* <Tabs.TabPane
-              key="accountAdmin"
-              tab={intl.formatMessage({
-                id: 'pages.login.accountLoginAdmin.tab',
-                defaultMessage: 'tab',
-              })}
-            /> */}
-						</Tabs>
+				<div className={styles.main}>
+					<Tabs activeKey={type} onChange={setType}>
+						<Tabs.TabPane
+							key='accountAdmin'
+							tab={intl.formatMessage({
+								id: 'pages.login.accountLogin.tab',
+								defaultMessage: 'Đăng nhập',
+							})}
+						/>
+					</Tabs>
 
-						{type === 'account' ? (
-							<LoginWithKeycloak />
-						) : type === 'accountAdmin' ? (
-							<Form
-								form={form}
-								onFinish={async (values) => handleSubmit(values as { login: string; password: string })}
-								layout='vertical'
-							>
-								<Form.Item label='' name='login' rules={[...rules.required]}>
-									<Input
-										placeholder={intl.formatMessage({
-											id: 'pages.login.username.placeholder',
-											defaultMessage: 'Nhập tên đăng nhập',
-										})}
-										prefix={<UserOutlined className={styles.prefixIcon} />}
-										size='large'
-									/>
-								</Form.Item>
-								<Form.Item label='' name='password' rules={[...rules.required]}>
-									<Input.Password
-										placeholder={intl.formatMessage({
-											id: 'pages.login.password.placeholder',
-											defaultMessage: 'Nhập mật khẩu',
-										})}
-										prefix={<LockOutlined className={styles.prefixIcon} />}
-										size='large'
-									/>
-								</Form.Item>
+					{type === 'accountAdmin' ? (
+						<Form
+							form={form}
+							onFinish={async (values) => handleSubmit(values as { login: string; password: string })}
+							layout='vertical'
+						>
+							<Form.Item label='' name='login' rules={[...rules.required]}>
+								<Input
+									placeholder={intl.formatMessage({
+										id: 'pages.login.username.placeholder',
+										defaultMessage: 'Nhập tên đăng nhập',
+									})}
+									prefix={<UserOutlined className={styles.prefixIcon} />}
+									size='large'
+								/>
+							</Form.Item>
+							<Form.Item label='' name='password' rules={[...rules.required]}>
+								<Input.Password
+									placeholder={intl.formatMessage({
+										id: 'pages.login.password.placeholder',
+										defaultMessage: 'Nhập mật khẩu',
+									})}
+									prefix={<LockOutlined className={styles.prefixIcon} />}
+									size='large'
+								/>
+							</Form.Item>
 
-								<Button type='primary' block size='large' loading={submitting}>
-									{intl.formatMessage({ id: 'pages.login.submit', defaultMessage: 'submit' })}
-								</Button>
-							</Form>
-						) : null}
-
-						<br />
-						<div style={{ textAlign: 'center' }}>
-							<Button
-								onClick={() => {
-									window.open(keycloakAuthority + '/login-actions/reset-credentials');
-								}}
-								type='link'
-							>
-								Quên mật khẩu?
+							<Button type='primary' block size='large' loading={submitting} htmlType='submit'>
+								{intl.formatMessage({ id: 'pages.login.submit', defaultMessage: 'submit' })}
 							</Button>
+						</Form>
+					) : null}
 
-							{/* {type === 'accountAdmin' && visibleCaptcha && count >= 5 && (
+					<br />
+					<div style={{ textAlign: 'center' }}>
+						<Button
+							onClick={() => {
+								window.open(keycloakAuthority + '/login-actions/reset-credentials');
+							}}
+							type='link'
+						>
+							Quên mật khẩu?
+						</Button>
+
+						{/* {type === 'accountAdmin' && visibleCaptcha && count >= 5 && (
               <Recaptcha
                 ref={recaptchaRef}
                 size="normal"
@@ -180,15 +168,14 @@ const Login: React.FC = () => {
                 verifyCallback={verifyCallback}
               />
             )} */}
-						</div>
 					</div>
 				</div>
-
-				<div className='login-footer'>
-					<Footer />
-				</div>
 			</div>
-		</OIDCBounder>
+
+			<div className='login-footer'>
+				<Footer />
+			</div>
+		</div>
 	);
 };
 

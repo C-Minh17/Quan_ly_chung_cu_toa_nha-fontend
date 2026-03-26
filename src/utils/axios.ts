@@ -1,36 +1,36 @@
-// import { refreshAccesssToken } from '@/services/ant-design-pro/api';
+import { refreshAccesssToken } from '@/services/base/api';
 import '@ant-design/v5-patch-for-react-19';
 import { notification } from 'antd';
 import axios1 from 'axios';
-// import { history } from 'umi';
+import { history } from 'umi';
 import qs from 'qs';
 import { excludedPaths } from './constants';
 import data from './data';
 
-// function routeLogin(errorCode: string) {
-//   // notification.warning({
-//   //   message: 'Vui lòng đăng nhập lại',
-//   //   description: data.error[errorCode],
-//   // });
-//   // localStorage.clear();
-//   history.replace({
-//     pathname: '/user/login',
-//   });
-// }
+function routeLogin(errorCode?: string) {
+	notification.warning({
+		message: 'Vui lòng đăng nhập lại',
+		description: 'Phiên đăng nhập đã hết hạn',
+	});
+	localStorage.clear();
+	history.replace({
+		pathname: '/user/login',
+	});
+}
 
 // for multiple request
-// let isRefreshing = false;
-// let failedQueue: any[] = [];
-// const processQueue = (error: any, token: any = null) => {
-//   failedQueue.forEach((prom) => {
-//     if (error) {
-//       prom.reject(error);
-//     } else {
-//       prom.resolve(token);
-//     }
-//   });
-//   failedQueue = [];
-// };
+let isRefreshing = false;
+let failedQueue: any[] = [];
+const processQueue = (error: any, token: any = null) => {
+	failedQueue.forEach((prom) => {
+		if (error) {
+			prom.reject(error);
+		} else {
+			prom.resolve(token);
+		}
+	});
+	failedQueue = [];
+};
 
 const axios = axios1.create({
 	/**
@@ -61,15 +61,12 @@ const axios = axios1.create({
 // Add a request interceptor
 axios.interceptors.request.use(
 	(config) => {
-		/**
-		 * Chuyển sang xử lý access_token with OIDC auth ở Technical Support
-		 */
-		// if (!config.headers.Authorization) {
-		// 	const token = localStorage.getItem('token');
-		// 	if (token) {
-		// 		config.headers.Authorization = `Bearer ${token}`;
-		// 	}
-		// }
+		if (!config.headers.Authorization) {
+			const token = localStorage.getItem('token');
+			if (token) {
+				config.headers.Authorization = `Bearer ${token}`;
+			}
+		}
 
 		const isExcluded = excludedPaths.some((path) => config.url?.startsWith(path));
 		if (!isExcluded && !config.url?.includes('wp-json')) {
@@ -112,12 +109,12 @@ axios.interceptors.response.use(
 			const descriptionError = Array.isArray(er?.detail?.exception?.response?.message)
 				? er?.detail?.exception?.response?.message?.join(', ')
 				: // Sequelize validation Errors
-					Array.isArray(er?.detail?.exception?.errors)
+				Array.isArray(er?.detail?.exception?.errors)
 					? er?.detail?.exception?.errors?.map((e: any) => e?.message)?.join(', ')
 					: data.error[er?.detail?.errorCode || er?.errorCode] ||
-						er?.detail?.message ||
-						er?.message ||
-						er?.errorDescription;
+					er?.detail?.message ||
+					er?.message ||
+					er?.errorDescription;
 
 			switch (error?.response?.status) {
 				case 400:
@@ -138,57 +135,54 @@ axios.interceptors.response.use(
 						});
 					if (originalRequest._retry) break;
 					break;
-				// return routeLogin('Unauthorize');
+					const refreshToken = localStorage.getItem('refreshToken');
+					if (!refreshToken || typeof error?.response?.config?.data === 'string' && error?.response?.config?.data?.includes('refresh')) {
+						return routeLogin(er?.errorCode);
+					}
+					if (typeof error?.response?.config?.data === 'string' && error?.response?.config?.data?.includes('grant_type')) return Promise.reject(error);
 
-				///////////////////////////////////////////////////////////////////
-				// Tobe removed, token refreshing is handled by OIDC context
-				///////////////////////////////////////////////////////////////////
-				// const refreshToken = localStorage.getItem('refreshToken');
-				// if (!refreshToken || error?.response?.config?.data?.includes('refresh')) {
-				//   return routeLogin(error?.response?.data?.errorCode);
-				// }
-				// if (error?.response?.config?.data?.includes('grant_type')) return;
+					if (isRefreshing) {
+						// Nếu đang có 1 cái refresh thì thêm request này vào queue;
+						return new Promise((resolve, reject) => {
+							failedQueue.push({ resolve, reject });
+						})
+							.then((token) => {
+								// gán lại token mới cho request này rồi gửi lại nó
+								originalRequest.headers.Authorization = 'Bearer ' + token;
+								return axios(originalRequest);
+							})
+							.catch((err) => {
+								return Promise.reject(err);
+							});
+					}
 
-				// if (isRefreshing) {
-				//   // Nếu đang có 1 cái refresh thì thêm request này vào queue;
-				//   return new Promise((resolve, reject) => {
-				//     failedQueue.push({ resolve, reject });
-				//   })
-				//     .then((token) => {
-				//       // gán lại token mới cho request này rồi gửi lại nó
-				//       originalRequest.headers.Authorization = 'Bearer ' + token;
-				//       return axios(originalRequest);
-				//     })
-				//     .catch((err) => {
-				//       return Promise.reject(err);
-				//     });
-				// }
+					originalRequest._retry = true;
+					isRefreshing = true;
 
-				// originalRequest._retry = true;
-				// isRefreshing = true; // Request đầu tiên bị lỗi => call refresh token => isRefreshing
-
-				// return new Promise((resolve, reject) => {
-				//   refreshAccesssToken({ refreshToken })
-				//     .then((response) => {
-				//       // Lưu token mới vào localStorage
-				//       localStorage.setItem('token', response?.data?.access_token);
-				//       localStorage.setItem('refreshToken', response?.data?.refresh_token);
-				//       // Set lại token cho axios
-				//       axios.defaults.headers.common.Authorization = `Bearer ${response?.data?.access_token}`;
-				//       originalRequest.headers.Authorization = `Bearer ${response?.data?.access_token}`;
-				//       processQueue(null, response?.data?.access_token); // Chạy lại các request ở trong queue với token mới
-				//       resolve(axios(originalRequest)); // Gửi lại request đầu tiên
-				//     })
-				//     .catch((err) => {
-				//       // Nếu get refresh cũng lỗi => refresh hết hạn => logout
-				//       processQueue(err, null);
-				//       reject(err);
-				//       routeLogin(error?.response?.data?.errorCode);
-				//     })
-				//     .then(() => {
-				//       isRefreshing = false;
-				//     });
-				// });
+					return new Promise((resolve, reject) => {
+						refreshAccesssToken({ refreshToken: refreshToken as string })
+							.then((response) => {
+								const newAccessToken = response?.data?.access_token || response?.data?.accessToken;
+								const newRefreshToken = response?.data?.refresh_token || response?.data?.refreshToken;
+								// Lưu token mới vào localStorage
+								localStorage.setItem('token', newAccessToken);
+								localStorage.setItem('refreshToken', newRefreshToken);
+								// Set lại token cho axios
+								axios.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+								originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+								processQueue(null, newAccessToken); // Chạy lại các request ở trong queue với token mới
+								resolve(axios(originalRequest)); // Gửi lại request đầu tiên
+							})
+							.catch((err) => {
+								// Nếu get refresh cũng lỗi => refresh hết hạn => logout
+								processQueue(err, null);
+								reject(err);
+								routeLogin(er?.errorCode);
+							})
+							.finally(() => {
+								isRefreshing = false;
+							});
+					});
 
 				case 403:
 				case 405:

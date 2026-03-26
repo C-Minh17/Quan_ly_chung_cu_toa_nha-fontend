@@ -2,9 +2,9 @@ import axios from '@/utils/axios';
 import {
 	ip3,
 	ipNotif,
+	ipRoot,
 	keycloakClientID,
 	keycloakTokenEndpoint,
-	keycloakUserInfoEndpoint,
 	resourceServerClientId,
 } from '@/utils/ip';
 import queryString from 'query-string';
@@ -12,15 +12,16 @@ import type { ESettingKey } from './constant';
 import type { ISetting } from './typing';
 
 // export async function getInfo() {
-//   return axios.get(`${ip3}/user/me`);
+// 	return axios.get(`${ip3}/user/me`);
 // }
 
 export async function getUserInfo() {
-	return axios.get(keycloakUserInfoEndpoint);
+	// Gọi về Backend local thay vì Keycloak
+	return axios.get(`${ipRoot}/user/me`);
 }
 
 export async function adminlogin(payload: { username?: string; password?: string }) {
-	return axios.post(`${ip3}/auth/login`, { ...payload, platform: 'Web' });
+	return axios.post(`${ipRoot}/auth/login`, { ...payload, platform: 'Web' });
 }
 
 export async function refreshAccesssToken(payload: { refreshToken: string }) {

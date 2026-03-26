@@ -8,8 +8,9 @@ import type { RunTimeLayoutConfig } from 'umi';
 import { getIntl, history } from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import ErrorBoundary from './components/ErrorBoundary';
-import { OIDCBounder } from './components/OIDCBounder';
 import { unCheckPermissionPaths } from './components/OIDCBounder/constant';
+import { getUserInfo, getPermission } from '@/services/base/api';
+import type { Login } from '@/services/base/typing';
 import OneSignalBounder from './components/OneSignalBounder';
 import HeaderContentPage from './components/RightContent/Header';
 import TechnicalSupportBounder from './components/TechnicalSupportBounder';
@@ -34,11 +35,36 @@ export async function getInitialState(): Promise<IInitialState> {
 		settings: defaultSettings,
 		permissionLoading: true,
 	};
+
+	try {
+		const token = localStorage.getItem('token');
+		if (token) {
+			// Lấy thông tin user trước, không để lỗi permission chặn
+			const userInfoRes = await getUserInfo();
+			const userInfo: Login.IUser = userInfoRes?.data?.data || userInfoRes?.data;
+			initialState.currentUser = { ...userInfo, ssoId: userInfo?.sub || (userInfo as any)?.id };
+
+			// Lấy permission riêng, nếu lỗi (Keycloak không dùng) thì bỏ qua
+			try {
+				const permissionsRes = await getPermission();
+				const permissions: Login.IPermission[] = permissionsRes?.data?.data || permissionsRes?.data || [];
+				initialState.authorizedPermissions = permissions;
+			} catch {
+				initialState.authorizedPermissions = [];
+			}
+		}
+		initialState.permissionLoading = false;
+	} catch (error) {
+		initialState.permissionLoading = false;
+	}
+
 	try {
 		const raw = sessionStorage.getItem('initialState');
 		if (raw) {
 			const { authorizedPermissions } = JSON.parse(raw) as Partial<IInitialState>;
-			Object.assign(initialState, { authorizedPermissions });
+			if (authorizedPermissions) {
+				Object.assign(initialState, { authorizedPermissions });
+			}
 		}
 	} catch (e) { }
 
@@ -50,11 +76,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 	const intl = getIntl();
 	return {
 		unAccessible: (
-			<OIDCBounder>
-				<TechnicalSupportBounder>
-					<NotAccessible />
-				</TechnicalSupportBounder>
-			</OIDCBounder>
+			<TechnicalSupportBounder>
+				<NotAccessible />
+			</TechnicalSupportBounder>
 		),
 		noFound: <NotFoundContent />,
 		rightContentRender: () => <RightContent />,
@@ -104,13 +128,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 		),
 
 		childrenRender: (dom) => (
-			<OIDCBounder>
-				<ErrorBoundary>
-					<TechnicalSupportBounder>
-						<OneSignalBounder>{dom}</OneSignalBounder>
-					</TechnicalSupportBounder>
-				</ErrorBoundary>
-			</OIDCBounder>
+			<ErrorBoundary>
+				<TechnicalSupportBounder>
+					<OneSignalBounder>{dom}</OneSignalBounder>
+				</TechnicalSupportBounder>
+			</ErrorBoundary>
 		),
 
 		title: intl.formatMessage({ id: AppModules[currentRole].title }),
