@@ -134,9 +134,9 @@ axios.interceptors.response.use(
 							key: 'error401',
 						});
 					if (originalRequest._retry) break;
-					break;
+					
 					const refreshToken = localStorage.getItem('refreshToken');
-					if (!refreshToken || typeof error?.response?.config?.data === 'string' && error?.response?.config?.data?.includes('refresh')) {
+					if (!refreshToken || (typeof error?.response?.config?.data === 'string' && error?.response?.config?.data?.includes('refresh'))) {
 						return routeLogin(er?.errorCode);
 					}
 					if (typeof error?.response?.config?.data === 'string' && error?.response?.config?.data?.includes('grant_type')) return Promise.reject(error);

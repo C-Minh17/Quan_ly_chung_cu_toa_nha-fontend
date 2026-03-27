@@ -54,7 +54,12 @@ export async function getInitialState(): Promise<IInitialState> {
 			}
 		}
 		initialState.permissionLoading = false;
-	} catch (error) {
+	} catch (error: any) {
+		if (error?.response?.status === 401) {
+			localStorage.removeItem('token');
+			localStorage.removeItem('refreshToken');
+			history.replace('/user/login');
+		}
 		initialState.permissionLoading = false;
 	}
 
