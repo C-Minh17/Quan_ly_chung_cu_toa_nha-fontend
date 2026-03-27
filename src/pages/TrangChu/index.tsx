@@ -8,10 +8,11 @@ const TrangChu = () => {
 	return (
 		<Card styles={{ body: { height: '100%' } }} variant='borderless'>
 			<div className='home-welcome'>
-				<h1 className='title'>{intl.formatMessage({ id: 'pages.trangchu.title' })}</h1>
+				{/* <h1 className='title'>{intl.formatMessage({ id: 'pages.trangchu.title' })}</h1>
 				<h2 className='sub-title'>
 					{intl.formatMessage({ id: 'pages.trangchu.subtitle' })} - {intl.formatMessage({ id: unitName }).toUpperCase()}
-				</h2>
+				</h2> */}
+				<h1>Hệ thống quản lý tòa nhà</h1>
 			</div>
 		</Card>
 	);

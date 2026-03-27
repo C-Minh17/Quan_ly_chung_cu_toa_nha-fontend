@@ -4,22 +4,18 @@ import { useIntl } from 'umi';
 
 export default () => {
 	const intl = useIntl();
-	const defaultMessage = intl.formatMessage({
-		id: 'app.copyright.produced',
-		defaultMessage: 'CopyRight',
-	});
 
 	return (
 		<DefaultFooter
-			copyright={`2023 ${defaultMessage} - ${APP_CONFIG_APP_VERSION}`}
-			links={[
-				{
-					key: 'link',
-					title: intl.formatMessage({ id: unitName }).toUpperCase(),
-					href: landingUrl,
-					blankTarget: true,
-				},
-			]}
+			copyright={`SmartBuilding`}
+			// links={[
+			// 	{
+			// 		key: 'link',
+			// 		title: intl.formatMessage({ id: unitName }).toUpperCase(),
+			// 		href: landingUrl,
+			// 		blankTarget: true,
+			// 	},
+			// ]}
 			style={{ width: '100%' }}
 		/>
 	);

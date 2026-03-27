@@ -17,6 +17,11 @@ export default {
 	'modules.van-bang-chung-chi': 'Văn bằng chứng chỉ',
 	'modules.quan-ly-nguoi-dung': 'Người dùng & phân quyền',
 	'modules.tap-chi-khoa-hoc': 'Tạp chí khoa học',
+	//new
+	'modules.super-admin': 'Super Admin',
+	'modules.quan-ly': 'Quản lý',
+	'modules.nhan-vien': 'Nhân viên',
+	'modules.cu-dan': 'Cư dân',
 
 	// University information
 	'config.co-quan-chu-quan': 'Hội Liên hiệp phụ nữ Việt Nam',

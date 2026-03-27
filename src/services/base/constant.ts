@@ -15,6 +15,11 @@ export enum EModuleKey {
 	THU_VIEN = 'thu-vien',
 	CORE = 'danh-muc-chung',
 	QLND = 'quan-ly-nguoi-dung',
+	//new
+	SUPER_ADMIN = 'super-admin',
+	MANAGER = 'quan-ly',
+	STAFF = 'nhan-vien',
+	RESIDENT = 'cu-dan',
 }
 
 export const AppModules: Record<EModuleKey, Login.TModule> = {
@@ -101,6 +106,30 @@ export const AppModules: Record<EModuleKey, Login.TModule> = {
 		clientId: `${APP_CONFIG_PREFIX_OF_KEYCLOAK_CLIENT_ID}qlnd`,
 		url: APP_CONFIG_URL_QLND,
 		icon: EModuleKey.QLND + '.svg',
+	},
+	[EModuleKey.SUPER_ADMIN]: {
+		title: `modules.${EModuleKey.SUPER_ADMIN}`,
+		clientId: `${APP_CONFIG_PREFIX_OF_KEYCLOAK_CLIENT_ID}super-admin`,
+		url: '/',
+		icon: EModuleKey.SUPER_ADMIN + '.svg',
+	},
+	[EModuleKey.MANAGER]: {
+		title: `modules.${EModuleKey.MANAGER}`,
+		clientId: `${APP_CONFIG_PREFIX_OF_KEYCLOAK_CLIENT_ID}manager`,
+		url: '/',
+		icon: EModuleKey.MANAGER + '.svg',
+	},
+	[EModuleKey.STAFF]: {
+		title: `modules.${EModuleKey.STAFF}`,
+		clientId: `${APP_CONFIG_PREFIX_OF_KEYCLOAK_CLIENT_ID}staff`,
+		url: '/',
+		icon: EModuleKey.STAFF + '.svg',
+	},
+	[EModuleKey.RESIDENT]: {
+		title: `modules.${EModuleKey.RESIDENT}`,
+		clientId: `${APP_CONFIG_PREFIX_OF_KEYCLOAK_CLIENT_ID}resident`,
+		url: '/',
+		icon: EModuleKey.RESIDENT + '.svg',
 	},
 };
 

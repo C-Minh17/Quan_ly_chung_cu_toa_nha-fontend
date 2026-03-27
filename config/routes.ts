@@ -27,6 +27,7 @@
 		name: 'Dashboard',
 		component: './TrangChu',
 		icon: 'HomeOutlined',
+		access: "canAccessManager"
 	},
 	{
 		path: '/gioi-thieu',

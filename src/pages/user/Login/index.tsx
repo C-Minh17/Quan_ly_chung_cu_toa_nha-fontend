@@ -85,7 +85,15 @@ const Login: React.FC = () => {
 				<div className={styles.top}>
 					<div className={styles.header}>
 						<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-							<img alt='logo' className={styles.logo} src='/logo-full-white.svg' />
+							{/* <img alt='logo' className={styles.logo} src='/logo-full-white.svg' /> */}
+							<div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'start' }}>
+								<div style={{ fontSize: 28, fontWeight: 600, color: '#fff', lineHeight: '1.5' }}>
+									HỆ THỐNG QUẢN LÝ TÒA NHÀ
+								</div>
+								<div style={{ fontSize: 18, fontWeight: 600, color: '#fff', lineHeight: '1.5' }}>
+									SmartBuilding
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
