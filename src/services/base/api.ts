@@ -26,7 +26,6 @@ export async function adminlogin(payload: { username?: string; password?: string
 
 export async function refreshAccesssToken(payload: { refreshToken: string }) {
 	const data = {
-		client_id: keycloakClientID,
 		grant_type: 'refresh_token',
 		refresh_token: payload.refreshToken,
 	};
@@ -34,8 +33,8 @@ export async function refreshAccesssToken(payload: { refreshToken: string }) {
 	return axios({
 		url: keycloakTokenEndpoint,
 		method: 'POST',
-		headers: { 'content-type': 'application/x-www-form-urlencoded' },
-		data: queryString.stringify(data),
+		headers: { 'Content-Type': 'application/json' },
+		data,
 	});
 }
 

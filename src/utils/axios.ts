@@ -61,7 +61,7 @@ const axios = axios1.create({
 // Add a request interceptor
 axios.interceptors.request.use(
 	(config) => {
-		if (!config.headers.Authorization) {
+		if (!config.headers.Authorization && !config.url?.includes('/user/auth/refresh')) {
 			const token = localStorage.getItem('token');
 			if (token) {
 				config.headers.Authorization = `Bearer ${token}`;
@@ -126,20 +126,23 @@ axios.interceptors.response.use(
 					break;
 
 				case 401:
-					// Nếu có access token (có thể access token hết hạn) thì mới cảnh báo
-					if (originalRequest?.headers?.Authorization)
+					// Chỉ cảnh báo nếu đã thử refresh nhưng vẫn lỗi
+					if (originalRequest._retry && originalRequest?.headers?.Authorization) {
 						notification.error({
-							message: 'Phiên đăng nhập đã thay đổi (104)',
-							description: 'Vui lòng tải lại trang (F5) để cập nhật. Chú ý các dữ liệu chưa lưu sẽ bị mất!',
+							message: 'Phiên đăng nhập đã hết hạn (104)',
+							description: 'Vui lòng đăng nhập lại.',
 							key: 'error401',
 						});
-					if (originalRequest._retry) break;
-					
-					const refreshToken = localStorage.getItem('refreshToken');
-					if (!refreshToken || (typeof error?.response?.config?.data === 'string' && error?.response?.config?.data?.includes('refresh'))) {
-						return routeLogin(er?.errorCode);
 					}
-					if (typeof error?.response?.config?.data === 'string' && error?.response?.config?.data?.includes('grant_type')) return Promise.reject(error);
+
+					if (originalRequest._retry) break;
+
+					const refreshToken = localStorage.getItem('refreshToken');
+					// Nếu không có refresh token hoặc chính yêu cầu refresh bị lỗi 401
+					if (!refreshToken || originalRequest.url?.includes('/user/auth/refresh')) {
+						routeLogin(er?.errorCode);
+						return Promise.reject(error);
+					}
 
 					if (isRefreshing) {
 						// Nếu đang có 1 cái refresh thì thêm request này vào queue;
