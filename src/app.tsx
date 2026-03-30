@@ -21,6 +21,7 @@ import { AppModules } from './services/base/constant';
 import type { IInitialState } from './services/base/typing';
 import './styles/global.less';
 import { currentRole, replaceRole } from './utils/ip';
+import { useAccess } from '@umijs/max';
 
 export function rootContainer(container: React.ReactNode) {
 	return (
@@ -74,6 +75,8 @@ export async function getInitialState(): Promise<IInitialState> {
 // ProLayout  https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 	const intl = getIntl();
+	const access = useAccess()
+
 	return {
 		unAccessible: (
 			<TechnicalSupportBounder>
@@ -135,7 +138,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 			</ErrorBoundary>
 		),
 
-		title: intl.formatMessage({ id: AppModules[currentRole].title }),
+		title: intl.formatMessage({ id: access.canAccessSuperAdmin ? "modules.super-admin" : access.canAccessManager ? "modules.quan-ly" : access.canAccessStaff ? "modules.nhan-vien" : "modules.cu-dan" }),
 		...initialState?.settings,
 	};
 };

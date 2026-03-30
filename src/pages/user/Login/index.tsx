@@ -1,5 +1,5 @@
 import Footer from '@/components/Footer';
-import { adminlogin, getUserInfo } from '@/services/base/api';
+import { adminlogin, getPermission, getUserInfo } from '@/services/base/api';
 import { keycloakAuthority } from '@/utils/ip';
 import rules from '@/utils/rules';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
@@ -13,7 +13,7 @@ const Login: React.FC = () => {
 	const [count, setCount] = useState<number>(Number(localStorage?.getItem('failed')) || 0);
 	const [submitting, setSubmitting] = useState(false);
 	const [type, setType] = useState<string>('accountAdmin');
-	const { initialState, setInitialState } = useModel('@@initialState');
+	const { initialState, setInitialState, refresh } = useModel('@@initialState');
 	const [isVerified, setIsverified] = useState<boolean>(true);
 	const [visibleCaptcha, setVisibleCaptcha] = useState<boolean>(false);
 	// const [visibleCaptcha2, setVisibleCaptcha2] = useState<boolean>(false);
@@ -31,11 +31,23 @@ const Login: React.FC = () => {
 
 		// const decoded = jwt_decode(role?.access_token) as any;
 		const info = await getUserInfo();
+		const userInfo = info?.data?.data || info?.data;
+
+		let permissions = [];
+		try {
+			const resPermission = await getPermission();
+			permissions = resPermission?.data?.data || resPermission?.data || [];
+		} catch (e) {
+			console.log('Error fetching permissions', e);
+		}
+
 		setInitialState({
 			...initialState,
-			currentUser: info?.data?.data,
-			// authorizedPermissions: decoded?.authorization?.permissions,
+			currentUser: { ...userInfo, ssoId: userInfo?.sub || userInfo?.id },
+			authorizedPermissions: permissions,
 		});
+
+		await refresh();
 
 		const defaultloginSuccessMessage = intl.formatMessage({
 			id: 'pages.login.success',

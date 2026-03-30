@@ -3,7 +3,7 @@ import OneSignal from 'react-onesignal';
 import { useModel, history } from 'umi';
 
 export const useAuthActions = () => {
-	const { initialState, setInitialState } = useModel('@@initialState');
+	const { setInitialState } = useModel('@@initialState');
 
 	const handleLogout = () => {
 		if (oneSignalRole.valueOf() === currentRole.valueOf()) {
@@ -15,7 +15,7 @@ export const useAuthActions = () => {
 
 		sessionStorage.clear();
 		localStorage.clear();
-		setInitialState({ ...initialState, currentUser: undefined });
+		setInitialState({});
 		history.replace('/user/login');
 	};
 
