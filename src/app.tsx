@@ -8,7 +8,7 @@ import type { RunTimeLayoutConfig } from 'umi';
 import { getIntl, history } from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import ErrorBoundary from './components/ErrorBoundary';
-import { unCheckPermissionPaths } from './components/OIDCBounder/constant';
+import { unAuthPaths, unCheckPermissionPaths } from './components/OIDCBounder/constant';
 import { getUserInfo, getPermission } from '@/services/base/api';
 import type { Login } from '@/services/base/typing';
 import OneSignalBounder from './components/OneSignalBounder';
@@ -91,11 +91,18 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 		footerRender: () => <Footer />,
 
 		onPageChange: () => {
-			if (initialState?.currentUser) {
-				const { location } = history;
-				const isUncheckPath = unCheckPermissionPaths.some((path) => window.location.pathname.includes(path));
+			const { location } = history;
+			const isUnauthPath = unAuthPaths.some((path) => location.pathname.includes(path));
+			const isUncheckPath = unCheckPermissionPaths.some((path) => location.pathname.includes(path));
 
-				if (location.pathname === '/') {
+			// Nếu không có user và không thuộc các trang được phép bỏ qua Auth
+			if (!initialState?.currentUser && location.pathname !== '/user/login' && !isUnauthPath && !isUncheckPath) {
+				history.replace('/user/login');
+				return;
+			}
+
+			if (initialState?.currentUser) {
+				if (location.pathname === '/' || location.pathname === '/user/login') {
 					history.replace('/dashboard');
 				} else if (
 					!isUncheckPath &&
