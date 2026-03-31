@@ -1,6 +1,6 @@
 declare module MUser {
   interface IRecord {
-    id: String;
+    _id: String;
     sub: string;
     ssoId: string;
 
