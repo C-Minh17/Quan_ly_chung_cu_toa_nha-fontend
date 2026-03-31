@@ -5,7 +5,6 @@ export default {
 	'menu.Dashboard': 'Home',
 	'menu.About': `Introduction ${APP_CONFIG_TIEN_TO_TRUONG.toLowerCase()}`,
 	'menu.News': 'News',
-
 	'menu.DanhMuc': 'Categories',
 	'menu.DanhMuc.ChucVu': 'Position',
 };

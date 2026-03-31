@@ -23,8 +23,6 @@ const TableStaticData = (props: TableStaticProps) => {
 	const [total, setTotal] = useState<number>();
 	const searchInputRef = useRef<InputRef>(null);
 
-	// dnd-kit: sensors
-	const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
 	// State cho tableData để sortable
 	const tableData = (props?.data ?? []).map((item, index) => ({
@@ -237,6 +235,18 @@ const TableStaticData = (props: TableStaticProps) => {
 		);
 	};
 
+	// Sortable Wrapper
+	const SortableWrapper = ({ children, tableData, handleDragEnd }: any) => {
+		const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+		return (
+			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+				<SortableContext items={tableData.map((item: any) => item.key)} strategy={verticalListSortingStrategy}>
+					{children}
+				</SortableContext>
+			</DndContext>
+		);
+	};
+
 	return (
 		<div className='table-base'>
 			<div className='header'>
@@ -295,11 +305,9 @@ const TableStaticData = (props: TableStaticProps) => {
 				)}
 			>
 				{rowSortable ? (
-					<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-						<SortableContext items={tableData.map((item) => item.key)} strategy={verticalListSortingStrategy}>
-							{renderTable()}
-						</SortableContext>
-					</DndContext>
+					<SortableWrapper tableData={tableData} handleDragEnd={handleDragEnd}>
+						{renderTable()}
+					</SortableWrapper>
 				) : (
 					renderTable()
 				)}

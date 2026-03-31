@@ -45,7 +45,6 @@ export const TableBaseContent = (props: TableBaseProps) => {
 		dsPhanVung,
 	});
 
-	const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
 	const tableData: any[] = model?.[props.dataState || 'danhSach']?.map((item: any, index: number) => ({
 		...item,
@@ -198,6 +197,18 @@ export const TableBaseContent = (props: TableBaseProps) => {
 		);
 	};
 
+	// Sortable Wrapper
+	const SortableWrapper = ({ children, tableData, handleDragEnd }: any) => {
+		const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+		return (
+			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+				<SortableContext items={tableData.map((item: any) => item.key)} strategy={verticalListSortingStrategy}>
+					{children}
+				</SortableContext>
+			</DndContext>
+		);
+	};
+
 	const mainContent = (
 		<div className='table-base'>
 			{props.children}
@@ -214,11 +225,9 @@ export const TableBaseContent = (props: TableBaseProps) => {
 				)}
 			>
 				{rowSortable ? (
-					<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-						<SortableContext items={tableData.map((item) => item.key)} strategy={verticalListSortingStrategy}>
-							{renderTable()}
-						</SortableContext>
-					</DndContext>
+					<SortableWrapper tableData={tableData} handleDragEnd={handleDragEnd}>
+						{renderTable()}
+					</SortableWrapper>
 				) : (
 					renderTable()
 				)}

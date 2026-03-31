@@ -12,6 +12,8 @@ const ipNotif = ipRoot + 'notification'; // ip dev
 const ipSlink = ipRoot + 'slink'; // ip dev
 const ipCore = ipRoot + 'core'; // ip dev
 
+const ipUser = ipRoot + '/user';
+
 const currentRole = EModuleKey.TCNS;
 const replaceRole: EModuleKey | undefined = undefined; //EModuleKey.CONG_CAN_BO; // Thay đổi theo từng phân hệ
 const oneSignalRole = EModuleKey.CONG_CAN_BO;
@@ -43,4 +45,6 @@ export {
 	oneSignalRole,
 	resourceServerClientId,
 	sentryDSN,
+	//
+	ipUser
 };

@@ -1,4 +1,4 @@
-﻿export default [
+export default [
 	{
 		path: '/user',
 		layout: false,
@@ -27,6 +27,13 @@
 		name: 'Dashboard',
 		component: './TrangChu',
 		icon: 'HomeOutlined',
+		// access: "canAccessManager"
+	},
+	{
+		path: '/quan-ly-tai-khoan',
+		name: 'Quản lý tài khoản',
+		component: './Quan-ly-tai-khoan',
+		icon: 'UserOutlined',
 		access: "canAccessManager"
 	},
 	{

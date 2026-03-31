@@ -4,7 +4,7 @@ export default {
 	'modules.cong-hoc-vien': 'Cổng người học',
 	'modules.cong-can-bo': 'Cổng cán bộ',
 	'modules.quan-ly-dao-tao': 'Quản lý đào tạo',
-	'modules.to-chuc-nhan-su': 'Quản lý',
+	'modules.to-chuc-nhan-su': 'SmartBuilding',
 	'modules.tai-chinh': 'Tài chính',
 	'modules.cong-tac-sinh-vien': 'Công tác sinh viên',
 	'modules.quan-ly-khoa-hoc': 'Quản lý khoa học',
