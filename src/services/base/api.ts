@@ -24,6 +24,10 @@ export async function adminlogin(payload: { username?: string; password?: string
 	return axios.post(`${ipRoot}/auth/login`, { ...payload, platform: 'Web' });
 }
 
+export const createAccount = async (data: MUser.IRecord) => {
+	return axios.post(`${ipRoot}/auth/register`, data).then(res => res.data)
+}
+
 export async function refreshAccesssToken(payload: { refreshToken: string }) {
 	const data = {
 		grant_type: 'refresh_token',

@@ -1,20 +1,35 @@
-import { useModel } from '@umijs/max';
-import { Button, Card, Col, Form, Input, Row, Select, Switch } from 'antd';
+import { useAccess, useModel } from '@umijs/max';
+import { Button, Card, Col, Form, Input, message, Row, Select, Switch } from 'antd';
 
 interface Props {
   initialValues?: MUser.IRecord;
   setShowEdit?: (value: boolean) => void;
+  edit?: boolean;
 }
 const FormAccount = (props: Props) => {
-  const { initialValues, setShowEdit } = props;
-  const { handleUpdateUser, loadingInfoUser } = useModel('user.user')
+  const { initialValues, setShowEdit, edit } = props;
+  const { handleUpdateUser, loadingInfoUser, handleCreateAccount } = useModel('user.user')
   const [form] = Form.useForm();
+
+  const access = useAccess();
 
   const onSubmit = async (values: MUser.IRecord) => {
     try {
-      await handleUpdateUser(initialValues?._id as string, values)
-      form.resetFields()
-      setShowEdit?.(false)
+      if (edit) {
+        const res = await handleUpdateUser(initialValues?._id as string, values)
+        if (res) {
+          message.success('Cập nhật tài khoản thành công')
+        }
+        form.resetFields()
+        setShowEdit?.(false)
+      } else {
+        const res = await handleCreateAccount(values)
+        if (res) {
+          message.success('Tạo tài khoản thành công')
+        }
+        form.resetFields()
+        setShowEdit?.(false)
+      }
     } catch (err) {
       console.log(err)
     }
@@ -45,6 +60,18 @@ const FormAccount = (props: Props) => {
               <Input placeholder="Email" />
             </Form.Item>
           </Col>
+          {!edit ?
+            <Col span={24}>
+              <Form.Item
+                name="password"
+                label="Mật khẩu"
+                rules={[
+                  { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                ]}
+              >
+                <Input.Password placeholder="Mật khẩu" />
+              </Form.Item>
+            </Col> : null}
           <Col xs={24} md={12}>
             <Form.Item
               name="family_name"
@@ -75,7 +102,19 @@ const FormAccount = (props: Props) => {
               label="Vai trò (Role)"
               rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}
             >
-              <Input disabled={true} />
+              {edit ? <Input disabled={true} /> :
+                access.canAccessSuperAdmin ? <Select
+                  options={[
+                    { value: 'RESIDENT', label: 'Cư dân' },
+                    { value: 'MANAGER', label: 'Quản lý' },
+                    { value: 'SUPER_ADMIN', label: 'Quản trị viên' },
+                  ]}
+                /> : <Select
+                  options={[
+                    { value: 'RESIDENT', label: 'Cư dân' },
+                    { value: 'MANAGER', label: 'Quản lý' },
+                  ]}
+                />}
             </Form.Item>
           </Col>
           <Col span={24}>
@@ -92,7 +131,7 @@ const FormAccount = (props: Props) => {
         <Row>
           <Col>
             <Button type="primary" htmlType="submit" loading={loadingInfoUser}>
-              Cập nhật
+              {edit ? 'Cập nhật' : 'Tạo'}
             </Button>
           </Col>
         </Row>

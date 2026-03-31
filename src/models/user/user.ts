@@ -1,3 +1,4 @@
+import { createAccount } from "@/services/base/api"
 import { createUser, deleteUser, getAllUser, getUserById, updateUser } from "@/services/User"
 import { useState } from "react"
 
@@ -19,7 +20,7 @@ export default () => {
     setLoadingInfoAllUser(true)
     try {
       const res = await getAllUser()
-      setInfoAllUser(res?.data)
+      setInfoAllUser(res?.data?.filter((item: MUser.IRecord) => item.role !== 'SUPER_ADMIN'))
       const data = res?.data?.filter((item: MUser.IRecord) => item.role !== 'SUPER_ADMIN' && item.role !== 'MANAGER')
       setInfoAllUserFilter(data)
       return res?.data
@@ -91,6 +92,22 @@ export default () => {
     }
   }
 
+  const handleCreateAccount = async (data: MUser.IRecord) => {
+    setLoadingInfoUser(true)
+    try {
+      const res = await createAccount(data)
+      if (res) {
+        return res?.data
+      }
+      return null
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoadingInfoUser(false)
+      refreshUsers()
+    }
+  }
+
   return {
     refreshKey,
     infoAllUser,
@@ -103,6 +120,7 @@ export default () => {
     handleCreateUser,
     handleUpdateUser,
     handleDeleteUser,
+    handleCreateAccount,
   }
 
 }

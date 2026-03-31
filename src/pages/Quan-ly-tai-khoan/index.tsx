@@ -12,6 +12,7 @@ const ManagerAccount = () => {
   const { refreshKey, infoAllUser, infoAllUserFilter, loadingInfoAllUser, handleGetInfoAllUser, handleDeleteUser } = useModel("user.user");
   const [showEdit, setShowEdit] = useState(false);
   const [record, setRecord] = useState<MUser.IRecord | {}>({});
+  const [edit, setEdit] = useState(false);
 
   const aceess = useAccess();
 
@@ -70,6 +71,7 @@ const ManagerAccount = () => {
               onClick={() => {
                 setRecord(record);
                 setShowEdit(true);
+                setEdit(true);
               }}
               type="link"
               icon={<EditOutlined />}
@@ -105,19 +107,23 @@ const ManagerAccount = () => {
         data={aceess.canAccessSuperAdmin ? infoAllUser || [] : infoAllUserFilter || []}
         loading={loadingInfoAllUser}
         showEdit={showEdit}
+        hasCreate={true}
         onReload={() => handleGetInfoAllUser()}
         Form={FormAccount}
         formProps={{
           initialValues: record,
           setShowEdit: setShowEdit,
+          edit: edit,
         }}
         setShowEdit={(val) => {
           setShowEdit(val);
           if (!val) {
             setRecord({});
+            setEdit(false);
           }
         }}
         widthDrawer={800}
+        addStt
       />
     </>
   )
