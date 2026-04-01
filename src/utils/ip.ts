@@ -13,6 +13,7 @@ const ipSlink = ipRoot + 'slink'; // ip dev
 const ipCore = ipRoot + 'core'; // ip dev
 
 const ipUser = ipRoot + '/user';
+const ipResident = ipRoot + '/residents';
 
 const currentRole = EModuleKey.TCNS;
 const replaceRole: EModuleKey | undefined = undefined; //EModuleKey.CONG_CAN_BO; // Thay đổi theo từng phân hệ
@@ -46,5 +47,6 @@ export {
 	resourceServerClientId,
 	sentryDSN,
 	//
-	ipUser
+	ipUser,
+	ipResident
 };

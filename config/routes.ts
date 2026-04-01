@@ -37,6 +37,13 @@ export default [
 		access: "canAccessManager"
 	},
 	{
+		path: '/quan-ly-dan-cu',
+		name: 'Quản lý dân cư',
+		component: './Quan-ly-dan-cu',
+		icon: 'UserOutlined',
+		access: "canAccessManager"
+	},
+	{
 		path: '/gioi-thieu',
 		name: 'About',
 		component: './TienIch/GioiThieu',
