@@ -26,7 +26,7 @@ export default [
 		path: '/dashboard',
 		name: 'Dashboard',
 		component: './TrangChu',
-		icon: 'DashboardOutlined',
+		icon: 'AppstoreOutlined',
 		// access: "canAccessManager"
 	},
 	{
@@ -47,14 +47,14 @@ export default [
 		path: '/quan-ly-tang',
 		name: 'Quản lý tầng',
 		component: './Quan-ly-tang',
-		icon: 'BankOutlined',
+		icon: 'ApartmentOutlined',
 		access: "canAccessManager"
 	},
 	{
 		path: '/quan-ly-dan-cu',
 		name: 'Quản lý dân cư',
 		component: './Quan-ly-dan-cu',
-		icon: 'UserOutlined',
+		icon: 'TeamOutlined',
 		access: "canAccessManager"
 	},
 	{
