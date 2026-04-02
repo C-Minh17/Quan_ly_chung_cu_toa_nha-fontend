@@ -51,6 +51,13 @@ export default [
 		access: "canAccessManager"
 	},
 	{
+		path: '/quan-ly-can-ho',
+		name: 'Quản lý căn hộ',
+		component: './Quan-ly-can-ho',
+		icon: 'HomeOutlined',
+		access: "canAccessManager"
+	},
+	{
 		path: '/quan-ly-dan-cu',
 		name: 'Quản lý dân cư',
 		component: './Quan-ly-dan-cu',
