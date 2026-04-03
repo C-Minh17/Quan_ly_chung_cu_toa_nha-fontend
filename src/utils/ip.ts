@@ -14,6 +14,8 @@ const ipCore = ipRoot + 'core'; // ip dev
 
 const ipUser = ipRoot + '/user';
 const ipResident = ipRoot + '/residents';
+const ipBuilding = ipRoot + '/buildings';
+const ipFloor = ipRoot + '/floors';
 
 const currentRole = EModuleKey.TCNS;
 const replaceRole: EModuleKey | undefined = undefined; //EModuleKey.CONG_CAN_BO; // Thay đổi theo từng phân hệ
@@ -48,5 +50,7 @@ export {
 	sentryDSN,
 	//
 	ipUser,
-	ipResident
+	ipResident,
+	ipBuilding,
+	ipFloor
 };

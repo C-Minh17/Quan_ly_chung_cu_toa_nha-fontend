@@ -26,7 +26,7 @@ export default [
 		path: '/dashboard',
 		name: 'Dashboard',
 		component: './TrangChu',
-		icon: 'HomeOutlined',
+		icon: 'AppstoreOutlined',
 		// access: "canAccessManager"
 	},
 	{
@@ -37,10 +37,24 @@ export default [
 		access: "canAccessManager"
 	},
 	{
+		path: '/quan-ly-toa-nha',
+		name: 'Quản lý tòa nhà',
+		component: './Quan-ly-toa-nha',
+		icon: 'BankOutlined',
+		access: "canAccessManager"
+	},
+	{
+		path: '/quan-ly-tang',
+		name: 'Quản lý tầng',
+		component: './Quan-ly-tang',
+		icon: 'ApartmentOutlined',
+		access: "canAccessManager"
+	},
+	{
 		path: '/quan-ly-dan-cu',
 		name: 'Quản lý dân cư',
 		component: './Quan-ly-dan-cu',
-		icon: 'UserOutlined',
+		icon: 'TeamOutlined',
 		access: "canAccessManager"
 	},
 	{
