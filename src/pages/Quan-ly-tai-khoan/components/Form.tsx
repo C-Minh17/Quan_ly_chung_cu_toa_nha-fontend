@@ -36,7 +36,7 @@ const FormAccount = (props: Props) => {
   }
 
   return (
-    <Card title={"Cập nhật tài khoản"}>
+    <Card title={edit ? "Cập nhật tài khoản" : "Tạo tài khoản mới"}>
       <Form form={form} initialValues={initialValues} onFinish={onSubmit}>
         <Row gutter={16}>
           <Col span={24}>

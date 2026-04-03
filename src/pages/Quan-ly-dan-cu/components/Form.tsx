@@ -4,6 +4,7 @@ import UploadFile from '@/components/Upload/UploadFile';
 import { buildUpLoadFile } from '@/services/uploadFile';
 import { useEffect } from 'react';
 import MyDatePicker from '@/components/MyDatePicker';
+import SelectAccount from '@/pages/Quan-ly-tai-khoan/components/Select';
 
 interface Props {
   initialValues?: MResident.IRecord;
@@ -25,7 +26,7 @@ const FormResident = (props: Props) => {
     try {
       const id_card_front_image = await buildUpLoadFile(values, 'id_card_front_image');
       const id_card_back_image = await buildUpLoadFile(values, 'id_card_back_image');
-      
+
       const payload = {
         ...values,
         id_card_front_image,
@@ -52,9 +53,9 @@ const FormResident = (props: Props) => {
 
   return (
     <Card title={edit ? "Cập nhật dân cư" : "Thêm mới dân cư"}>
-      <Form 
-        form={form} 
-        initialValues={initialValues} 
+      <Form
+        form={form}
+        initialValues={initialValues}
         onFinish={onSubmit}
         layout="vertical"
       >
@@ -65,14 +66,11 @@ const FormResident = (props: Props) => {
               label="Tài khoản người dùng"
               rules={[{ required: true, message: 'Vui lòng chọn tài khoản!' }]}
             >
-              <Select
-                showSearch
-                placeholder="Chọn tài khoản"
-                optionFilterProp="children"
-                options={infoAllUser?.map(user => ({
-                  value: user._id,
-                  label: `${user.name} (${user.preferred_username})`,
-                }))}
+              <SelectAccount
+                value={form.getFieldValue('user_id')}
+                onChange={(val) => form.setFieldsValue({ user_id: val })}
+                multiple={false}
+                hasCreate={true}
               />
             </Form.Item>
           </Col>
@@ -85,7 +83,7 @@ const FormResident = (props: Props) => {
               <Input placeholder="ID Căn hộ" />
             </Form.Item>
           </Col>
-          
+
           <Col span={8}>
             <Form.Item name="id_card_number" label="Số CCCD" rules={[{ required: true }]}>
               <Input placeholder="Số CCCD" />
@@ -94,7 +92,7 @@ const FormResident = (props: Props) => {
           <Col span={8}>
             <Form.Item name="id_card_date" label="Ngày cấp">
               <MyDatePicker />
-            </Form.Item>
+            </Form.Item>     
           </Col>
           <Col span={8}>
             <Form.Item name="id_card_place" label="Nơi cấp">
@@ -159,7 +157,7 @@ const FormResident = (props: Props) => {
             </Form.Item>
           </Col>
         </Row>
-        
+
         <div className='form-footer'>
           <Button type="primary" htmlType="submit" loading={loadingInfoResident}>
             {!edit ? 'Thêm mới' : 'Lưu lại'}
