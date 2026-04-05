@@ -1,3 +1,4 @@
+import SelectBuilding from '@/pages/Quan-ly-toa-nha/components/Select';
 import { useModel } from '@umijs/max';
 import { Button, Card, Col, Form, Input, InputNumber, message, Row, Select } from 'antd';
 import { useEffect } from 'react';
@@ -74,14 +75,11 @@ const FormFloor = (props: Props) => {
               label="Tòa nhà"
               rules={[{ required: true, message: 'Vui lòng chọn tòa nhà!' }]}
             >
-              <Select
-                showSearch
-                placeholder="Chọn tòa nhà"
-                optionFilterProp="children"
-                options={infoAllBuilding?.map(bld => ({
-                  value: bld._id,
-                  label: bld.name
-                }))}
+              <SelectBuilding
+                value={form.getFieldValue('building_id')}
+                onChange={(val) => form.setFieldsValue({ building_id: val })}
+                multiple={false}
+                hasCreate={true}
               />
             </Form.Item>
           </Col>

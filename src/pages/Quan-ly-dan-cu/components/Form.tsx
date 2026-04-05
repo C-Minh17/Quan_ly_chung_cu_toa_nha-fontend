@@ -71,6 +71,7 @@ const FormResident = (props: Props) => {
                 onChange={(val) => form.setFieldsValue({ user_id: val })}
                 multiple={false}
                 hasCreate={true}
+                filter="RESIDENT"
               />
             </Form.Item>
           </Col>
@@ -92,7 +93,7 @@ const FormResident = (props: Props) => {
           <Col span={8}>
             <Form.Item name="id_card_date" label="Ngày cấp">
               <MyDatePicker />
-            </Form.Item>     
+            </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item name="id_card_place" label="Nơi cấp">

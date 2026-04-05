@@ -1,26 +1,24 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Modal, Select } from 'antd';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useModel } from '@umijs/max';
-import FormAccount from './Form';
+import FormBuilding from './Form';
 
-const SelectAccount = (props: {
+const SelectBuilding = (props: {
   value?: string | null;
   onChange?: (val: string | null) => void;
   multiple?: boolean;
   hasCreate?: boolean;
-  filter?: "RESIDENT" | "STAFF" | "ALL";
 }) => {
-  const { value, onChange, multiple, hasCreate, filter } = props;
-  const { infoAllUser, handleGetInfoAllUser } =
-    useModel('user.user');
+  const { value, onChange, multiple, hasCreate } = props;
+  const { infoAllBuilding, handleGetInfoAllBuilding } = useModel('building.building');
 
   const [visibleForm, setVisibleForm] = useState(false);
-  const [record, setRecord] = useState<MUser.IRecord | undefined>(undefined);
+  const [record, setRecord] = useState<MBuilding.IRecord | undefined>(undefined);
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
-    if (!visibleForm) handleGetInfoAllUser();
+    if (!visibleForm) handleGetInfoAllBuilding();
   }, [visibleForm]);
 
   const onAddNew = () => {
@@ -29,13 +27,9 @@ const SelectAccount = (props: {
     setVisibleForm(true);
   };
 
-  const usersData = useMemo(() => {
-    if (!infoAllUser) return [];
-    if (filter && filter !== "ALL") {
-      return infoAllUser.filter((user: MUser.IRecord) => user.role === filter);
-    }
-    return infoAllUser;
-  }, [infoAllUser, filter]);
+  useEffect(() => {
+    console.log("value", value);
+  }, [value]);
 
   return (
     <div style={{ display: 'flex', gap: 8, width: '100%' }}>
@@ -44,14 +38,14 @@ const SelectAccount = (props: {
           mode={multiple ? 'multiple' : undefined}
           value={value}
           onChange={onChange}
-          options={usersData?.map((item: MUser.IRecord) => ({
+          options={infoAllBuilding?.map((item: MBuilding.IRecord) => ({
             key: item._id,
             value: item._id,
-            label: `${item.name} (${item.preferred_username})`,
+            label: item.name || item._id,
           }))}
           showSearch
           optionFilterProp='label'
-          placeholder='Chọn tài khoản'
+          placeholder='Chọn tòa nhà'
           style={{ width: '100%' }}
         />
       </div>
@@ -65,9 +59,9 @@ const SelectAccount = (props: {
             footer={null}
             onCancel={() => setVisibleForm(false)}
             destroyOnClose
-            width={800}
+            width={600}
           >
-            <FormAccount
+            <FormBuilding
               initialValues={record}
               setShowEdit={setVisibleForm}
               edit={edit}
@@ -79,4 +73,4 @@ const SelectAccount = (props: {
   );
 };
 
-export default SelectAccount;
+export default SelectBuilding;
