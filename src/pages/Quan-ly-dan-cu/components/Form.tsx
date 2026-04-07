@@ -5,6 +5,7 @@ import { buildUpLoadFile } from '@/services/uploadFile';
 import { useEffect } from 'react';
 import MyDatePicker from '@/components/MyDatePicker';
 import SelectAccount from '@/pages/Quan-ly-tai-khoan/components/Select';
+import SelectApartment from '@/pages/Quan-ly-can-ho/components/Select';
 
 interface Props {
   initialValues?: MResident.IRecord;
@@ -81,74 +82,78 @@ const FormResident = (props: Props) => {
               label="ID Căn hộ"
               rules={[{ required: true, message: 'Vui lòng nhập ID căn hộ!' }]}
             >
-              <Input placeholder="ID Căn hộ" />
+              <SelectApartment
+                value={form.getFieldValue('apartment_id')}
+                onChange={(val) => form.setFieldsValue({ apartment_id: val })}
+                multiple={false}
+                hasCreate={true}
+              />
             </Form.Item>
           </Col>
 
           <Col span={8}>
-            <Form.Item name="id_card_number" label="Số CCCD" rules={[{ required: true }]}>
+            <Form.Item name="id_card_number" label="Số CCCD" rules={[{ required: true, message: 'Vui lòng nhập số CCCD!' }]}>
               <Input placeholder="Số CCCD" />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item name="id_card_date" label="Ngày cấp">
+            <Form.Item name="id_card_date" label="Ngày cấp" rules={[{ required: true, message: 'Vui lòng chọn ngày cấp!' }]}>
               <MyDatePicker />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item name="id_card_place" label="Nơi cấp">
+            <Form.Item name="id_card_place" label="Nơi cấp" rules={[{ required: true, message: 'Vui lòng nhập nơi cấp!' }]}>
               <Input placeholder="Nơi cấp" />
             </Form.Item>
           </Col>
 
           <Col span={12}>
-            <Form.Item name="id_card_front_image" label="Ảnh CCCD mặt trước">
+            <Form.Item name="id_card_front_image" label="Ảnh CCCD mặt trước" rules={[{ required: true, message: 'Vui lòng upload ảnh mặt trước!' }]}>
               <UploadFile isAvatar />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item name="id_card_back_image" label="Ảnh CCCD mặt sau">
+            <Form.Item name="id_card_back_image" label="Ảnh CCCD mặt sau" rules={[{ required: true, message: 'Vui lòng upload ảnh mặt sau!' }]}>
               <UploadFile isAvatar />
             </Form.Item>
           </Col>
 
           <Col span={8}>
-            <Form.Item name="date_of_birth" label="Ngày sinh">
+            <Form.Item name="date_of_birth" label="Ngày sinh" rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}>
               <MyDatePicker />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item name="gender" label="Giới tính">
+            <Form.Item name="gender" label="Giới tính" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
               <Select options={[
-                { value: 'MALE', label: 'Nam' },
-                { value: 'FEMALE', label: 'Nữ' },
-                { value: 'OTHER', label: 'Khác' },
+                { value: 'male', label: 'Nam' },
+                { value: 'female', label: 'Nữ' },
+                { value: 'other', label: 'Khác' },
               ]} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item name="resident_type" label="Loại cư dân">
+            <Form.Item name="resident_type" label="Loại cư dân" rules={[{ required: true, message: 'Vui lòng chọn loại cư dân!' }]}>
               <Select options={[
-                { value: 'OWNER', label: 'Chủ hộ' },
-                { value: 'FAMILY_MEMBER', label: 'Thành viên gia đình' },
-                { value: 'TENANT', label: 'Khách thuê' },
+                { value: 'owner', label: 'Chủ hộ' },
+                { value: 'tenant', label: 'Người thuê' },
               ]} />
             </Form.Item>
           </Col>
 
           <Col span={24}>
-            <Form.Item name="permanent_address" label="Địa chỉ thường trú">
+            <Form.Item name="permanent_address" label="Địa chỉ thường trú" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ thường trú!' }]}>
               <Input.TextArea rows={2} placeholder="Địa chỉ thường trú" />
             </Form.Item>
           </Col>
 
           <Col span={8}>
-            <Form.Item name="move_in_date" label="Ngày chuyển đến">
+            <Form.Item name="move_in_date" label="Ngày chuyển đến" rules={[{ required: true, message: 'Vui lòng chọn ngày chuyển đến!' }]}>
               <MyDatePicker />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item name="move_out_date" label="Ngày chuyển đi">
+            <Form.Item name="move_out_date" label="Ngày chuyển đi" rules={[{ required: true, message: 'Vui lòng chọn ngày chuyển đi!' }]}>
               <MyDatePicker />
             </Form.Item>
           </Col>

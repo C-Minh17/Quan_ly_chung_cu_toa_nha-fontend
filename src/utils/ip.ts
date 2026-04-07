@@ -4,7 +4,8 @@ const ipRoot = typeof APP_CONFIG_IP_ROOT !== 'undefined' ? APP_CONFIG_IP_ROOT : 
 // console.log('IP Root:', ipRoot);
 
 // Ip Chính => Mặc định dùng trong các useInitModel
-const ip3 = ipRoot + '/api'; // ip dev
+// const ip3 = ipRoot + '/api'; // ip dev
+const ip3 = ipRoot;
 // console.log('IP3:', ip3);
 
 // Ip khác

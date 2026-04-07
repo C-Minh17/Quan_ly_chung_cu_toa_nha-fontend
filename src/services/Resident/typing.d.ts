@@ -9,7 +9,7 @@ declare module MResident {
     id_card_front_image: string
     id_card_back_image: string
     date_of_birth: string
-    gender: string,
+    gender: 'male' | 'female' | 'other'
     permanent_address: string
     move_in_date: string
     move_out_date: string | null
@@ -18,6 +18,6 @@ declare module MResident {
     created_at: string
 
     user: MUser.IRecord
-    apartment: any
+    apartment: MApartment.IRecord
   }
 }

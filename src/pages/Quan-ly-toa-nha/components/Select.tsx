@@ -27,10 +27,6 @@ const SelectBuilding = (props: {
     setVisibleForm(true);
   };
 
-  useEffect(() => {
-    console.log("value", value);
-  }, [value]);
-
   return (
     <div style={{ display: 'flex', gap: 8, width: '100%' }}>
       <div className={hasCreate !== false ? 'width-select-custom' : 'fullWidth'}>

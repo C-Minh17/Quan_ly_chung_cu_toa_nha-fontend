@@ -5,12 +5,16 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Tooltip, Typography, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 import FormResident from './components/Form';
+import DetailResident from './components/Detail';
+import { EyeOutlined } from '@ant-design/icons';
+import { Modal } from 'antd';
 
 const { Title } = Typography
 
 const ManagerResident = () => {
   const { refreshKey, infoAllResident, loadingInfoAllResident, handleGetInfoAllResident, handleDeleteResident } = useModel("resident.resident");
   const [showEdit, setShowEdit] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
   const [record, setRecord] = useState<MResident.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
 
@@ -30,9 +34,12 @@ const ManagerResident = () => {
     },
     {
       title: "Căn hộ",
-      dataIndex: "apartment_id",
+      dataIndex: "apartment",
       width: 120,
       filterType: "string",
+      render: (_, record) => (
+        <div>{record?.apartment?.apartment_code}</div>
+      )
     },
     {
       title: "Loại cư dân",
@@ -62,10 +69,20 @@ const ManagerResident = () => {
     {
       title: 'Thao tác',
       align: 'center',
-      width: 100,
+      width: 140,
       fixed: 'right',
       render: (record: MResident.IRecord) => (
         <>
+          <Tooltip title="Chi tiết">
+            <Button
+              onClick={() => {
+                setRecord(record);
+                setShowDetail(true);
+              }}
+              type="link"
+              icon={<EyeOutlined />}
+            />
+          </Tooltip>
           <Tooltip title="Chỉnh sửa">
             <Button
               onClick={() => {
@@ -125,6 +142,19 @@ const ManagerResident = () => {
         widthDrawer={800}
         addStt
       />
+
+      <Modal
+        title="Chi tiết cư dân"
+        open={showDetail}
+        onCancel={() => {
+          setShowDetail(false);
+          setRecord({});
+        }}
+        footer={null}
+        width={800}
+      >
+        <DetailResident record={record as MResident.IRecord} />
+      </Modal>
     </>
   )
 }
