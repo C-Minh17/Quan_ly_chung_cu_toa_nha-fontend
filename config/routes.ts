@@ -65,6 +65,13 @@ export default [
 		access: "canAccessManager"
 	},
 	{
+		path: '/quan-ly-hop-dong',
+		name: 'Quản lý hợp đồng',
+		component: './Quan-ly-hop-dong',
+		icon: 'FileTextOutlined',
+		access: "canAccessManager"
+	},
+	{
 		path: '/gioi-thieu',
 		name: 'About',
 		component: './TienIch/GioiThieu',
