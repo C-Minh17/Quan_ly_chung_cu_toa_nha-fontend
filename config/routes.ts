@@ -95,6 +95,20 @@ export default [
 		component: './TienIch/GioiThieu',
 		hideInMenu: true,
 	},
+	{
+		path: '/thong-tin-hop-dong',
+		name: 'Thông tin hợp đồng',
+		component: './Thong-tin-hop-dong(resident)',
+		icon: 'FileTextOutlined',
+		access: "canAccessResident"
+	},
+	{
+		path: '/phuong-tien',
+		name: 'Phương tiện',
+		component: './Phuong-tien(resident)',
+		icon: 'CarOutlined',
+		access: "canAccessResident"
+	},
 
 	// DANH MUC HE THONG
 	// {

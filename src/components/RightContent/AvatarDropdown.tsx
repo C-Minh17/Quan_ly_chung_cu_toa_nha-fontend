@@ -74,11 +74,11 @@ const AvatarDropdown = () => {
 	const items: ItemType[] = [
 		...(partitionItems as any),
 		...(partitionItems.length > 0 ? [{ type: 'divider', key: 'divider' } as ItemType] : []),
-		{
-			key: 'name',
-			icon: <UserOutlined />,
-			label: fullName,
-		},
+		// {
+		// 	key: 'name',
+		// 	icon: <UserOutlined />,
+		// 	label: fullName,
+		// },
 		// {
 		// 	key: 'password',
 		// 	icon: <SwapOutlined />,
