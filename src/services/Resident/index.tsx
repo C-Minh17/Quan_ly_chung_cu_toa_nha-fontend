@@ -20,3 +20,7 @@ export const updateResident = async (id: string, data: MResident.IRecord) => {
 export const deleteResident = async (id: string) => {
   return axios.delete(`${ipResident}/${id}`).then(res => res.data)
 }
+
+export const getMeResident = async () => {
+  return axios.get(`${ipResident}/me`).then(res => res.data)
+}

@@ -1,4 +1,4 @@
-import { createResident, deleteResident, getAllResident, getResidentById, updateResident } from "@/services/Resident"
+import { createResident, deleteResident, getAllResident, getResidentById, updateResident, getMeResident } from "@/services/Resident"
 import { useState } from "react"
 
 export default () => {
@@ -7,6 +7,9 @@ export default () => {
 
   const [infoResident, setInfoResident] = useState<MResident.IRecord>()
   const [loadingInfoResident, setLoadingInfoResident] = useState<boolean>(false)
+
+  const [infoMeResident, setInfoMeResident] = useState<MResident.IRecord>()
+  const [loadingInfoMeResident, setLoadingInfoMeResident] = useState<boolean>(false)
 
   const [refreshKey, setRefreshKey] = useState(0)
 
@@ -37,6 +40,19 @@ export default () => {
       console.log(err)
     } finally {
       setLoadingInfoResident(false)
+    }
+  }
+
+  const handleGetMeResident = async () => {
+    setLoadingInfoMeResident(true)
+    try {
+      const res = await getMeResident()
+      setInfoMeResident(res?.data)
+      return res?.data
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoadingInfoMeResident(false)
     }
   }
 
@@ -99,5 +115,8 @@ export default () => {
     handleCreateResident,
     handleUpdateResident,
     handleDeleteResident,
+    infoMeResident,
+    loadingInfoMeResident,
+    handleGetMeResident,
   }
 }

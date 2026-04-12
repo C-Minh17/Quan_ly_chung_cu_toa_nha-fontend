@@ -19,6 +19,7 @@ const ipBuilding = ipRoot + '/buildings';
 const ipFloor = ipRoot + '/floors';
 const ipApartment = ipRoot + '/apartments';
 const ipContract = ipRoot + '/contracts';
+const ipVehicle = ipRoot + '/vehicles';
 
 const currentRole = EModuleKey.TCNS;
 const replaceRole: EModuleKey | undefined = undefined; //EModuleKey.CONG_CAN_BO; // Thay đổi theo từng phân hệ
@@ -58,4 +59,5 @@ export {
 	ipFloor,
 	ipApartment,
 	ipContract,
+	ipVehicle,
 };

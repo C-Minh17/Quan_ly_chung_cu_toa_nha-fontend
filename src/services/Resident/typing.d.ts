@@ -16,8 +16,9 @@ declare module MResident {
     resident_type: string
     is_primary: boolean
     created_at: string
+    updated_at: string
 
-    user: MUser.IRecord
-    apartment: MApartment.IRecord
+    user?: MUser.IRecord
+    apartment?: MApartment.IRecord
   }
 }

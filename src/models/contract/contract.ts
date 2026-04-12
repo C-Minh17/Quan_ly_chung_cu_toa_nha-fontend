@@ -15,6 +15,9 @@ export default () => {
   const [infoContract, setInfoContract] = useState<MContract.IRecord>()
   const [loadingInfoContract, setLoadingInfoContract] = useState<boolean>(false)
 
+  const [infoMyContracts, setInfoMyContracts] = useState<MContract.IRecord[]>([])
+  const [loadingInfoMyContracts, setLoadingInfoMyContracts] = useState<boolean>(false)
+
   const [refreshKey, setRefreshKey] = useState(0)
 
   const refreshContracts = () => {
@@ -96,15 +99,15 @@ export default () => {
   }
 
   const handleGetMyContracts = async () => {
-    setLoadingInfoAllContract(true)
+    setLoadingInfoMyContracts(true)
     try {
       const res = await getMyContracts()
-      setInfoAllContract(res?.data || [])
+      setInfoMyContracts(res?.data || [])
       return res?.data
     } catch (err) {
       console.log(err)
     } finally {
-      setLoadingInfoAllContract(false)
+      setLoadingInfoMyContracts(false)
     }
   }
 
@@ -120,6 +123,8 @@ export default () => {
     handleUpdateContract,
     handleTerminateContract,
     handleGetMyContracts,
-    refreshContracts
+    refreshContracts,
+    infoMyContracts,
+    loadingInfoMyContracts
   }
 }

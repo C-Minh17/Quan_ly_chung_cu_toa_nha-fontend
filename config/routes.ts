@@ -22,6 +22,8 @@ export default [
 	///////////////////////////////////
 
 	// DEFAULT MENU
+
+	// quản lý
 	{
 		path: '/dashboard',
 		name: 'Dashboard',
@@ -70,6 +72,22 @@ export default [
 		component: './Quan-ly-hop-dong',
 		icon: 'FileTextOutlined',
 		access: "canAccessManager"
+	},
+	{
+		path: '/quan-ly-phuong-tien',
+		name: 'Quản lý phương tiện',
+		component: './Quan-ly-phuong-tien',
+		icon: 'CarOutlined',
+		access: "canAccessManager"
+	},
+
+	// cư dân
+	{
+		path: '/thong-tin-ca-nhan',
+		name: 'Thông tin cá nhân',
+		component: './Thong-tin-ca-nhan(resident)',
+		icon: 'UserOutlined',
+		access: "canAccessResident"
 	},
 	{
 		path: '/gioi-thieu',
