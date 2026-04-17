@@ -109,6 +109,13 @@ export default [
 		icon: 'CarOutlined',
 		access: "canAccessResident"
 	},
+	{
+		path: '/quan-ly-loai-phi',
+		name: 'Quản lý loại phí',
+		component: './Quan-ly-loai-phi',
+		icon: 'FileTextOutlined',
+		access: "canAccessManager"
+	},
 
 	// DANH MUC HE THONG
 	// {
