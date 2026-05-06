@@ -117,6 +117,15 @@ export default [
 		access: "canAccessManager"
 	},
 
+	// nhân viên
+	{
+		path: '/ghi-dien-nuoc',
+		name: 'Ghi dịch vụ',
+		component: './Ghi-dien-nuoc(staff)',
+		icon: 'FileTextOutlined',
+		access: "canAccessStaff"
+	},
+
 	// DANH MUC HE THONG
 	// {
 	// 	name: 'DanhMuc',

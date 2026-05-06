@@ -70,7 +70,13 @@ const FormFeeType = (props: Props) => {
               label="Danh mục phí"
               rules={[{ required: true, message: 'Vui lòng chọn danh mục phí!' }]}
             >
-              <SelectFeeCategory />
+              <Select
+                options={[
+                  { value: 'fixed', label: 'Phí cố định' },
+                  { value: 'metered', label: 'Phí theo mét khối' },
+                  { value: 'parking', label: 'Phí đỗ xe' },
+                ]}
+              />
             </Form.Item>
           </Col>
 
@@ -132,24 +138,6 @@ const FormFeeType = (props: Props) => {
   );
 };
 
-
-export const SelectFeeCategory = (props: SelectProps) => {
-  const options = [
-    { value: 'Phí dịch vụ', label: 'Phí dịch vụ' },
-    { value: 'Phí điện', label: 'Phí điện' },
-    { value: 'Phí nước', label: 'Phí nước' },
-    { value: 'Phí gửi xe', label: 'Phí gửi xe' },
-    { value: 'Phí khác', label: 'Phí khác' },
-  ];
-
-  return (
-    <Select
-      placeholder="Chọn danh mục phí"
-      options={options}
-      {...props}
-    />
-  );
-};
 
 export const SelectUnit = (props: SelectProps) => {
   const options = [

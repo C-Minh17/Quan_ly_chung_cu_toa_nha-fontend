@@ -21,6 +21,7 @@ const ipApartment = ipRoot + '/apartments';
 const ipContract = ipRoot + '/contracts';
 const ipVehicle = ipRoot + '/vehicles';
 const ipFeeType = ipRoot + '/feeType';
+const ipUtilityReading = ipRoot + '/utilityreading';
 
 
 const currentRole = EModuleKey.TCNS;
@@ -63,4 +64,5 @@ export {
 	ipContract,
 	ipVehicle,
 	ipFeeType,
+	ipUtilityReading,
 };
