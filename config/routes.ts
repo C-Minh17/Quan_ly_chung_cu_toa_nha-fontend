@@ -80,6 +80,13 @@ export default [
 		icon: 'CarOutlined',
 		access: "canAccessManager"
 	},
+	{
+		path: '/quan-ly-bao-tri',
+		name: 'Quản lý bảo trì',
+		component: './Quan-ly-bao-tri',
+		icon: 'ToolOutlined',
+		access: "canAccessManager"
+	},
 
 	// cư dân
 	{

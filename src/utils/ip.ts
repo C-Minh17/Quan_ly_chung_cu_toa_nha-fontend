@@ -22,6 +22,8 @@ const ipContract = ipRoot + '/contracts';
 const ipVehicle = ipRoot + '/vehicles';
 const ipFeeType = ipRoot + '/feeType';
 const ipUtilityReading = ipRoot + '/utilityreading';
+const ipMaintenanceRequest = ipRoot + '/maintenancerequests';
+const ipMaintenanceSchedule = ipRoot + '/maintenance-schedules';
 
 
 const currentRole = EModuleKey.TCNS;
@@ -65,4 +67,6 @@ export {
 	ipVehicle,
 	ipFeeType,
 	ipUtilityReading,
+	ipMaintenanceRequest,
+	ipMaintenanceSchedule,
 };
