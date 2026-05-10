@@ -119,11 +119,24 @@ export default [
 
 	// nhân viên
 	{
-		path: '/ghi-dien-nuoc',
+		path: '/ghi-dich-vu',
 		name: 'Ghi dịch vụ',
-		component: './Ghi-dien-nuoc(staff)',
 		icon: 'FileTextOutlined',
-		access: "canAccessStaff"
+		access: "canAccessStaff",
+		routes: [
+			{
+				path: '/ghi-dich-vu/ghi-chi-so',
+				name: 'Ghi chỉ số',
+				component: './Ghi-dich-vu(staff)/Ghi-chi-so',
+				icon: 'FileTextOutlined',
+			},
+			{
+				path: '/ghi-dich-vu/danh-sach',
+				name: 'Danh sách',
+				component: './Ghi-dich-vu(staff)/Danh-sach',
+				icon: 'FileTextOutlined',
+			},
+		],
 	},
 
 	// DANH MUC HE THONG
