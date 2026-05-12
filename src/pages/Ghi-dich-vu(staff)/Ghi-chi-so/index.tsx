@@ -53,15 +53,18 @@ const GhiChiSo = () => {
 
   const filteredApartments = useMemo(() => {
     if (!infoAllApartment) return [];
-    if (buildingId === 'all') return infoAllApartment;
-    return infoAllApartment.filter((apt: any) => {
-      const bId =
-        apt?.floor_id?.building_id?._id ||
-        apt?.floor_id?.building_id ||
-        apt?.floor?.building?._id ||
-        apt?.building_id;
-      return bId === buildingId;
-    });
+    let list = infoAllApartment.filter((apt: any) => apt.status === 'occupied');
+    if (buildingId !== 'all') {
+      list = list.filter((apt: any) => {
+        const bId =
+          apt?.floor_id?.building_id?._id ||
+          apt?.floor_id?.building_id ||
+          apt?.floor?.building?._id ||
+          apt?.building_id;
+        return bId === buildingId;
+      });
+    }
+    return list;
   }, [infoAllApartment, buildingId]);
 
   const meteredFeeTypes = useMemo<any[]>(() => {
@@ -268,25 +271,28 @@ const GhiChiSo = () => {
             placeholder="Nhập chỉ số..."
             min={0}
             precision={0}
+            onChange={(val) => updateRow(row.apartment_id, { current_reading: val as number | null })}
           />
         </Form.Item>
       ),
     },
     {
       title: 'Tiêu thụ',
-      width: 100,
+      width: 120,
       align: 'right' as const,
       render: (_: any, row: RowEntry) => {
-        if (
-          row.saved &&
-          row.current_reading !== null &&
-          row.previous_reading !== null &&
-          row.previous_reading !== undefined
-        ) {
-          const diff = (row.current_reading ?? 0) - (row.previous_reading ?? 0);
-          return <Text style={{ color: '#389e0d', fontWeight: 600 }}>{diff.toLocaleString()}</Text>;
+        const curr = row.current_reading;
+        if (curr === null || curr === undefined) {
+          return <Text type="secondary">-</Text>;
         }
-        return <Text type="secondary">-</Text>;
+        // Nếu chưa có chỉ số tháng trước thì coi là 0 (lần đầu ghi)
+        const prev = row.previous_reading ?? 0;
+        const diff = curr - prev;
+        return (
+          <Text style={{ color: diff >= 0 ? '#389e0d' : '#cf1322', fontWeight: 600 }}>
+            {diff.toLocaleString()}
+          </Text>
+        );
       },
     },
     {

@@ -66,18 +66,20 @@ const TaoHoaDon = () => {
   }, [infoAllInvoice]);
 
   const tableData = useMemo(() => {
-    return (infoAllApartment || []).map((apt: any) => {
-      const hasReading = !!readingMap[apt._id];
-      const readings = readingMap[apt._id]?.readings || [];
-      const hasInvoice = createdApartmentIds.has(apt._id);
-      return {
-        apartment_id: apt._id,
-        apartment_code: apt.apartment_code,
-        hasReading,
-        readings,
-        hasInvoice,
-      };
-    });
+    return (infoAllApartment || [])
+      .filter((apt: any) => apt.status === 'occupied')
+      .map((apt: any) => {
+        const hasReading = !!readingMap[apt._id];
+        const readings = readingMap[apt._id]?.readings || [];
+        const hasInvoice = createdApartmentIds.has(apt._id);
+        return {
+          apartment_id: apt._id,
+          apartment_code: apt.apartment_code,
+          hasReading,
+          readings,
+          hasInvoice,
+        };
+      });
   }, [infoAllApartment, readingMap, createdApartmentIds]);
 
   const doneCount = tableData.filter(r => r.hasInvoice).length;
@@ -90,7 +92,7 @@ const TaoHoaDon = () => {
     setModalOpen(true);
   };
 
-  const onSubmitCreate = async (values: any) => {
+  const onSubmitCreate = async () => {
     if (!selectedRecord) return;
 
     const details = selectedRecord.readings.map((r: any) => ({
@@ -102,7 +104,6 @@ const TaoHoaDon = () => {
       apartment_id: selectedRecord.apartment_id,
       billing_month: currentMonth,
       billing_year: currentYear,
-      due_date: values.due_date?.toISOString(),
       details,
     };
 
@@ -299,13 +300,6 @@ const TaoHoaDon = () => {
             <Divider />
 
             <Form form={form} layout="vertical" onFinish={onSubmitCreate}>
-              <Form.Item
-                label="Ngày đến hạn thanh toán"
-                name="due_date"
-                rules={[{ required: true, message: 'Vui lòng chọn ngày đến hạn' }]}
-              >
-                <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" />
-              </Form.Item>
               <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
                 <Space>
                   <Button onClick={() => setModalOpen(false)}>Huỷ</Button>
