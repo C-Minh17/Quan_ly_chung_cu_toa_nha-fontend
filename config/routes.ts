@@ -81,12 +81,39 @@ export default [
 		access: "canAccessManager"
 	},
 	{
-		path: '/quan-ly-bao-tri',
-		name: 'Quản lý bảo trì',
-		component: './Quan-ly-bao-tri',
-		icon: 'ToolOutlined',
+		path: '/quan-ly-loai-phi',
+		name: 'Quản lý loại phí',
+		component: './Quan-ly-loai-phi',
+		icon: 'FileTextOutlined',
 		access: "canAccessManager"
 	},
+	{
+		path: '/danh-sach-ghi-dich-vu',
+		name: 'Danh sách ghi dịch vụ',
+		component: './Ghi-dich-vu(staff)/Danh-sach',
+		icon: 'FileTextOutlined',
+		access: "canAccessManager"
+	},
+	{
+		path: '/quan-ly-hoa-don',
+		name: 'Quản lý hóa đơn',
+		icon: 'FileTextOutlined',
+		access: 'canAccessManager',
+		routes: [
+			{
+				path: '/quan-ly-hoa-don/tao-hoa-don',
+				name: 'Tạo hóa đơn',
+				component: './Quan-ly-hoa-don/Tao-hoa-don',
+				access: 'canAccessManager',
+			},
+			{
+				path: '/quan-ly-hoa-don/danh-sach',
+				name: 'Danh sách hóa đơn',
+				component: './Quan-ly-hoa-don/Danh-sach-hoa-don',
+			},
+		],
+	},
+
 
 	// cư dân
 	{
@@ -117,11 +144,11 @@ export default [
 		access: "canAccessResident"
 	},
 	{
-		path: '/quan-ly-loai-phi',
-		name: 'Quản lý loại phí',
-		component: './Quan-ly-loai-phi',
-		icon: 'FileTextOutlined',
-		access: "canAccessManager"
+		path: '/quan-ly-bao-tri',
+		name: 'Quản lý bảo trì',
+		component: './Quan-ly-bao-tri',
+		icon: 'ToolOutlined',
+		access: "canAccessResident"
 	},
 
 	// nhân viên

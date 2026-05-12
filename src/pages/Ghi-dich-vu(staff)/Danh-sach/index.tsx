@@ -1,6 +1,6 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
-import { useModel } from "@umijs/max"
+import { useAccess, useModel } from "@umijs/max"
 import { Typography, Select, Row, Col, Button, Tooltip, Popconfirm, Divider } from 'antd';
 import { DeleteOutlined, EditOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
@@ -29,6 +29,8 @@ const DanhSach = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [record, setRecord] = useState<MUtilityReading.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
+
+  const access = useAccess()
 
   useEffect(() => {
     handleGetInfoAllUtilityReading();
@@ -86,6 +88,7 @@ const DanhSach = () => {
       align: 'center',
       width: 140,
       fixed: 'right',
+      hidden: !access.canAccessManager,
       render: (record: MUtilityReading.IRecord) => (
         <>
           <Tooltip title="Chỉnh sửa">
