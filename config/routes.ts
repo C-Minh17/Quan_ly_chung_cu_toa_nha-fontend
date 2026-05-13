@@ -74,20 +74,6 @@ export default [
 		access: "canAccessManager"
 	},
 	{
-		path: '/quan-ly-phuong-tien',
-		name: 'Quản lý phương tiện',
-		component: './Quan-ly-phuong-tien',
-		icon: 'CarOutlined',
-		access: "canAccessManager"
-	},
-	{
-		path: '/quan-ly-loai-phi',
-		name: 'Quản lý loại phí',
-		component: './Quan-ly-loai-phi',
-		icon: 'FileTextOutlined',
-		access: "canAccessManager"
-	},
-	{
 		path: '/danh-sach-ghi-dich-vu',
 		name: 'Danh sách ghi dịch vụ',
 		component: './Ghi-dich-vu(staff)/Danh-sach',
@@ -111,7 +97,26 @@ export default [
 				name: 'Danh sách hóa đơn',
 				component: './Quan-ly-hoa-don/Danh-sach-hoa-don',
 			},
+			{
+				path: '/quan-ly-hoa-don/danh-sach-overdue',
+				name: 'Hóa đơn quá hạn',
+				component: './Quan-ly-hoa-don/Danh-sach-hoa-don-overdue',
+			},
 		],
+	},
+	{
+		path: '/quan-ly-phuong-tien',
+		name: 'Quản lý phương tiện',
+		component: './Quan-ly-phuong-tien',
+		icon: 'CarOutlined',
+		access: "canAccessManager"
+	},
+	{
+		path: '/quan-ly-loai-phi',
+		name: 'Quản lý loại phí',
+		component: './Quan-ly-loai-phi',
+		icon: 'FileTextOutlined',
+		access: "canAccessManager"
 	},
 
 
