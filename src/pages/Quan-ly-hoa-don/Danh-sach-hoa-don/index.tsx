@@ -2,8 +2,9 @@ import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useAccess, useModel } from "@umijs/max"
 import { Typography, Button, Tooltip, Popconfirm, Divider, Tag } from 'antd';
-import { DeleteOutlined, FilePdfOutlined, FileTextOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, DollarOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
+import { history } from '@umijs/max';
 import FilterBar from './components/FilterBar';
 
 const { Title } = Typography;
@@ -85,11 +86,21 @@ const DanhSachHoaDon = () => {
     {
       title: 'Thao tác',
       align: 'center',
-      width: 120,
+      width: 160,
       fixed: 'right',
       hidden: !access.canAccessManager,
       render: (record: MInvoice.IRecord) => (
         <>
+          {record.status !== 'paid' && (
+            <Tooltip title="Thanh toán">
+              <Button
+                type="link"
+                icon={<DollarOutlined />}
+                style={{ color: '#52c41a' }}
+                onClick={() => history.push('/quan-ly-hoa-don/thanh-toan')}
+              />
+            </Tooltip>
+          )}
           <Tooltip title="Xuất PDF">
             <Button
               type="link"

@@ -102,6 +102,11 @@ export default [
 				name: 'Hóa đơn quá hạn',
 				component: './Quan-ly-hoa-don/Danh-sach-hoa-don-overdue',
 			},
+			{
+				path: '/quan-ly-hoa-don/thanh-toan',
+				name: 'Thanh toán hóa đơn',
+				component: './Quan-ly-hoa-don/Thanh-toan',
+			},
 		],
 	},
 	{
@@ -153,6 +158,20 @@ export default [
 		name: 'Quản lý bảo trì',
 		component: './Quan-ly-bao-tri',
 		icon: 'ToolOutlined',
+		access: "canAccessResident"
+	},
+	{
+		path: '/thanh-toan',
+		name: 'Thanh toán hóa đơn',
+		component: './Quan-ly-hoa-don/Thanh-toan',
+		icon: 'DollarOutlined',
+		access: "canAccessResident"
+	},
+	{
+		path: '/lich-su-thanh-toan',
+		name: 'Lịch sử thanh toán',
+		component: './Quan-ly-hoa-don/Lich-su-thanh-toan',
+		icon: 'HistoryOutlined',
 		access: "canAccessResident"
 	},
 
