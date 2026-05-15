@@ -2,7 +2,7 @@ import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
 import { AppstoreOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Badge, Button, Modal, Popconfirm, Space, Tag, Tooltip, Typography } from 'antd';
+import { Badge, Button, Modal, Popconfirm, Space, Tag, Tooltip, Typography, Tabs } from 'antd';
 import { useEffect, useState } from 'react';
 import FormFloor from './components/Form';
 
@@ -27,11 +27,14 @@ const ManagerFloor = () => {
     loadingLayout,
   } = useModel("floor.floor");
 
+  const { infoAllBuilding, handleGetInfoAllBuilding } = useModel("building.building");
+
   const [showEdit, setShowEdit] = useState(false);
   const [record, setRecord] = useState<MFloor.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
   const [showLayout, setShowLayout] = useState(false);
   const [layoutFloorName, setLayoutFloorName] = useState('');
+  const [activeTab, setActiveTab] = useState<string>('');
 
   const columns: IColumn<MFloor.IRecord>[] = [
     {
@@ -115,21 +118,73 @@ const ManagerFloor = () => {
 
   useEffect(() => {
     handleGetInfoAllFloor()
+    handleGetInfoAllBuilding()
   }, [refreshKey])
+
+  useEffect(() => {
+    if (infoAllBuilding && infoAllBuilding.length > 0 && !activeTab) {
+      setActiveTab(infoAllBuilding[0]._id as string);
+    }
+  }, [infoAllBuilding]);
+
+  const filteredFloors = infoAllFloor?.filter(f => {
+    const bid = (f as any).building?._id || f.building_id;
+    return bid === activeTab;
+  }) || [];
+
+  const tabItems = infoAllBuilding?.map(b => ({
+    key: b._id as string,
+    label: b.name
+  })) || [];
 
   return (
     <>
-      <Title level={2} style={{ marginTop: 10, marginBottom: 40 }}>Quản lý tầng</Title>
+      <Title level={2} style={{ marginTop: 10, marginBottom: 20 }}>Quản lý tầng</Title>
+
+      <style>{`
+        .beautiful-tabs .ant-tabs-nav::before {
+          display: none;
+        }
+        .beautiful-tabs .ant-tabs-tab {
+          background: #f0f2f5 !important;
+          border: none !important;
+          border-radius: 24px !important;
+          padding: 8px 24px !important;
+          margin-right: 12px !important;
+          transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+        .beautiful-tabs .ant-tabs-tab:hover {
+          background: #e6f4ff !important;
+        }
+        .beautiful-tabs .ant-tabs-tab-active {
+          background: #1677ff !important;
+          box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
+        }
+        .beautiful-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+          color: #fff !important;
+          font-weight: 500;
+        }
+      `}</style>
+      <Tabs
+        className="beautiful-tabs"
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        items={tabItems}
+        type="card"
+        size="middle"
+        style={{ marginBottom: 16 }}
+      />
+
       <TableStaticData
         columns={columns}
-        data={infoAllFloor || []}
+        data={filteredFloors}
         loading={loadingInfoAllFloor}
         showEdit={showEdit}
         hasCreate={true}
         onReload={() => handleGetInfoAllFloor()}
         Form={FormFloor}
         formProps={{
-          initialValues: record,
+          initialValues: Object.keys(record).length > 0 ? record : { building_id: activeTab },
           setShowEdit: setShowEdit,
           edit: edit,
         }}

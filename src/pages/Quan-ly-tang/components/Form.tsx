@@ -34,17 +34,21 @@ const FormFloor = (props: Props) => {
         const res = await handleUpdateFloor(initialValues?._id as string, values);
         if (res) {
           message.success('Cập nhật thông tin tầng thành công');
+          form.resetFields();
+          setShowEdit?.(false);
         }
       } else {
         const res = await handleCreateFloor(values);
         if (res) {
           message.success('Thêm mới tầng thành công');
+          form.resetFields();
+          setShowEdit?.(false);
         }
       }
-      form.resetFields();
-      setShowEdit?.(false);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+      const errorMsg = err?.response?.data?.message || err?.response?.data?.detail?.message || 'Không thể tạo thêm tầng, có lỗi xảy ra!';
+      message.error(errorMsg);
     }
   };
 
@@ -57,20 +61,12 @@ const FormFloor = (props: Props) => {
         layout="vertical"
       >
         <Row gutter={16}>
-          <Col span={24}>
-            <Form.Item
-              name="building_id"
-              label="Tòa nhà"
-              rules={[{ required: true, message: 'Vui lòng chọn tòa nhà!' }]}
-            >
-              <SelectBuilding
-                value={form.getFieldValue('building_id')}
-                onChange={(val) => form.setFieldsValue({ building_id: val })}
-                multiple={false}
-                hasCreate={true}
-              />
-            </Form.Item>
-          </Col>
+          <Form.Item
+            name="building_id"
+            hidden={true}
+          >
+            <Input />
+          </Form.Item>
 
           {edit && (
             <Col span={12}>
