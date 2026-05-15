@@ -265,13 +265,19 @@ const ThanhToan = () => {
                 columns={[
                   {
                     title: 'Loại phí',
-                    render: (_, rec: MPayment.IInvoiceDetail) => rec.fee_type_id?.name || '—',
+                    render: (_, rec: MPayment.IInvoiceDetail) => {
+                      const name = rec.fee_type?.name || (typeof rec.fee_type_id === 'object' && rec.fee_type_id?.name) || '—';
+                      return name;
+                    },
                   },
                   {
-                    title: 'Mô tả',
-                    render: (_, rec: MPayment.IInvoiceDetail) => (
-                      <Text type="secondary">{rec.fee_type_id?.description || '—'}</Text>
-                    ),
+                    title: 'Chi tiết (SL × Đơn giá)',
+                    render: (_, rec: MPayment.IInvoiceDetail) => {
+                      if (rec.quantity && rec.unit_price) {
+                        return <Text type="secondary">{`${rec.quantity} × ${formatVND(rec.unit_price)}`}</Text>;
+                      }
+                      return <Text type="secondary">{rec.fee_type?.description || (typeof rec.fee_type_id === 'object' && rec.fee_type_id?.description) || '—'}</Text>;
+                    },
                   },
                   {
                     title: 'Số tiền',
@@ -395,7 +401,7 @@ const ThanhToan = () => {
                   </Form.Item>
 
                   {/* Quick fill buttons */}
-                  <Form.Item style={{ marginTop: -16 }}>
+                  <Form.Item style={{ marginTop: -8 }}>
                     <Space wrap size="small">
                       <Text type="secondary" style={{ fontSize: 12 }}>Nhanh:</Text>
                       {[25, 50, 75, 100].map(pct => (

@@ -9,9 +9,13 @@ declare module MPayment {
   }
 
   interface IInvoiceDetail {
-    _id: string;
-    invoice_id: string;
-    fee_type_id: IFeeType;
+    id?: string;
+    _id?: string;
+    invoice_id?: string;
+    fee_type_id?: string | IFeeType;
+    fee_type?: IFeeType;
+    quantity?: number;
+    unit_price?: number;
     amount: number;
   }
 

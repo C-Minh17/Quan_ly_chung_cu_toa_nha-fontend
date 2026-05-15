@@ -1,4 +1,13 @@
 declare module MInvoice {
+  interface IDetail {
+    id: string;
+    fee_type_id: string;
+    fee_type?: MFeeType.IRecord;
+    quantity: number;
+    unit_price: number;
+    amount: number;
+  }
+
   interface IRecord {
     _id: string;
     apartment_id: string;
@@ -12,7 +21,22 @@ declare module MInvoice {
 
     apartment?: MApartment.IRecord;
 
+    fixed_amount?: number;
+    metered_amount?: number;
+    parking_amount?: number;
+
+    fee_breakdown?: {
+      fixed_amount: number;
+      metered_amount: number;
+      parking_amount: number;
+      items: IDetail[];
+    };
+
+    details?: IDetail[];
+
     createdAt?: string;
     updatedAt?: string;
+    created_at?: string;
+    updated_at?: string;
   }
 }

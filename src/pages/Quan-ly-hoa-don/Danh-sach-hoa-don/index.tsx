@@ -2,10 +2,11 @@ import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useAccess, useModel } from "@umijs/max"
 import { Typography, Button, Tooltip, Popconfirm, Divider, Tag } from 'antd';
-import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, DollarOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, DollarOutlined, EyeOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
 import { history } from '@umijs/max';
 import FilterBar from './components/FilterBar';
+import DetailModal from './components/DetailModal';
 
 const { Title } = Typography;
 
@@ -22,6 +23,7 @@ const DanhSachHoaDon = () => {
     infoAllInvoice,
     loadingInfoAllInvoice,
     handleGetInfoAllInvoice,
+    handleGetInfoInvoice,
     handleDeleteInvoice,
     handleExportInvoicePdf,
   } = useModel("invoice.invoice");
@@ -32,6 +34,9 @@ const DanhSachHoaDon = () => {
   const [status, setStatus] = useState<string>("all");
   const [month, setMonth] = useState<number | string>("all");
   const [year, setYear] = useState<number | string>("all");
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<MInvoice.IRecord | null>(null);
 
   const access = useAccess();
 
@@ -118,6 +123,21 @@ const DanhSachHoaDon = () => {
               }}
             />
           </Tooltip>
+          <Tooltip title="Xem chi tiết">
+            <Button
+              type="link"
+              icon={<EyeOutlined />}
+              onClick={async () => {
+                const fullRecord = await handleGetInfoInvoice(record._id);
+                if (fullRecord) {
+                  setSelectedRecord(fullRecord);
+                } else {
+                  setSelectedRecord(record);
+                }
+                setIsModalVisible(true);
+              }}
+            />
+          </Tooltip>
           <Tooltip title="Xóa">
             <Popconfirm
               title="Bạn có chắc chắn muốn xóa hóa đơn này?"
@@ -184,6 +204,12 @@ const DanhSachHoaDon = () => {
         loading={loadingInfoAllInvoice}
         onReload={() => handleGetInfoAllInvoice()}
         addStt
+      />
+
+      <DetailModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        record={selectedRecord}
       />
     </>
   );

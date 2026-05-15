@@ -107,6 +107,11 @@ export default [
 				name: 'Thanh toán hóa đơn',
 				component: './Quan-ly-hoa-don/Thanh-toan',
 			},
+			{
+				path: '/quan-ly-hoa-don/lich-su-thanh-toan-admin',
+				name: 'Lịch sử thanh toán',
+				component: './Quan-ly-hoa-don/Lich-su-thanh-toan-admin',
+			},
 		],
 	},
 	{
@@ -161,10 +166,10 @@ export default [
 		access: "canAccessResident"
 	},
 	{
-		path: '/thanh-toan',
-		name: 'Thanh toán hóa đơn',
-		component: './Quan-ly-hoa-don/Thanh-toan',
-		icon: 'DollarOutlined',
+		path: '/hoa-don-cua-toi',
+		name: 'Hóa đơn của tôi',
+		component: './Quan-ly-hoa-don/Hoa-don-cua-toi(resident)',
+		icon: 'FileTextOutlined',
 		access: "canAccessResident"
 	},
 	{

@@ -1,6 +1,6 @@
 import { useModel } from '@umijs/max';
 import {
-  Typography, Divider, Table, Tag, Space, Button
+  Typography, Tag, Row, Col, Card, Modal, Descriptions, Button
 } from 'antd';
 import {
   HistoryOutlined, BankOutlined, WalletOutlined, CreditCardOutlined, EyeOutlined
@@ -8,7 +8,8 @@ import {
 import { useEffect, useState } from 'react';
 import { IColumn } from '@/components/Table/typing';
 import TableStaticData from '@/components/Table/TableStaticData';
-import DetailModal from '../Lich-su-thanh-toan-admin/components/DetailModal';
+import SelectInvoice from '@/pages/Quan-ly-hoa-don/Danh-sach-hoa-don/components/Select';
+import DetailModal from './components/DetailModal';
 
 const { Title, Text } = Typography;
 
@@ -39,13 +40,14 @@ const methodIcon: Record<string, React.ReactNode> = {
   vnpay: <CreditCardOutlined />,
 };
 
-const LichSuThanhToan = () => {
-  const { myPayments, loadingPayments, handleGetMyPayments } = useModel('payment.payment');
+const LichSuThanhToanAdmin = () => {
+  const { allPayments, loadingPayments, handleGetAllPayments } = useModel('payment.payment');
+  const [selectedInvoiceCode, setSelectedInvoiceCode] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
 
   useEffect(() => {
-    handleGetMyPayments();
+    handleGetAllPayments();
   }, []);
 
   const columns: IColumn<MPayment.IRecord>[] = [
@@ -64,7 +66,13 @@ const LichSuThanhToan = () => {
       render: (_, rec: any) =>
         rec.invoice?.apartment?.apartment_code || '—',
     },
-
+    {
+      title: 'Người kiểm thu',
+      align: 'center',
+      width: 180,
+      render: (_, rec: any) =>
+        rec.received_by?.name || '—',
+    },
     {
       title: 'Phương thức',
       dataIndex: 'payment_method',
@@ -121,42 +129,63 @@ const LichSuThanhToan = () => {
     },
   ];
 
+  // Filter payments based on selected invoice code
+  const filteredPayments = selectedInvoiceCode
+    ? allPayments?.filter((payment: any) => {
+      const code = payment.invoice?.invoice_code || payment.invoice_id;
+      return code === selectedInvoiceCode;
+    })
+    : allPayments;
+
   return (
-    <>
+    <Card style={{ minHeight: '100%', borderRadius: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
         <div style={{
           width: 50, height: 50,
-          backgroundColor: '#f6ffed',
+          backgroundColor: '#e6f7ff',
           borderRadius: 12,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <HistoryOutlined style={{ fontSize: 22, color: '#52c41a' }} />
+          <HistoryOutlined style={{ fontSize: 22, color: '#1890ff' }} />
         </div>
         <div>
-          <Title level={3} style={{ margin: 0 }}>Lịch Sử Thanh Toán</Title>
+          <Title level={3} style={{ margin: 0 }}>Quản Lý Lịch Sử Thanh Toán</Title>
           <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
-            Xem lịch sử các giao dịch thanh toán của bạn
+            Xem và tìm kiếm tất cả các giao dịch thanh toán trong hệ thống
           </div>
         </div>
       </div>
 
-      <Divider style={{ margin: '0 0 20px' }} />
+      <Card style={{ marginBottom: 24, borderRadius: 12, backgroundColor: '#fafafa' }} bordered={false}>
+        <Row align="middle" gutter={16}>
+          <Col>
+            <Text strong>Tìm kiếm theo hóa đơn:</Text>
+          </Col>
+          <Col span={8}>
+            <SelectInvoice
+              hasCreate={false}
+              value={selectedInvoiceCode}
+              onChange={(val) => setSelectedInvoiceCode(val)}
+              valueType="code"
+            />
+          </Col>
+        </Row>
+      </Card>
 
       <TableStaticData
         columns={columns}
-        data={myPayments || []}
+        data={filteredPayments || []}
         loading={loadingPayments}
-        onReload={handleGetMyPayments}
+        onReload={handleGetAllPayments}
         addStt
       />
-
       <DetailModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         record={selectedRecord}
       />
-    </>
+    </Card>
   );
 };
 
-export default LichSuThanhToan;
+export default LichSuThanhToanAdmin;

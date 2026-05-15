@@ -1,13 +1,15 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useAccess, useModel } from "@umijs/max"
-import { Typography, Button, Tooltip, Popconfirm, Divider, Tag } from 'antd';
-import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, EyeOutlined } from '@ant-design/icons';
+import { Typography, Button, Tooltip, Divider, Tag, Select, Row, Col } from 'antd';
+import { FilePdfOutlined, FileTextOutlined, DollarOutlined, EyeOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
-import FilterBar from './components/FilterBar';
+import { history } from '@umijs/max';
 import DetailModal from '../Danh-sach-hoa-don/components/DetailModal';
+import PaymentModal from './components/PaymentModal';
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const statusConfig: Record<string, { color: string; text: string }> = {
   unpaid: { color: 'red', text: 'Chưa thanh toán' },
@@ -16,31 +18,28 @@ const statusConfig: Record<string, { color: string; text: string }> = {
   overdue: { color: 'magenta', text: 'Quá hạn' },
 };
 
-const DanhSachHoaDonOverdue = () => {
+const HoaDonCuaToi = () => {
   const {
     refreshKey,
     infoAllInvoice,
     loadingInfoAllInvoice,
-    handleGetOverdueInvoices,
+    handleGetMyInvoices,
     handleGetInfoInvoice,
-    handleDeleteInvoice,
     handleExportInvoicePdf,
   } = useModel("invoice.invoice");
 
-  const { infoAllApartment, handleGetInfoAllApartment } = useModel("apartment.apartment");
-
-  const [apartmentId, setApartmentId] = useState<string>("all");
+  const [status, setStatus] = useState<string>("all");
   const [month, setMonth] = useState<number | string>("all");
   const [year, setYear] = useState<number | string>("all");
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<MInvoice.IRecord | null>(null);
 
-  const access = useAccess();
+  const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
+  const [paymentRecord, setPaymentRecord] = useState<MInvoice.IRecord | null>(null);
 
   useEffect(() => {
-    handleGetOverdueInvoices();
-    if (handleGetInfoAllApartment) handleGetInfoAllApartment();
+    handleGetMyInvoices();
   }, [refreshKey]);
 
   const columns: IColumn<MInvoice.IRecord>[] = [
@@ -89,11 +88,23 @@ const DanhSachHoaDonOverdue = () => {
     {
       title: 'Thao tác',
       align: 'center',
-      width: 120,
+      width: 160,
       fixed: 'right',
-      hidden: !access.canAccessManager,
       render: (record: MInvoice.IRecord) => (
         <>
+          {record.status !== 'paid' && (
+            <Tooltip title="Thanh toán">
+              <Button
+                type="link"
+                icon={<DollarOutlined />}
+                style={{ color: '#52c41a' }}
+                onClick={() => {
+                  setPaymentRecord(record);
+                  setIsPaymentModalVisible(true);
+                }}
+              />
+            </Tooltip>
+          )}
           <Tooltip title="Xuất PDF">
             <Button
               type="link"
@@ -126,15 +137,6 @@ const DanhSachHoaDonOverdue = () => {
               }}
             />
           </Tooltip>
-          <Tooltip title="Xóa">
-            <Popconfirm
-              title="Bạn có chắc chắn muốn xóa hóa đơn này?"
-              placement="topLeft"
-              onConfirm={() => handleDeleteInvoice(record._id)}
-            >
-              <Button danger type="link" icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
         </>
       ),
     },
@@ -142,52 +144,71 @@ const DanhSachHoaDonOverdue = () => {
 
   const filteredData = useMemo(() => {
     let data = infoAllInvoice || [];
-    if (apartmentId !== 'all') {
-      data = data.filter((item: any) =>
-        item.apartment_id === apartmentId || item.apartment?._id === apartmentId
-      );
-    }
+    if (status !== 'all') data = data.filter(item => item.status === status);
     if (month !== 'all') data = data.filter(item => item.billing_month === Number(month));
     if (year !== 'all') data = data.filter(item => item.billing_year === Number(year));
     return data;
-  }, [infoAllInvoice, apartmentId, month, year]);
+  }, [infoAllInvoice, status, month, year]);
 
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
         <div style={{
           width: 50, height: 50,
-          backgroundColor: '#fff1f0',
+          backgroundColor: '#e6f4ff',
           borderRadius: 12,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <FileTextOutlined style={{ fontSize: 22, color: '#cf1322' }} />
+          <FileTextOutlined style={{ fontSize: 22, color: '#1677ff' }} />
         </div>
         <div>
-          <Title level={3} style={{ margin: 0 }}>Danh sách hóa đơn quá hạn</Title>
+          <Title level={3} style={{ margin: 0 }}>Hóa đơn của tôi</Title>
           <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
-            Quản lý các hóa đơn đã quá hạn thanh toán
+            Quản lý các hóa đơn thanh toán căn hộ của bạn
           </div>
         </div>
       </div>
 
       <Divider style={{ margin: '10px 0 20px' }} />
 
-      <FilterBar
-        apartmentId={apartmentId}
-        month={month}
-        year={year}
-        apartments={infoAllApartment || []}
-        onApartmentChange={setApartmentId}
-        onMonthChange={setMonth}
-        onYearChange={setYear}
-      />
+      <Row gutter={16} style={{ marginBottom: 20 }}>
+        <Col span={8}>
+          <div style={{ marginBottom: 5 }}>Trạng thái</div>
+          <Select style={{ width: '100%' }} value={status} onChange={setStatus}>
+            <Option value="all">Tất cả</Option>
+            <Option value="unpaid">Chưa thanh toán</Option>
+            <Option value="partial">Thanh toán 1 phần</Option>
+            <Option value="paid">Đã thanh toán</Option>
+            <Option value="overdue">Quá hạn</Option>
+          </Select>
+        </Col>
+
+        <Col span={8}>
+          <div style={{ marginBottom: 5 }}>Tháng</div>
+          <Select style={{ width: '100%' }} value={month} onChange={setMonth}>
+            <Option value="all">Tất cả</Option>
+            {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+              <Option key={m} value={m}>Tháng {m}</Option>
+            ))}
+          </Select>
+        </Col>
+
+        <Col span={8}>
+          <div style={{ marginBottom: 5 }}>Năm</div>
+          <Select style={{ width: '100%' }} value={year} onChange={setYear}>
+            <Option value="all">Tất cả</Option>
+            {[2024, 2025, 2026, 2027, 2028].map(y => (
+              <Option key={y} value={y}>{y}</Option>
+            ))}
+          </Select>
+        </Col>
+      </Row>
 
       <TableStaticData
         columns={columns}
         data={filteredData}
         loading={loadingInfoAllInvoice}
-        onReload={() => handleGetOverdueInvoices()}
+        onReload={() => handleGetMyInvoices()}
         addStt
       />
 
@@ -196,8 +217,14 @@ const DanhSachHoaDonOverdue = () => {
         onClose={() => setIsModalVisible(false)}
         record={selectedRecord}
       />
+
+      <PaymentModal
+        visible={isPaymentModalVisible}
+        onClose={() => setIsPaymentModalVisible(false)}
+        record={paymentRecord}
+      />
     </>
   );
 };
 
-export default DanhSachHoaDonOverdue;
+export default HoaDonCuaToi;
