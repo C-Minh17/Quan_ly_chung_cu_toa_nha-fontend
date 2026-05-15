@@ -127,10 +127,6 @@ export default [
 		name: 'Quản lý bảo trì',
 		component: './Quan-ly-bao-tri(admin)',
 		icon: 'ToolOutlined',
-		path: '/quan-ly-loai-phi',
-		name: 'Quản lý loại phí',
-		component: './Quan-ly-loai-phi',
-		icon: 'FileTextOutlined',
 		access: "canAccessManager"
 	},
 
@@ -167,9 +163,6 @@ export default [
 		path: '/quan-ly-bao-tri',
 		name: 'Quản lý bảo trì',
 		component: './Yeu-cau-bao-tri(resident)',
-		icon: 'ToolOutlined',
-		access: "canAccessResident"
-		component: './Quan-ly-bao-tri',
 		icon: 'ToolOutlined',
 		access: "canAccessResident"
 	},
