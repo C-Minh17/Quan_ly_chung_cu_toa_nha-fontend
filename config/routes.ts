@@ -80,13 +80,7 @@ export default [
 		icon: 'CarOutlined',
 		access: "canAccessManager"
 	},
-	{
-		path: '/quan-ly-bao-tri(admin)',
-		name: 'Quản lý bảo trì',
-		component: './Quan-ly-bao-tri(admin)',
-		icon: 'ToolOutlined',
-		access: "canAccessManager"
-	},
+
 	{
 		path: '/quan-ly-bao-tri-admin',
 		name: 'Quản lý bảo trì',
@@ -131,20 +125,7 @@ export default [
 		icon: 'ToolOutlined',
 		access: "canAccessResident"
 	},
-	{
-		path: '/thanh-toan',
-		name: 'Thanh toán hóa đơn',
-		component: './Quan-ly-hoa-don/Thanh-toan',
-		icon: 'DollarOutlined',
-		access: "canAccessResident"
-	},
-	{
-		path: '/lich-su-thanh-toan',
-		name: 'Lịch sử thanh toán',
-		component: './Quan-ly-hoa-don/Lich-su-thanh-toan',
-		icon: 'HistoryOutlined',
-		access: "canAccessResident"
-	},
+
 
 	// nhân viên
 	{
