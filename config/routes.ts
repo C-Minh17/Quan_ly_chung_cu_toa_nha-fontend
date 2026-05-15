@@ -74,6 +74,47 @@ export default [
 		access: "canAccessManager"
 	},
 	{
+		path: '/danh-sach-ghi-dich-vu',
+		name: 'Danh sách ghi dịch vụ',
+		component: './Ghi-dich-vu(staff)/Danh-sach',
+		icon: 'FileTextOutlined',
+		access: "canAccessManager"
+	},
+	{
+		path: '/quan-ly-hoa-don',
+		name: 'Quản lý hóa đơn',
+		icon: 'FileTextOutlined',
+		access: 'canAccessManager',
+		routes: [
+			{
+				path: '/quan-ly-hoa-don/tao-hoa-don',
+				name: 'Tạo hóa đơn',
+				component: './Quan-ly-hoa-don/Tao-hoa-don',
+				access: 'canAccessManager',
+			},
+			{
+				path: '/quan-ly-hoa-don/danh-sach',
+				name: 'Danh sách hóa đơn',
+				component: './Quan-ly-hoa-don/Danh-sach-hoa-don',
+			},
+			{
+				path: '/quan-ly-hoa-don/danh-sach-overdue',
+				name: 'Hóa đơn quá hạn',
+				component: './Quan-ly-hoa-don/Danh-sach-hoa-don-overdue',
+			},
+			{
+				path: '/quan-ly-hoa-don/thanh-toan',
+				name: 'Thanh toán hóa đơn',
+				component: './Quan-ly-hoa-don/Thanh-toan',
+			},
+			{
+				path: '/quan-ly-hoa-don/lich-su-thanh-toan-admin',
+				name: 'Lịch sử thanh toán',
+				component: './Quan-ly-hoa-don/Lich-su-thanh-toan-admin',
+			},
+		],
+	},
+	{
 		path: '/quan-ly-phuong-tien',
 		name: 'Quản lý phương tiện',
 		component: './Quan-ly-phuong-tien',
@@ -86,6 +127,10 @@ export default [
 		name: 'Quản lý bảo trì',
 		component: './Quan-ly-bao-tri(admin)',
 		icon: 'ToolOutlined',
+		path: '/quan-ly-loai-phi',
+		name: 'Quản lý loại phí',
+		component: './Quan-ly-loai-phi',
+		icon: 'FileTextOutlined',
 		access: "canAccessManager"
 	},
 
@@ -124,16 +169,46 @@ export default [
 		component: './Yeu-cau-bao-tri(resident)',
 		icon: 'ToolOutlined',
 		access: "canAccessResident"
+		component: './Quan-ly-bao-tri',
+		icon: 'ToolOutlined',
+		access: "canAccessResident"
+	},
+	{
+		path: '/hoa-don-cua-toi',
+		name: 'Hóa đơn của tôi',
+		component: './Quan-ly-hoa-don/Hoa-don-cua-toi(resident)',
+		icon: 'FileTextOutlined',
+		access: "canAccessResident"
+	},
+	{
+		path: '/lich-su-thanh-toan',
+		name: 'Lịch sử thanh toán',
+		component: './Quan-ly-hoa-don/Lich-su-thanh-toan',
+		icon: 'HistoryOutlined',
+		access: "canAccessResident"
 	},
 
 
 	// nhân viên
 	{
-		path: '/ghi-dien-nuoc',
+		path: '/ghi-dich-vu',
 		name: 'Ghi dịch vụ',
-		component: './Ghi-dien-nuoc(staff)',
 		icon: 'FileTextOutlined',
-		access: "canAccessStaff"
+		access: "canAccessStaff",
+		routes: [
+			{
+				path: '/ghi-dich-vu/ghi-chi-so',
+				name: 'Ghi chỉ số',
+				component: './Ghi-dich-vu(staff)/Ghi-chi-so',
+				icon: 'FileTextOutlined',
+			},
+			{
+				path: '/ghi-dich-vu/danh-sach',
+				name: 'Danh sách',
+				component: './Ghi-dich-vu(staff)/Danh-sach',
+				icon: 'FileTextOutlined',
+			},
+		],
 	},
 
 	// DANH MUC HE THONG

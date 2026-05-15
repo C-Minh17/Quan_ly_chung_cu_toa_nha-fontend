@@ -9,10 +9,9 @@ interface Props {
 }
 
 const STATUS_OPTIONS = [
-  { value: 'Trống', label: 'Trống' },
-  { value: 'Đã thuê', label: 'Đã thuê' },
-  { value: 'Đã đặt', label: 'Đã đặt' },
-  { value: 'Đang bảo trì', label: 'Đang bảo trì' },
+  { value: 'vacant', label: 'Trống' },
+  { value: 'occupied', label: 'Đã thuê' },
+  { value: 'maintenance', label: 'Đang bảo trì' },
 ];
 
 const FormApartment = (props: Props) => {

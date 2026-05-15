@@ -188,7 +188,7 @@ const FormUtilityReading = (props: Props) => {
             htmlType="submit"
             loading={loadingInfoUtilityReading}
             icon={<SaveOutlined />}
-            style={{ backgroundColor: '#2f3032', borderColor: '#434343' }} // Tweak to match dark theme icon styles if needed
+            style={{ backgroundColor: '#2f3032', borderColor: '#434343' }} 
           >
             Lưu chỉ số
           </Button>
