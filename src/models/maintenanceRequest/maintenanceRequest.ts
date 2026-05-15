@@ -1,5 +1,6 @@
 import {
   getAllMaintenanceRequest,
+  getMyMaintenanceRequest,
   getMaintenanceRequestById,
   getMaintenanceRequestStats,
   createMaintenanceRequest,
@@ -29,6 +30,19 @@ export default () => {
     setLoadingInfoAllMaintenanceRequest(true)
     try {
       const res = await getAllMaintenanceRequest()
+      setInfoAllMaintenanceRequest(res?.data || [])
+      return res?.data
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoadingInfoAllMaintenanceRequest(false)
+    }
+  }
+
+  const handleGetMyMaintenanceRequest = async () => {
+    setLoadingInfoAllMaintenanceRequest(true)
+    try {
+      const res = await getMyMaintenanceRequest()
       setInfoAllMaintenanceRequest(res?.data || [])
       return res?.data
     } catch (err) {
@@ -167,6 +181,7 @@ export default () => {
     loadingInfoMaintenanceRequest,
     statsMaintenanceRequest,
     handleGetAllMaintenanceRequest,
+    handleGetMyMaintenanceRequest,
     handleGetMaintenanceRequestById,
     handleGetMaintenanceRequestStats,
     handleCreateMaintenanceRequest,

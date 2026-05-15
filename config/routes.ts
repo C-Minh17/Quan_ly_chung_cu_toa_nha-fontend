@@ -81,12 +81,20 @@ export default [
 		access: "canAccessManager"
 	},
 	{
-		path: '/quan-ly-bao-tri',
+		path: '/quan-ly-bao-tri(admin)',
 		name: 'Quản lý bảo trì',
-		component: './Quan-ly-bao-tri',
+		component: './Quan-ly-bao-tri(admin)',
 		icon: 'ToolOutlined',
 		access: "canAccessManager"
 	},
+	{
+		path: '/quan-ly-bao-tri-admin',
+		name: 'Quản lý bảo trì',
+		component: './Quan-ly-bao-tri(admin)',
+		icon: 'ToolOutlined',
+		access: "canAccessManager"
+	},
+
 
 	// cư dân
 	{
@@ -117,11 +125,25 @@ export default [
 		access: "canAccessResident"
 	},
 	{
-		path: '/quan-ly-loai-phi',
-		name: 'Quản lý loại phí',
-		component: './Quan-ly-loai-phi',
-		icon: 'FileTextOutlined',
-		access: "canAccessManager"
+		path: '/quan-ly-bao-tri',
+		name: 'Quản lý bảo trì',
+		component: './Yeu-cau-bao-tri(resident)',
+		icon: 'ToolOutlined',
+		access: "canAccessResident"
+	},
+	{
+		path: '/thanh-toan',
+		name: 'Thanh toán hóa đơn',
+		component: './Quan-ly-hoa-don/Thanh-toan',
+		icon: 'DollarOutlined',
+		access: "canAccessResident"
+	},
+	{
+		path: '/lich-su-thanh-toan',
+		name: 'Lịch sử thanh toán',
+		component: './Quan-ly-hoa-don/Lich-su-thanh-toan',
+		icon: 'HistoryOutlined',
+		access: "canAccessResident"
 	},
 
 	// nhân viên

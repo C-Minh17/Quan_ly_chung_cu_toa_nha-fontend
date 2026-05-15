@@ -49,8 +49,7 @@ export default () => {
     setLoadingInfoMaintenanceSchedule(true)
     try {
       const res = await createMaintenanceSchedule(data)
-      if (res) return res?.data
-      return null
+      return res || true
     } catch (err) {
       console.log(err)
     } finally {
@@ -73,11 +72,11 @@ export default () => {
     }
   }
 
-  const handleCompleteMaintenanceSchedule = async (id: string) => {
+  const handleCompleteMaintenanceSchedule = async (id: string, status: string = 'completed') => {
     setLoadingInfoMaintenanceSchedule(true)
     try {
-      const res = await completeMaintenanceSchedule(id)
-      if (res) return res?.data
+      const res = await completeMaintenanceSchedule(id, status)
+      if (res) return res?.data || res
       return null
     } catch (err) {
       console.log(err)

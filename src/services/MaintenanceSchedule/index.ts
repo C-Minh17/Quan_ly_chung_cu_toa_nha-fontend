@@ -13,8 +13,8 @@ export const createMaintenanceSchedule = async (data: MMaintenanceSchedule.IReco
 export const updateMaintenanceSchedule = async (id: string, data: MMaintenanceSchedule.IRecord) =>
   axios.put(`${ipMaintenanceSchedule}/${id}`, data).then(res => res.data)
 
-export const completeMaintenanceSchedule = async (id: string) =>
-  axios.patch(`${ipMaintenanceSchedule}/${id}/complete`, {}).then(res => res.data)
+export const completeMaintenanceSchedule = async (id: string, status: string = 'completed') =>
+  axios.patch(`${ipMaintenanceSchedule}/${id}/complete`, { status }).then(res => res.data)
 
 export const deleteMaintenanceSchedule = async (id: string) =>
   axios.delete(`${ipMaintenanceSchedule}/${id}`).then(res => res.data)

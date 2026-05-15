@@ -53,6 +53,7 @@ export default () => {
       return null
     } catch (err) {
       console.log(err)
+      throw err;
     } finally {
       setLoadingInfoFloor(false)
       refreshFloors()
@@ -69,6 +70,7 @@ export default () => {
       return null
     } catch (err) {
       console.log(err)
+      throw err;
     } finally {
       setLoadingInfoFloor(false)
       refreshFloors()

@@ -4,6 +4,9 @@ import { ipMaintenanceRequest } from "@/utils/ip"
 export const getAllMaintenanceRequest = async () =>
   axios.get(`${ipMaintenanceRequest}`).then(res => res.data)
 
+export const getMyMaintenanceRequest = async () =>
+  axios.get(`${ipMaintenanceRequest}/me`).then(res => res.data)
+
 export const getMaintenanceRequestById = async (id: string) =>
   axios.get(`${ipMaintenanceRequest}/${id}`).then(res => res.data)
 
