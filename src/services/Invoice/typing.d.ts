@@ -19,6 +19,8 @@ declare module MInvoice {
     due_date?: string;
     status: 'unpaid' | 'partial' | 'paid' | 'overdue';
 
+    rental_amount?: number;
+
     apartment?: MApartment.IRecord;
 
     fixed_amount?: number;

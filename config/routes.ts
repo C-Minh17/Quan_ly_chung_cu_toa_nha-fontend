@@ -115,6 +115,13 @@ export default [
 		],
 	},
 	{
+		path: '/quan-ly-loai-phi',
+		name: 'Quản lý loại phí',
+		component: './Quan-ly-loai-phi',
+		icon: 'CarOutlined',
+		access: "canAccessManager"
+	},
+	{
 		path: '/quan-ly-phuong-tien',
 		name: 'Quản lý phương tiện',
 		component: './Quan-ly-phuong-tien',
