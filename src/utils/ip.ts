@@ -26,6 +26,7 @@ const ipMaintenanceRequest = ipRoot + '/maintenancerequests';
 const ipMaintenanceSchedule = ipRoot + '/maintenance-schedules';
 const ipAmenity = ipRoot + '/amenities';
 const ipAmenityBooking = ipRoot + '/amenity-bookings';
+const ipPayment = ipRoot + '/payments';
 
 
 const currentRole = EModuleKey.TCNS;
@@ -73,4 +74,5 @@ export {
 	ipMaintenanceSchedule,
 	ipAmenity,
 	ipAmenityBooking,
+	ipPayment,
 };

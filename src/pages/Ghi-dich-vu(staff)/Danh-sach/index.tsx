@@ -1,7 +1,7 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
-import { useModel } from "@umijs/max"
-import { Typography, Select, Row, Col, Button, Tooltip, Popconfirm } from 'antd';
+import { useAccess, useModel } from "@umijs/max"
+import { Typography, Select, Row, Col, Button, Tooltip, Popconfirm, Divider } from 'antd';
 import { DeleteOutlined, EditOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
 import FormUtilityReading from './components/Form';
@@ -9,7 +9,7 @@ import FormUtilityReading from './components/Form';
 const { Title } = Typography
 const { Option } = Select;
 
-const GhiDienNuocStaff = () => {
+const DanhSach = () => {
   const {
     refreshKey,
     infoAllUtilityReading,
@@ -29,6 +29,8 @@ const GhiDienNuocStaff = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [record, setRecord] = useState<MUtilityReading.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
+
+  const access = useAccess()
 
   useEffect(() => {
     handleGetInfoAllUtilityReading();
@@ -86,6 +88,7 @@ const GhiDienNuocStaff = () => {
       align: 'center',
       width: 140,
       fixed: 'right',
+      hidden: !access.canAccessManager,
       render: (record: MUtilityReading.IRecord) => (
         <>
           <Tooltip title="Chỉnh sửa">
@@ -160,12 +163,14 @@ const GhiDienNuocStaff = () => {
           <ThunderboltOutlined style={{ fontSize: 20, color: '#237804' }} />
         </div>
         <div>
-          <Title level={3} style={{ margin: 0 }}>Ghi chỉ số dịch vụ</Title>
+          <Title level={3} style={{ margin: 0 }}>Danh sách chỉ số dịch vụ</Title>
           <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4, fontWeight: 500 }}>
             {buildingId !== 'all' ? infoAllBuilding?.find(b => b._id === buildingId)?.name || 'Tòa nhà' : 'Tất cả tòa nhà'}
           </div>
         </div>
       </div>
+
+      <Divider style={{ margin: '10px 0px' }} />
 
       <Row gutter={16} style={{ marginBottom: 20 }}>
         <Col span={6}>
@@ -227,7 +232,6 @@ const GhiDienNuocStaff = () => {
         data={filteredData}
         loading={loadingInfoAllUtilityReading}
         showEdit={showEdit}
-        hasCreate={true}
         onReload={() => handleGetInfoAllUtilityReading()}
         Form={FormUtilityReading}
         formProps={{
@@ -249,4 +253,4 @@ const GhiDienNuocStaff = () => {
   )
 }
 
-export default GhiDienNuocStaff
+export default DanhSach
