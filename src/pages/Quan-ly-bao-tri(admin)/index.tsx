@@ -1,13 +1,13 @@
 import TableStaticData from "@/components/Table/TableStaticData";
 import { IColumn } from "@/components/Table/typing";
 import { useModel } from "@umijs/max";
-import { DeleteOutlined, EditOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Tag, Tooltip, Typography, message } from 'antd';
+import { DeleteOutlined, EditOutlined, CloseCircleOutlined, UserAddOutlined } from '@ant-design/icons';
+import { Button, Form, Modal, Popconfirm, Select, Tag, Tooltip, Typography, message } from 'antd';
 import { useEffect, useState } from 'react';
 import FormMaintenanceRequest from './components/FormRequest';
 import FormMaintenanceSchedule from './components/FormSchedule';
 
-const { Title } = Typography
+const { Title } = Typography;
 
 const CATEGORY_LABEL: Record<string, string> = {
   electrical: 'Điện', plumbing: 'Nước', structure: 'Kết cấu',
@@ -21,6 +21,13 @@ const PRIORITY_COLOR: Record<string, string> = {
 const PRIORITY_LABEL: Record<string, string> = {
   low: 'Thấp', medium: 'Trung bình', high: 'Cao', urgent: 'Khẩn cấp',
 };
+
+const PRIORITY_OPTIONS = [
+  { value: 'low', label: 'Thấp' },
+  { value: 'medium', label: 'Trung bình' },
+  { value: 'high', label: 'Cao' },
+  { value: 'urgent', label: 'Khẩn cấp' },
+];
 
 const REQUEST_STATUS_COLOR: Record<string, string> = {
   new: 'default', assigned: 'blue', in_progress: 'gold', completed: 'green', closed: 'volcano',
@@ -52,6 +59,7 @@ const ManagerMaintenance = () => {
     handleGetAllMaintenanceRequest,
     handleDeleteMaintenanceRequest,
     handleCloseMaintenanceRequest,
+    handleAssignMaintenanceRequest,
   } = useModel("maintenanceRequest.maintenanceRequest");
 
   const {
@@ -64,6 +72,7 @@ const ManagerMaintenance = () => {
   } = useModel("maintenanceSchedule.maintenanceSchedule");
 
   const { infoAllApartment, handleGetInfoAllApartment } = useModel("apartment.apartment");
+  const { infoAllUser, handleGetInfoAllUser } = useModel("user.user");
 
   const [showEditRequest, setShowEditRequest] = useState(false);
   const [recordRequest, setRecordRequest] = useState<MMaintenanceRequest.IRecord | {}>({});
@@ -72,6 +81,40 @@ const ManagerMaintenance = () => {
   const [showEditSchedule, setShowEditSchedule] = useState(false);
   const [recordSchedule, setRecordSchedule] = useState<MMaintenanceSchedule.IRecord | {}>({});
   const [editSchedule, setEditSchedule] = useState(false);
+
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assignRecord, setAssignRecord] = useState<MMaintenanceRequest.IRecord | null>(null);
+  const [assignForm] = Form.useForm();
+  const [loadingAssign, setLoadingAssign] = useState(false);
+
+  const handleOpenAssign = (record: MMaintenanceRequest.IRecord) => {
+    setAssignRecord(record);
+    assignForm.setFieldsValue({
+      assigned_to: (record as any)?.assigned_to?._id || record.assigned_to || undefined,
+      priority: record.priority || 'medium',
+    });
+    setShowAssignModal(true);
+  };
+
+  const handleSubmitAssign = async (values: { assigned_to: string; priority: string }) => {
+    if (!assignRecord?._id) return;
+    setLoadingAssign(true);
+    try {
+      await handleAssignMaintenanceRequest(assignRecord._id, values);
+      message.success('Phân công nhân viên thành công!');
+      setShowAssignModal(false);
+      assignForm.resetFields();
+      handleGetAllMaintenanceRequest();
+    } catch {
+      message.error('Phân công thất bại, vui lòng thử lại.');
+    } finally {
+      setLoadingAssign(false);
+    }
+  };
+
+  const staffOptions = infoAllUser
+    ?.filter((u: any) => u.role === 'STAFF')
+    .map((u: any) => ({ value: u._id, label: u.name }));
 
   const requestColumns: IColumn<MMaintenanceRequest.IRecord>[] = [
     {
@@ -85,13 +128,13 @@ const ManagerMaintenance = () => {
     {
       title: "Tiêu đề",
       dataIndex: "title",
-      width: 200,
+      width: 180,
       filterType: "string",
     },
     {
       title: "Căn hộ",
       align: "center",
-      width: 110,
+      width: 100,
       render: (_: any, r: MMaintenanceRequest.IRecord) => {
         const apt = infoAllApartment?.find(a => a._id === r.apartment_id);
         return apt?.apartment_code || r.apartment_id || 'N/A';
@@ -101,14 +144,8 @@ const ManagerMaintenance = () => {
       title: "Hạng mục",
       align: "center",
       dataIndex: "category",
-      width: 110,
+      width: 100,
       render: (v: string) => CATEGORY_LABEL[v] || v,
-    },
-    {
-      title: "Mô tả",
-      dataIndex: "description",
-      width: 200,
-      filterType: "string",
     },
     {
       title: "Ưu tiên",
@@ -121,24 +158,42 @@ const ManagerMaintenance = () => {
       title: "Trạng thái",
       align: "center",
       dataIndex: "status",
-      width: 140,
+      width: 130,
       filterType: "string",
       render: (v: string) => <Tag color={REQUEST_STATUS_COLOR[v]}>{REQUEST_STATUS_LABEL[v] || v}</Tag>,
+    },
+    {
+      title: "Nhân viên phụ trách",
+      align: "center",
+      width: 150,
+      render: (_: any, r: MMaintenanceRequest.IRecord) => {
+        const staff = infoAllUser?.find((u: any) => u._id === ((r as any)?.assigned_to?._id || r.assigned_to));
+        return staff ? <Tag color="blue">{staff.name}</Tag> : <span style={{ color: '#bbb' }}>Chưa phân công</span>;
+      },
     },
     {
       title: "Ngày tạo",
       align: "center",
       dataIndex: "created_at",
-      width: 130,
+      width: 110,
       render: (v: string) => v ? new Date(v).toLocaleDateString('vi-VN') : '',
     },
     {
       title: 'Thao tác',
       align: 'center',
-      width: 130,
+      width: 160,
       fixed: 'right',
       render: (r: MMaintenanceRequest.IRecord) => (
         <>
+          <Tooltip title="Phân công nhân viên">
+            <Button
+              type="link"
+              icon={<UserAddOutlined />}
+              style={{ color: '#1677ff' }}
+              disabled={r.status === 'closed' || r.status === 'completed'}
+              onClick={() => handleOpenAssign(r)}
+            />
+          </Tooltip>
           <Tooltip title="Chỉnh sửa">
             <Button
               type="link"
@@ -281,6 +336,7 @@ const ManagerMaintenance = () => {
   useEffect(() => {
     handleGetAllMaintenanceRequest();
     handleGetInfoAllApartment();
+    handleGetInfoAllUser();
   }, [refreshRequest]);
 
   useEffect(() => {
@@ -334,6 +390,55 @@ const ManagerMaintenance = () => {
         widthDrawer={620}
         addStt
       />
+
+      <Modal
+        title={
+          <span>
+            <UserAddOutlined style={{ color: '#1677ff', marginRight: 8 }} />
+            Phân công nhân viên xử lý
+          </span>
+        }
+        open={showAssignModal}
+        onCancel={() => { setShowAssignModal(false); assignForm.resetFields(); }}
+        footer={null}
+        width={480}
+      >
+        {assignRecord && (
+          <div style={{ marginBottom: 16, padding: '8px 12px', background: '#f0f5ff', borderRadius: 6, borderLeft: '4px solid #1677ff' }}>
+            <div><strong>{(assignRecord as MMaintenanceRequest.IRecord).Maintenance_Requests_code}</strong> — {(assignRecord as MMaintenanceRequest.IRecord).title}</div>
+            <div style={{ marginTop: 4, color: '#666', fontSize: 12 }}>
+              Trạng thái hiện tại: <Tag color={REQUEST_STATUS_COLOR[(assignRecord as MMaintenanceRequest.IRecord).status!]}>{REQUEST_STATUS_LABEL[(assignRecord as MMaintenanceRequest.IRecord).status!]}</Tag>
+            </div>
+          </div>
+        )}
+        <Form form={assignForm} layout="vertical" onFinish={handleSubmitAssign}>
+          <Form.Item
+            name="assigned_to"
+            label="Chọn nhân viên kỹ thuật (STAFF)"
+            rules={[{ required: true, message: 'Vui lòng chọn nhân viên!' }]}
+          >
+            <Select
+              showSearch
+              placeholder="Chọn nhân viên kỹ thuật"
+              optionFilterProp="label"
+              options={staffOptions}
+            />
+          </Form.Item>
+          <Form.Item
+            name="priority"
+            label="Mức độ ưu tiên"
+            rules={[{ required: true, message: 'Vui lòng chọn mức độ ưu tiên!' }]}
+          >
+            <Select placeholder="Chọn mức độ ưu tiên" options={PRIORITY_OPTIONS} />
+          </Form.Item>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+            <Button onClick={() => { setShowAssignModal(false); assignForm.resetFields(); }}>Hủy</Button>
+            <Button type="primary" htmlType="submit" loading={loadingAssign} icon={<UserAddOutlined />}>
+              Xác nhận phân công
+            </Button>
+          </div>
+        </Form>
+      </Modal>
     </>
   );
 };

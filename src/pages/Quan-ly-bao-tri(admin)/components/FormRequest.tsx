@@ -38,13 +38,11 @@ const FormMaintenanceRequest = (props: Props) => {
     handleUpdateMaintenanceRequest,
     loadingInfoMaintenanceRequest,
   } = useModel('maintenanceRequest.maintenanceRequest');
-  const { infoAllApartment, handleGetInfoAllApartment } = useModel('apartment.apartment');
   const { infoAllResident, handleGetInfoAllResident } = useModel('resident.resident');
 
   const [form] = Form.useForm();
 
   useEffect(() => {
-    handleGetInfoAllApartment();
     handleGetInfoAllResident();
   }, []);
 
@@ -57,7 +55,6 @@ const FormMaintenanceRequest = (props: Props) => {
         priority: initialValues.priority,
         status: initialValues.status,
         description: initialValues.description,
-        apartment_id: initialValues.apartment_id || undefined,
         resident_id: residentId || undefined,
       });
     } else {
@@ -91,26 +88,15 @@ const FormMaintenanceRequest = (props: Props) => {
             </Form.Item>
           </Col>
 
-          <Col span={12}>
-            <Form.Item name="apartment_id" label="Căn hộ" rules={[{ required: true, message: 'Vui lòng chọn căn hộ!' }]}>
-              <Select
-                showSearch
-                placeholder="Chọn căn hộ"
-                optionFilterProp="label"
-                options={infoAllApartment?.map(a => ({ value: a._id, label: a.apartment_code }))}
-              />
-            </Form.Item>
-          </Col>
-
-          <Col span={12}>
+          <Col span={24}>
             <Form.Item name="resident_id" label="Cư dân" rules={[{ required: true, message: 'Vui lòng chọn cư dân!' }]}>
               <Select
                 showSearch
-                placeholder="Chọn cư dân"
+                placeholder="Chọn cư dân (hệ thống tự điền căn hộ)"
                 optionFilterProp="label"
                 options={infoAllResident?.map((r: any) => ({
                   value: r._id,
-                  label: r.full_name || r.name || r._id,
+                  label: r.user?.name || r.user?.email,
                 }))}
               />
             </Form.Item>
