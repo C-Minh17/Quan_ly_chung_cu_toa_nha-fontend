@@ -175,9 +175,6 @@ export default [
 		component: './Yeu-cau-bao-tri(resident)',
 		icon: 'ToolOutlined',
 		access: "canAccessResident"
-		component: './Quan-ly-bao-tri',
-		icon: 'ToolOutlined',
-		access: "canAccessResident"
 	},
 	{
 		path: '/hoa-don-cua-toi',
