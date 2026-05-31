@@ -132,9 +132,22 @@ export default [
 	{
 		path: '/quan-ly-bao-tri-admin',
 		name: 'Quản lý bảo trì',
-		component: './Quan-ly-bao-tri(admin)',
 		icon: 'ToolOutlined',
-		access: "canAccessManager"
+		access: "canAccessManager",
+		routes: [
+			{
+				path: '/quan-ly-bao-tri-admin/yeu-cau-bao-tri',
+				name: 'Yêu cầu bảo trì',
+				component: './Quan-ly-bao-tri(admin)/Yeu-cau-bao-tri',
+				access: "canAccessManager",
+			},
+			{
+				path: '/quan-ly-bao-tri-admin/lich-bao-tri',
+				name: 'Lịch bảo trì',
+				component: './Quan-ly-bao-tri(admin)/Lich-bao-tri',
+				access: "canAccessManager",
+			},
+		],
 	},
 	{
 		path: '/quan-ly-tien-ich',
