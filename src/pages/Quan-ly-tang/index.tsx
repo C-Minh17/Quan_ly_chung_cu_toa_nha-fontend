@@ -134,50 +134,11 @@ const ManagerFloor = () => {
 
   const tabItems = infoAllBuilding?.map(b => ({
     key: b._id as string,
-    label: b.name
-  })) || [];
-
-  return (
-    <>
-      <Title level={2} style={{ marginTop: 10, marginBottom: 20 }}>Quản lý tầng</Title>
-
-      <style>{`
-        .beautiful-tabs .ant-tabs-nav::before {
-          display: none;
-        }
-        .beautiful-tabs .ant-tabs-tab {
-          background: #f0f2f5 !important;
-          border: none !important;
-          border-radius: 24px !important;
-          padding: 8px 24px !important;
-          margin-right: 12px !important;
-          transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-        }
-        .beautiful-tabs .ant-tabs-tab:hover {
-          background: #e6f4ff !important;
-        }
-        .beautiful-tabs .ant-tabs-tab-active {
-          background: #1677ff !important;
-          box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
-        }
-        .beautiful-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
-          color: #fff !important;
-          font-weight: 500;
-        }
-      `}</style>
-      <Tabs
-        className="beautiful-tabs"
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        items={tabItems}
-        type="card"
-        size="middle"
-        style={{ marginBottom: 16 }}
-      />
-
+    label: b.name,
+    children: activeTab === (b._id as string) ? (
       <TableStaticData
         columns={columns}
-        data={filteredFloors}
+        data={infoAllFloor?.filter((f: any) => (f.building?._id || f.building_id) === (b._id as string)) || []}
         loading={loadingInfoAllFloor}
         showEdit={showEdit}
         hasCreate={true}
@@ -197,6 +158,18 @@ const ManagerFloor = () => {
         }}
         widthDrawer={600}
         addStt
+      />
+    ) : null
+  })) || [];
+
+  return (
+    <>
+      <Title level={2} style={{ marginTop: 10, marginBottom: 20 }}>Quản lý tầng</Title>
+      
+      <Tabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        items={tabItems}
       />
 
       <Modal

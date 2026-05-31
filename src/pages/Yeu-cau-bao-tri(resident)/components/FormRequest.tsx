@@ -69,7 +69,6 @@ const FormMaintenanceRequest = (props: Props) => {
           return;
         }
         values.resident_id = infoMeResident._id;
-        values.apartment_id = infoMeResident.apartment_id;
         values.status = 'new';
       }
 

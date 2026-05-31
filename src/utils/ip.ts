@@ -24,6 +24,8 @@ const ipFeeType = ipRoot + '/feeType';
 const ipUtilityReading = ipRoot + '/utilityreading';
 const ipMaintenanceRequest = ipRoot + '/maintenancerequests';
 const ipMaintenanceSchedule = ipRoot + '/maintenance-schedules';
+const ipAmenity = ipRoot + '/amenities';
+const ipAmenityBooking = ipRoot + '/amenity-bookings';
 const ipPayment = ipRoot + '/payments';
 
 
@@ -70,5 +72,7 @@ export {
 	ipUtilityReading,
 	ipMaintenanceRequest,
 	ipMaintenanceSchedule,
+	ipAmenity,
+	ipAmenityBooking,
 	ipPayment,
 };

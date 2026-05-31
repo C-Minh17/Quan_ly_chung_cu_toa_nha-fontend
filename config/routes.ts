@@ -136,7 +136,13 @@ export default [
 		icon: 'ToolOutlined',
 		access: "canAccessManager"
 	},
-
+	{
+		path: '/quan-ly-tien-ich',
+		name: 'Quản lý tiện ích',
+		component: './Quan-ly-tien-ich(admin)',
+		icon: 'AppstoreAddOutlined',
+		access: "canAccessManager"
+	},
 
 	// cư dân
 	{
@@ -185,6 +191,13 @@ export default [
 		name: 'Lịch sử thanh toán',
 		component: './Quan-ly-hoa-don/Lich-su-thanh-toan',
 		icon: 'HistoryOutlined',
+		access: "canAccessResident"
+	},
+	{
+		path: '/dat-tien-ich',
+		name: 'Đặt tiện ích',
+		component: './Dat-tien-ich(resident)',
+		icon: 'CalendarOutlined',
 		access: "canAccessResident"
 	},
 

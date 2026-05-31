@@ -93,15 +93,17 @@ const FormMaintenanceSchedule = (props: Props) => {
           </Col>
 
           <Col span={12}>
-            <Form.Item name="assigned_to" label="Nhân viên phụ trách" rules={[{ required: true, message: 'Vui lòng chọn nhân viên!' }]}>
+            <Form.Item name="assigned_to" label="Nhân viên kỹ thuật (STAFF)" rules={[{ required: true, message: 'Vui lòng chọn nhân viên!' }]}>
               <Select
                 showSearch
-                placeholder="Chọn nhân viên"
+                placeholder="Chọn nhân viên kỹ thuật"
                 optionFilterProp="label"
-                options={infoAllUser?.map((u: any) => ({
-                  value: u._id,
-                  label: u.full_name || u.username || u._id,
-                }))}
+                options={infoAllUser
+                  ?.filter((u: any) => u.role === 'STAFF')
+                  .map((u: any) => ({
+                    value: u._id,
+                    label: u.name,
+                  }))}
               />
             </Form.Item>
           </Col>
