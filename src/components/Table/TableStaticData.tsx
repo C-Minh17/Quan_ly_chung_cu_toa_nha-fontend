@@ -16,7 +16,7 @@ import { updateSearchStorage } from './utils';
 
 const TableStaticData = (props: TableStaticProps) => {
 	const intl = useIntl();
-	const { Form, showEdit, setShowEdit, addStt, data, children, hasCreate, hasTotal, rowSortable } = props;
+	const { Form, showEdit, setShowEdit, addStt, data, children, hasCreate, hasTotal = true, rowSortable } = props;
 	const { danhSach: dsPhanVung } = useModel('core.phanvungdulieu');
 	const [searchText, setSearchText] = useState<string>('');
 	const [searchedColumn, setSearchedColumn] = useState();
