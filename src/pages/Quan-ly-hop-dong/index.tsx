@@ -1,10 +1,11 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { EditOutlined, EyeOutlined, StopOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Tooltip, Typography, Tag, Modal, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { EditOutlined, EyeOutlined, StopOutlined, FileTextOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, Modal, message } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import FormContract from './components/Form';
+import FilterBar from './components/FilterBar';
 import DetailContract from './components/Detail';
 import moment from "moment";
 
@@ -23,6 +24,9 @@ const ManagerContract = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [record, setRecord] = useState<MContract.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [contractTypeFilter, setContractTypeFilter] = useState("all");
 
   const columns: IColumn<MContract.IRecord>[] = [
     {
@@ -146,12 +150,74 @@ const ManagerContract = () => {
     handleGetInfoAllContract()
   }, [refreshKey])
 
+  const filteredData = useMemo(() => {
+    let data = infoAllContract || [];
+
+    // Filter by status
+    if (statusFilter !== "all") {
+      data = data.filter(item => item.status === statusFilter);
+    }
+
+    // Filter by contract type
+    if (contractTypeFilter !== "all") {
+      data = data.filter(item => item.contract_type === contractTypeFilter);
+    }
+
+    // Search filter
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter(item =>
+        [item.contract_code, item.apartment?.apartment_code, item.resident_user?.name]
+          .filter(Boolean)
+          .some(val => val.toString().toLowerCase().includes(keyword))
+      );
+    }
+
+    return data;
+  }, [infoAllContract, searchKeyword, statusFilter, contractTypeFilter]);
+
   return (
     <>
-      <Title level={2} style={{ marginTop: 10, marginBottom: 40 }}>Quản lý hợp đồng</Title>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+        <div style={{
+          width: 50, height: 50,
+          backgroundColor: '#e6f4ff',
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <FileTextOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+        </div>
+        <div>
+          <Title level={3} style={{ margin: 0 }}>Quản lý hợp đồng</Title>
+          <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+            Quản lý hợp đồng thuê/mua bán căn hộ và trạng thái hiệu lực
+          </div>
+        </div>
+      </div>
+
+      <Divider style={{ margin: '5px 0 20px' }} />
+      
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo mã hợp đồng, căn hộ, cư dân..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
+
+      <FilterBar
+        statusFilter={statusFilter}
+        contractTypeFilter={contractTypeFilter}
+        onStatusFilterChange={setStatusFilter}
+        onContractTypeFilterChange={setContractTypeFilter}
+      />
+
       <TableStaticData
         columns={columns}
-        data={infoAllContract || []}
+        data={filteredData}
         loading={loadingInfoAllContract}
         showEdit={showEdit}
         hasCreate={true}

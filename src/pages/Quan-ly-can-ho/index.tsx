@@ -1,10 +1,11 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { Button, Descriptions, Modal, Popconfirm, Tag, Tooltip, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { DeleteOutlined, EditOutlined, EyeOutlined, HomeOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Divider, Input, Modal, Popconfirm, Tag, Tooltip, Typography } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import FormApartment from './components/Form';
+import FilterBar from './components/FilterBar';
 
 const { Title } = Typography
 
@@ -34,6 +35,9 @@ const ManagerApartment = () => {
   const [record, setRecord] = useState<MApartment.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
   const [detailRecord, setDetailRecord] = useState<MApartment.IRecord | null>(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [buildingFilter, setBuildingFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const columns: IColumn<MApartment.IRecord>[] = [
     {
@@ -165,12 +169,75 @@ const ManagerApartment = () => {
     handleGetInfoAllBuilding();
   }, [refreshKey])
 
+  const filteredData = useMemo(() => {
+    let data = infoAllApartment || [];
+
+    // Filter by building
+    if (buildingFilter !== "all") {
+      data = data.filter(item => item.building_id === buildingFilter);
+    }
+
+    // Filter by status
+    if (statusFilter !== "all") {
+      data = data.filter(item => item.status === statusFilter);
+    }
+
+    // Search filter
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter(item =>
+        [item.apartment_code, item.apartment_type]
+          .filter(Boolean)
+          .some(val => val.toString().toLowerCase().includes(keyword))
+      );
+    }
+
+    return data;
+  }, [infoAllApartment, searchKeyword, buildingFilter, statusFilter]);
+
   return (
     <>
-      <Title level={2} style={{ marginTop: 10, marginBottom: 40 }}>Quản lý căn hộ</Title>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+        <div style={{
+          width: 50, height: 50,
+          backgroundColor: '#e6f4ff',
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <HomeOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+        </div>
+        <div>
+          <Title level={3} style={{ margin: 0 }}>Quản lý căn hộ</Title>
+          <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+            Quản lý danh sách và trạng thái các căn hộ
+          </div>
+        </div>
+      </div>
+
+      <Divider style={{ margin: '5px 0 20px' }} />
+      
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo mã căn hộ, loại căn hộ..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
+
+      <FilterBar
+        buildingFilter={buildingFilter}
+        statusFilter={statusFilter}
+        buildings={infoAllBuilding || []}
+        onBuildingFilterChange={setBuildingFilter}
+        onStatusFilterChange={setStatusFilter}
+      />
+
       <TableStaticData
         columns={columns}
-        data={infoAllApartment || []}
+        data={filteredData}
         loading={loadingInfoAllApartment}
         showEdit={showEdit}
         hasCreate={true}
