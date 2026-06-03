@@ -1,9 +1,10 @@
 import TableStaticData from '@/components/Table/TableStaticData';
 import { IColumn } from '@/components/Table/typing';
-import { CloseCircleOutlined, DeleteOutlined, EditOutlined, CalendarOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DeleteOutlined, EditOutlined, CalendarOutlined, FilterOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
-import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, message } from 'antd';
+import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, message, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormMaintenanceSchedule from '../components/FormSchedule';
 import FilterBar from './components/FilterBar';
 
@@ -45,6 +46,8 @@ const MaintenanceSchedulePage = () => {
 	const [searchKeyword, setSearchKeyword] = useState("");
 	const [statusFilter, setStatusFilter] = useState("all");
 	const [frequencyFilter, setFrequencyFilter] = useState("all");
+	const [filterModalVisible, setFilterModalVisible] = useState(false);
+	const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
 	const scheduleColumns: IColumn<MMaintenanceSchedule.IRecord>[] = [
 		{
@@ -147,6 +150,33 @@ const MaintenanceSchedulePage = () => {
 		handleGetAllMaintenanceSchedule();
 	}, [refreshKey]);
 
+	useEffect(() => {
+		const findAndInsert = () => {
+			const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+			const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+			if (reloadBtn) {
+				let placeholder = document.getElementById('filter-btn-placeholder-lich-bao-tri');
+				if (!placeholder) {
+					placeholder = document.createElement('span');
+					placeholder.id = 'filter-btn-placeholder-lich-bao-tri';
+					placeholder.style.display = 'inline-flex';
+					placeholder.style.marginRight = '8px';
+					reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+				}
+				setPortalContainer(placeholder);
+			}
+		};
+
+		findAndInsert();
+		const timer = setTimeout(findAndInsert, 500);
+		return () => clearTimeout(timer);
+	}, [infoAllMaintenanceSchedule, loadingInfoAllMaintenanceSchedule]);
+
+	const isFilterActive = useMemo(() => {
+		return statusFilter !== "all" || frequencyFilter !== "all";
+	}, [statusFilter, frequencyFilter]);
+
 	const filteredData = useMemo(() => {
 		let data = infoAllMaintenanceSchedule || [];
 
@@ -205,11 +235,37 @@ const MaintenanceSchedulePage = () => {
 				/>
 			</div>
 
+			{portalContainer && createPortal(
+				<Tooltip title="Bộ lọc tùy chỉnh">
+					<Badge dot={isFilterActive} offset={[-2, 2]}>
+						<Button
+							icon={<FilterOutlined />}
+							onClick={() => {
+								setFilterModalVisible(true);
+							}}
+							style={{
+								display: 'inline-flex',
+								alignItems: 'center',
+								borderRadius: 6,
+							}}
+						>
+							Bộ lọc
+						</Button>
+					</Badge>
+				</Tooltip>,
+				portalContainer
+			)}
+
 			<FilterBar
-				statusFilter={statusFilter}
-				frequencyFilter={frequencyFilter}
-				onStatusFilterChange={setStatusFilter}
-				onFrequencyFilterChange={setFrequencyFilter}
+				visible={filterModalVisible}
+				onCancel={() => setFilterModalVisible(false)}
+				onApply={(vals) => {
+					setStatusFilter(vals.statusFilter);
+					setFrequencyFilter(vals.frequencyFilter);
+					setFilterModalVisible(false);
+				}}
+				currentStatusFilter={statusFilter}
+				currentFrequencyFilter={frequencyFilter}
 			/>
 
 			<TableStaticData

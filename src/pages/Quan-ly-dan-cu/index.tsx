@@ -1,9 +1,10 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { DeleteOutlined, EditOutlined, EyeOutlined, TeamOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, Modal } from 'antd';
+import { DeleteOutlined, EditOutlined, EyeOutlined, TeamOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, Modal, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormResident from './components/Form';
 import FilterBar from './components/FilterBar';
 import DetailResident from './components/Detail';
@@ -19,6 +20,8 @@ const ManagerResident = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [residentTypeFilter, setResidentTypeFilter] = useState("all");
   const [primaryFilter, setPrimaryFilter] = useState("all");
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const columns: IColumn<MResident.IRecord>[] = [
     {
@@ -118,6 +121,33 @@ const ManagerResident = () => {
     handleGetInfoAllResident()
   }, [refreshKey])
 
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-dan-cu');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-quan-ly-dan-cu';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllResident, loadingInfoAllResident]);
+
+  const isFilterActive = useMemo(() => {
+    return residentTypeFilter !== "all" || primaryFilter !== "all";
+  }, [residentTypeFilter, primaryFilter]);
+
   const filteredData = useMemo(() => {
     let data = infoAllResident || [];
 
@@ -177,11 +207,37 @@ const ManagerResident = () => {
         />
       </div>
 
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => {
+                setFilterModalVisible(true);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
       <FilterBar
-        residentTypeFilter={residentTypeFilter}
-        primaryFilter={primaryFilter}
-        onResidentTypeFilterChange={setResidentTypeFilter}
-        onPrimaryFilterChange={setPrimaryFilter}
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(vals) => {
+          setResidentTypeFilter(vals.residentTypeFilter);
+          setPrimaryFilter(vals.primaryFilter);
+          setFilterModalVisible(false);
+        }}
+        currentResidentTypeFilter={residentTypeFilter}
+        currentPrimaryFilter={primaryFilter}
       />
 
       <TableStaticData

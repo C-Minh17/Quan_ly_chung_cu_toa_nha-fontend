@@ -1,69 +1,96 @@
-import { Select, Space } from 'antd';
+import { Modal, Select } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
 
 const { Option } = Select;
 
 interface Props {
-  buildingFilter: string;
-  statusFilter: string;
+  visible: boolean;
+  onCancel: () => void;
+  onApply: (filters: {
+    buildingFilter: string;
+    statusFilter: string;
+  }) => void;
+  currentBuildingFilter: string;
+  currentStatusFilter: string;
   buildings: any[];
-  onBuildingFilterChange: (val: string) => void;
-  onStatusFilterChange: (val: string) => void;
 }
 
 const FilterBar = ({
-  buildingFilter,
-  statusFilter,
+  visible,
+  onCancel,
+  onApply,
+  currentBuildingFilter,
+  currentStatusFilter,
   buildings,
-  onBuildingFilterChange,
-  onStatusFilterChange,
 }: Props) => {
-  return (
-    <div style={{
-      background: '#f9f9f9',
-      padding: '12px 16px',
-      borderRadius: '8px',
-      border: '1px solid #f0f0f0',
-      marginBottom: 20,
-      display: 'flex',
-      alignItems: 'center',
-      gap: 16,
-      flexWrap: 'wrap'
-    }}>
-      <Space style={{ fontWeight: 500, color: '#595959' }}>
-        <FilterOutlined style={{ color: '#1677ff' }} />
-        <span>Bộ lọc:</span>
-      </Space>
-      
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Tòa nhà:</span>
-        <Select
-          style={{ width: 200 }}
-          value={buildingFilter}
-          onChange={onBuildingFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          {buildings?.map(b => (
-            <Option key={b._id} value={b._id}>{b.name}</Option>
-          ))}
-        </Select>
-      </div>
+  const [draftBuilding, setDraftBuilding] = useState(currentBuildingFilter);
+  const [draftStatus, setDraftStatus] = useState(currentStatusFilter);
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Trạng thái:</span>
-        <Select
-          style={{ width: 160 }}
-          value={statusFilter}
-          onChange={onStatusFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="vacant">Trống</Option>
-          <Option value="occupied">Đã thuê</Option>
-          <Option value="reserved">Đã đặt</Option>
-          <Option value="maintenance">Bảo trì</Option>
-        </Select>
+  useEffect(() => {
+    if (visible) {
+      setDraftBuilding(currentBuildingFilter);
+      setDraftStatus(currentStatusFilter);
+    }
+  }, [visible, currentBuildingFilter, currentStatusFilter]);
+
+  return (
+    <Modal
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16 }}>
+          <FilterOutlined style={{ color: '#1677ff' }} />
+          <span>Bộ lọc tùy chỉnh</span>
+        </div>
+      }
+      open={visible}
+      onCancel={onCancel}
+      onOk={() => {
+        onApply({
+          buildingFilter: draftBuilding,
+          statusFilter: draftStatus,
+        });
+      }}
+      okText="Áp dụng tùy chỉnh"
+      cancelText="Hủy"
+      destroyOnClose
+      okButtonProps={{
+        style: { borderRadius: 6 }
+      }}
+      cancelButtonProps={{
+        style: { borderRadius: 6 }
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 0 8px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Tòa nhà:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftBuilding}
+            onChange={setDraftBuilding}
+          >
+            <Option value="all">Tất cả</Option>
+            {buildings?.map(b => (
+              <Option key={b._id} value={b._id}>{b.name}</Option>
+            ))}
+          </Select>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Trạng thái:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftStatus}
+            onChange={setDraftStatus}
+          >
+            <Option value="all">Tất cả</Option>
+            <Option value="vacant">Trống</Option>
+            <Option value="occupied">Đã thuê</Option>
+            <Option value="reserved">Đã đặt</Option>
+            <Option value="maintenance">Bảo trì</Option>
+          </Select>
+        </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

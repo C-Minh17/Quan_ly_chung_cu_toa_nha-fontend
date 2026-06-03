@@ -1,9 +1,10 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { EditOutlined, DeleteOutlined, CarOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, message } from 'antd';
+import { EditOutlined, DeleteOutlined, CarOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, message, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormVehicle from "./components/form";
 import FilterBar from "./components/FilterBar";
 
@@ -23,6 +24,9 @@ const ManagerVehicle = () => {
   const [edit, setEdit] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [vehicleTypeFilter, setVehicleTypeFilter] = useState("all");
+
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const columns: IColumn<MVehicle.IRecord>[] = [
     {
@@ -123,6 +127,29 @@ const ManagerVehicle = () => {
     handleGetInfoAllVehicle()
   }, [refreshKey])
 
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-phuong-tien');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-quan-ly-phuong-tien';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllVehicle, loadingInfoAllVehicle]);
+
   const filteredData = useMemo(() => {
     let data = infoAllVehicle || [];
 
@@ -143,6 +170,8 @@ const ManagerVehicle = () => {
 
     return data;
   }, [infoAllVehicle, searchKeyword, vehicleTypeFilter]);
+
+  const isFilterActive = vehicleTypeFilter !== "all";
 
   return (
     <>
@@ -176,9 +205,33 @@ const ManagerVehicle = () => {
         />
       </div>
 
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => setFilterModalVisible(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
       <FilterBar
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(values) => {
+          setVehicleTypeFilter(values.vehicleTypeFilter);
+          setFilterModalVisible(false);
+        }}
         vehicleTypeFilter={vehicleTypeFilter}
-        onVehicleTypeFilterChange={setVehicleTypeFilter}
       />
 
       <TableStaticData

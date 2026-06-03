@@ -1,11 +1,12 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { DeleteOutlined, EditOutlined, HomeOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Popconfirm, Tooltip, Typography } from 'antd';
+import { DeleteOutlined, EditOutlined, HomeOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormBuilding from './components/Form';
-import FilterBar from './components/FilterBar';
+import FilterModal from './components/FilterModal';
 
 const { Title } = Typography
 
@@ -16,6 +17,31 @@ const ManagerBuilding = () => {
   const [edit, setEdit] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [floorFilter, setFloorFilter] = useState("all");
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
+
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-toa-nha');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-toa-nha';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllBuilding, loadingInfoAllBuilding]);
 
   const columns: IColumn<MBuilding.IRecord>[] = [
     {
@@ -153,11 +179,6 @@ const ManagerBuilding = () => {
         />
       </div>
 
-      <FilterBar
-        floorFilter={floorFilter}
-        onFloorFilterChange={setFloorFilter}
-      />
-
       <TableStaticData
         columns={columns}
         data={filteredData}
@@ -180,6 +201,37 @@ const ManagerBuilding = () => {
         }}
         widthDrawer={600}
         addStt
+      />
+
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={floorFilter !== 'all'} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => {
+                setFilterModalVisible(true);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
+      <FilterModal
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(val) => {
+          setFloorFilter(val);
+          setFilterModalVisible(false);
+        }}
+        currentFloorFilter={floorFilter}
       />
     </>
   )

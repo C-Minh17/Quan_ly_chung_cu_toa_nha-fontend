@@ -1,47 +1,69 @@
-import { Select, Space } from 'antd';
+import { Modal, Select } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
 
 const { Option } = Select;
 
 interface Props {
+  visible: boolean;
+  onCancel: () => void;
+  onApply: (values: { statusFilter: string }) => void;
   statusFilter: string;
-  onStatusFilterChange: (val: string) => void;
 }
 
 const FilterBar = ({
+  visible,
+  onCancel,
+  onApply,
   statusFilter,
-  onStatusFilterChange,
 }: Props) => {
+  const [draftStatusFilter, setDraftStatusFilter] = useState(statusFilter);
+
+  useEffect(() => {
+    if (visible) {
+      setDraftStatusFilter(statusFilter);
+    }
+  }, [visible, statusFilter]);
+
+  const handleApply = () => {
+    onApply({
+      statusFilter: draftStatusFilter,
+    });
+  };
+
   return (
-    <div style={{
-      background: '#f9f9f9',
-      padding: '12px 16px',
-      borderRadius: '8px',
-      border: '1px solid #f0f0f0',
-      marginBottom: 20,
-      display: 'flex',
-      alignItems: 'center',
-      gap: 16,
-      flexWrap: 'wrap'
-    }}>
-      <Space style={{ fontWeight: 500, color: '#595959' }}>
-        <FilterOutlined style={{ color: '#1677ff' }} />
-        <span>Bộ lọc:</span>
-      </Space>
-      
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Trạng thái:</span>
-        <Select
-          style={{ width: 180 }}
-          value={statusFilter}
-          onChange={onStatusFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="active">Đang hoạt động</Option>
-          <Option value="inactive">Ngừng hoạt động</Option>
-        </Select>
+    <Modal
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16 }}>
+          <FilterOutlined style={{ color: '#1677ff' }} />
+          <span>Bộ lọc tùy chỉnh</span>
+        </div>
+      }
+      open={visible}
+      onCancel={onCancel}
+      onOk={handleApply}
+      okText="Áp dụng tùy chỉnh"
+      cancelText="Hủy"
+      destroyOnClose
+      okButtonProps={{ style: { borderRadius: 6 } }}
+      cancelButtonProps={{ style: { borderRadius: 6 } }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0 8px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Trạng thái:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftStatusFilter}
+            onChange={setDraftStatusFilter}
+            placeholder="Chọn trạng thái"
+          >
+            <Option value="all">Tất cả</Option>
+            <Option value="active">Đang hoạt động</Option>
+            <Option value="inactive">Ngừng hoạt động</Option>
+          </Select>
+        </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

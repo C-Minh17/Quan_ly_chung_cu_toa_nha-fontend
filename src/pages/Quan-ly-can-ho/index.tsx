@@ -1,9 +1,10 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { DeleteOutlined, EditOutlined, EyeOutlined, HomeOutlined } from '@ant-design/icons';
-import { Button, Descriptions, Divider, Input, Modal, Popconfirm, Tag, Tooltip, Typography } from 'antd';
+import { DeleteOutlined, EditOutlined, EyeOutlined, HomeOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Divider, Input, Modal, Popconfirm, Tag, Tooltip, Typography, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormApartment from './components/Form';
 import FilterBar from './components/FilterBar';
 
@@ -38,6 +39,8 @@ const ManagerApartment = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [buildingFilter, setBuildingFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const columns: IColumn<MApartment.IRecord>[] = [
     {
@@ -169,6 +172,33 @@ const ManagerApartment = () => {
     handleGetInfoAllBuilding();
   }, [refreshKey])
 
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-can-ho');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-quan-ly-can-ho';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllApartment, loadingInfoAllApartment]);
+
+  const isFilterActive = useMemo(() => {
+    return buildingFilter !== "all" || statusFilter !== "all";
+  }, [buildingFilter, statusFilter]);
+
   const filteredData = useMemo(() => {
     let data = infoAllApartment || [];
 
@@ -227,12 +257,38 @@ const ManagerApartment = () => {
         />
       </div>
 
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => {
+                setFilterModalVisible(true);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
       <FilterBar
-        buildingFilter={buildingFilter}
-        statusFilter={statusFilter}
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(vals) => {
+          setBuildingFilter(vals.buildingFilter);
+          setStatusFilter(vals.statusFilter);
+          setFilterModalVisible(false);
+        }}
+        currentBuildingFilter={buildingFilter}
+        currentStatusFilter={statusFilter}
         buildings={infoAllBuilding || []}
-        onBuildingFilterChange={setBuildingFilter}
-        onStatusFilterChange={setStatusFilter}
       />
 
       <TableStaticData

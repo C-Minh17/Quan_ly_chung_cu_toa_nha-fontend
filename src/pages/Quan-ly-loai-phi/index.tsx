@@ -1,9 +1,10 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { DeleteOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, DollarOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, message } from 'antd';
+import { DeleteOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, DollarOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, message, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormFeeType from './components/form';
 import FilterBar from './components/FilterBar';
 
@@ -24,6 +25,9 @@ const ManagerFeeType = () => {
   const [edit, setEdit] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const columns: IColumn<MFeeType.IRecord>[] = [
     {
@@ -130,6 +134,29 @@ const ManagerFeeType = () => {
     handleGetInfoAllFeeType()
   }, [refreshKey])
 
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-loai-phi');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-quan-ly-loai-phi';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllFeeType, loadingInfoAllFeeType]);
+
   const filteredData = useMemo(() => {
     let data = infoAllFeeType || [];
 
@@ -151,6 +178,8 @@ const ManagerFeeType = () => {
 
     return data;
   }, [infoAllFeeType, searchKeyword, statusFilter]);
+
+  const isFilterActive = statusFilter !== "all";
 
   return (
     <>
@@ -184,9 +213,33 @@ const ManagerFeeType = () => {
         />
       </div>
 
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => setFilterModalVisible(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
       <FilterBar
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(values) => {
+          setStatusFilter(values.statusFilter);
+          setFilterModalVisible(false);
+        }}
         statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
       />
 
       <TableStaticData

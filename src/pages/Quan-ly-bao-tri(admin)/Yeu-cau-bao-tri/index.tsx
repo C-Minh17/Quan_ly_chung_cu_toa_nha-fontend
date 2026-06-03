@@ -1,9 +1,10 @@
 import TableStaticData from '@/components/Table/TableStaticData';
 import { IColumn } from '@/components/Table/typing';
-import { CloseCircleOutlined, DeleteOutlined, EditOutlined, UserAddOutlined, ToolOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DeleteOutlined, EditOutlined, UserAddOutlined, ToolOutlined, FilterOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
-import { Button, Divider, Form, Input, Modal, Popconfirm, Select, Tag, Tooltip, Typography, message } from 'antd';
+import { Button, Divider, Form, Input, Modal, Popconfirm, Select, Tag, Tooltip, Typography, message, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormMaintenanceRequest from '../components/FormRequest';
 import FilterBar from './components/FilterBar';
 
@@ -75,6 +76,8 @@ const MaintenanceRequestPage = () => {
 	const [statusFilter, setStatusFilter] = useState("all");
 	const [priorityFilter, setPrimaryFilter] = useState("all");
 	const [categoryFilter, setCategoryFilter] = useState("all");
+	const [filterModalVisible, setFilterModalVisible] = useState(false);
+	const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
 	const [showAssignModal, setShowAssignModal] = useState(false);
 	const [assignRecord, setAssignRecord] = useState<MMaintenanceRequest.IRecord | null>(null);
@@ -238,6 +241,33 @@ const MaintenanceRequestPage = () => {
 		handleGetInfoAllUser();
 	}, [refreshKey]);
 
+	useEffect(() => {
+		const findAndInsert = () => {
+			const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+			const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+			if (reloadBtn) {
+				let placeholder = document.getElementById('filter-btn-placeholder-yeu-cau-bao-tri');
+				if (!placeholder) {
+					placeholder = document.createElement('span');
+					placeholder.id = 'filter-btn-placeholder-yeu-cau-bao-tri';
+					placeholder.style.display = 'inline-flex';
+					placeholder.style.marginRight = '8px';
+					reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+				}
+				setPortalContainer(placeholder);
+			}
+		};
+
+		findAndInsert();
+		const timer = setTimeout(findAndInsert, 500);
+		return () => clearTimeout(timer);
+	}, [infoAllMaintenanceRequest, loadingInfoAllMaintenanceRequest]);
+
+	const isFilterActive = useMemo(() => {
+		return statusFilter !== "all" || priorityFilter !== "all" || categoryFilter !== "all";
+	}, [statusFilter, priorityFilter, categoryFilter]);
+
 	const filteredData = useMemo(() => {
 		let data = infoAllMaintenanceRequest || [];
 
@@ -301,13 +331,39 @@ const MaintenanceRequestPage = () => {
 				/>
 			</div>
 
+			{portalContainer && createPortal(
+				<Tooltip title="Bộ lọc tùy chỉnh">
+					<Badge dot={isFilterActive} offset={[-2, 2]}>
+						<Button
+							icon={<FilterOutlined />}
+							onClick={() => {
+								setFilterModalVisible(true);
+							}}
+							style={{
+								display: 'inline-flex',
+								alignItems: 'center',
+								borderRadius: 6,
+							}}
+						>
+							Bộ lọc
+						</Button>
+					</Badge>
+				</Tooltip>,
+				portalContainer
+			)}
+
 			<FilterBar
-				statusFilter={statusFilter}
-				priorityFilter={priorityFilter}
-				categoryFilter={categoryFilter}
-				onStatusFilterChange={setStatusFilter}
-				onPriorityFilterChange={setPrimaryFilter}
-				onCategoryFilterChange={setCategoryFilter}
+				visible={filterModalVisible}
+				onCancel={() => setFilterModalVisible(false)}
+				onApply={(vals) => {
+					setStatusFilter(vals.statusFilter);
+					setPrimaryFilter(vals.priorityFilter);
+					setCategoryFilter(vals.categoryFilter);
+					setFilterModalVisible(false);
+				}}
+				currentStatusFilter={statusFilter}
+				currentPriorityFilter={priorityFilter}
+				currentCategoryFilter={categoryFilter}
 			/>
 
 			<TableStaticData

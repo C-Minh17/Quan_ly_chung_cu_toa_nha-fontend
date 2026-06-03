@@ -1,14 +1,14 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useAccess, useModel } from "@umijs/max"
-import { Typography, Select, Row, Col, Button, Tooltip, Popconfirm, Divider, Input } from 'antd';
-import { DeleteOutlined, EditOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { Typography, Button, Tooltip, Popconfirm, Divider, Input, Badge } from 'antd';
+import { DeleteOutlined, EditOutlined, ThunderboltOutlined, FilterOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import FormUtilityReading from './components/Form';
 import FilterBar from './components/FilterBar';
 
 const { Title } = Typography
-const { Option } = Select;
 
 const DanhSach = () => {
   const {
@@ -31,6 +31,8 @@ const DanhSach = () => {
   const [record, setRecord] = useState<MUtilityReading.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const access = useAccess()
 
@@ -39,6 +41,29 @@ const DanhSach = () => {
     if (handleGetInfoAllBuilding) handleGetInfoAllBuilding();
     if (handleGetInfoAllFeeType) handleGetInfoAllFeeType();
   }, [refreshKey]);
+
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-ghi-dich-vu');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-ghi-dich-vu';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllUtilityReading, loadingInfoAllUtilityReading]);
 
   const columns: IColumn<MUtilityReading.IRecord>[] = [
     {
@@ -122,6 +147,10 @@ const DanhSach = () => {
     },
   ];
 
+  const isFilterActive = useMemo(() => {
+    return buildingId !== 'all' || feeTypeId !== 'all' || month !== 'all' || year !== 'all';
+  }, [buildingId, feeTypeId, month, year]);
+
   const filteredData = useMemo(() => {
     let data = infoAllUtilityReading || [];
 
@@ -196,17 +225,43 @@ const DanhSach = () => {
         />
       </div>
 
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => {
+                setFilterModalVisible(true);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
       <FilterBar
-        buildingId={buildingId}
-        feeTypeId={feeTypeId}
-        month={month}
-        year={year}
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(vals) => {
+          setBuildingId(vals.buildingId);
+          setFeeTypeId(vals.feeTypeId);
+          setMonth(vals.month);
+          setYear(vals.year);
+          setFilterModalVisible(false);
+        }}
+        currentBuildingId={buildingId}
+        currentFeeTypeId={feeTypeId}
+        currentMonth={month}
+        currentYear={year}
         buildings={infoAllBuilding || []}
         feeTypes={infoAllFeeType || []}
-        onBuildingChange={setBuildingId}
-        onFeeTypeChange={setFeeTypeId}
-        onMonthChange={setMonth}
-        onYearChange={setYear}
       />
 
       <TableStaticData

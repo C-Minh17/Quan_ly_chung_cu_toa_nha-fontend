@@ -1,65 +1,89 @@
-import { Select, Space } from 'antd';
+import { Modal, Select } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
 
 const { Option } = Select;
 
 interface Props {
+  visible: boolean;
+  onCancel: () => void;
+  onApply: (values: { statusFilter: string; contractTypeFilter: string }) => void;
   statusFilter: string;
   contractTypeFilter: string;
-  onStatusFilterChange: (val: string) => void;
-  onContractTypeFilterChange: (val: string) => void;
 }
 
 const FilterBar = ({
+  visible,
+  onCancel,
+  onApply,
   statusFilter,
   contractTypeFilter,
-  onStatusFilterChange,
-  onContractTypeFilterChange,
 }: Props) => {
-  return (
-    <div style={{
-      background: '#f9f9f9',
-      padding: '12px 16px',
-      borderRadius: '8px',
-      border: '1px solid #f0f0f0',
-      marginBottom: 20,
-      display: 'flex',
-      alignItems: 'center',
-      gap: 16,
-      flexWrap: 'wrap'
-    }}>
-      <Space style={{ fontWeight: 500, color: '#595959' }}>
-        <FilterOutlined style={{ color: '#1677ff' }} />
-        <span>Bộ lọc:</span>
-      </Space>
-      
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Loại hợp đồng:</span>
-        <Select
-          style={{ width: 160 }}
-          value={contractTypeFilter}
-          onChange={onContractTypeFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="purchase">Mua bán</Option>
-          <Option value="lease">Cho thuê</Option>
-        </Select>
-      </div>
+  const [draftStatusFilter, setDraftStatusFilter] = useState(statusFilter);
+  const [draftContractTypeFilter, setDraftContractTypeFilter] = useState(contractTypeFilter);
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Trạng thái:</span>
-        <Select
-          style={{ width: 180 }}
-          value={statusFilter}
-          onChange={onStatusFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="active">Đang hiệu lực</Option>
-          <Option value="expired">Đã hết hạn</Option>
-          <Option value="terminated">Đã chấm dứt</Option>
-        </Select>
+  useEffect(() => {
+    if (visible) {
+      setDraftStatusFilter(statusFilter);
+      setDraftContractTypeFilter(contractTypeFilter);
+    }
+  }, [visible, statusFilter, contractTypeFilter]);
+
+  const handleApply = () => {
+    onApply({
+      statusFilter: draftStatusFilter,
+      contractTypeFilter: draftContractTypeFilter,
+    });
+  };
+
+  return (
+    <Modal
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16 }}>
+          <FilterOutlined style={{ color: '#1677ff' }} />
+          <span>Bộ lọc tùy chỉnh</span>
+        </div>
+      }
+      open={visible}
+      onCancel={onCancel}
+      onOk={handleApply}
+      okText="Áp dụng tùy chỉnh"
+      cancelText="Hủy"
+      destroyOnClose
+      okButtonProps={{ style: { borderRadius: 6 } }}
+      cancelButtonProps={{ style: { borderRadius: 6 } }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px 0 8px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Loại hợp đồng:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftContractTypeFilter}
+            onChange={setDraftContractTypeFilter}
+            placeholder="Chọn loại hợp đồng"
+          >
+            <Option value="all">Tất cả</Option>
+            <Option value="purchase">Mua bán</Option>
+            <Option value="lease">Cho thuê</Option>
+          </Select>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Trạng thái:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftStatusFilter}
+            onChange={setDraftStatusFilter}
+            placeholder="Chọn trạng thái"
+          >
+            <Option value="all">Tất cả</Option>
+            <Option value="active">Đang hiệu lực</Option>
+            <Option value="expired">Đã hết hạn</Option>
+            <Option value="terminated">Đã chấm dứt</Option>
+          </Select>
+        </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

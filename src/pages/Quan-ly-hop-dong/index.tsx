@@ -1,9 +1,10 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { EditOutlined, EyeOutlined, StopOutlined, FileTextOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, Modal, message } from 'antd';
+import { EditOutlined, EyeOutlined, StopOutlined, FileTextOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, Modal, message, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormContract from './components/Form';
 import FilterBar from './components/FilterBar';
 import DetailContract from './components/Detail';
@@ -27,6 +28,9 @@ const ManagerContract = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [contractTypeFilter, setContractTypeFilter] = useState("all");
+
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const columns: IColumn<MContract.IRecord>[] = [
     {
@@ -150,6 +154,29 @@ const ManagerContract = () => {
     handleGetInfoAllContract()
   }, [refreshKey])
 
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-hop-dong');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-quan-ly-hop-dong';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllContract, loadingInfoAllContract]);
+
   const filteredData = useMemo(() => {
     let data = infoAllContract || [];
 
@@ -175,6 +202,8 @@ const ManagerContract = () => {
 
     return data;
   }, [infoAllContract, searchKeyword, statusFilter, contractTypeFilter]);
+
+  const isFilterActive = statusFilter !== "all" || contractTypeFilter !== "all";
 
   return (
     <>
@@ -208,11 +237,35 @@ const ManagerContract = () => {
         />
       </div>
 
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => setFilterModalVisible(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
       <FilterBar
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(values) => {
+          setStatusFilter(values.statusFilter);
+          setContractTypeFilter(values.contractTypeFilter);
+          setFilterModalVisible(false);
+        }}
         statusFilter={statusFilter}
         contractTypeFilter={contractTypeFilter}
-        onStatusFilterChange={setStatusFilter}
-        onContractTypeFilterChange={setContractTypeFilter}
       />
 
       <TableStaticData

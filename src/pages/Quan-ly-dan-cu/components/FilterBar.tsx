@@ -1,65 +1,92 @@
-import { Select, Space } from 'antd';
+import { Modal, Select } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
 
 const { Option } = Select;
 
 interface Props {
-  residentTypeFilter: string;
-  primaryFilter: string;
-  onResidentTypeFilterChange: (val: string) => void;
-  onPrimaryFilterChange: (val: string) => void;
+  visible: boolean;
+  onCancel: () => void;
+  onApply: (filters: {
+    residentTypeFilter: string;
+    primaryFilter: string;
+  }) => void;
+  currentResidentTypeFilter: string;
+  currentPrimaryFilter: string;
 }
 
 const FilterBar = ({
-  residentTypeFilter,
-  primaryFilter,
-  onResidentTypeFilterChange,
-  onPrimaryFilterChange,
+  visible,
+  onCancel,
+  onApply,
+  currentResidentTypeFilter,
+  currentPrimaryFilter,
 }: Props) => {
-  return (
-    <div style={{
-      background: '#f9f9f9',
-      padding: '12px 16px',
-      borderRadius: '8px',
-      border: '1px solid #f0f0f0',
-      marginBottom: 20,
-      display: 'flex',
-      alignItems: 'center',
-      gap: 16,
-      flexWrap: 'wrap'
-    }}>
-      <Space style={{ fontWeight: 500, color: '#595959' }}>
-        <FilterOutlined style={{ color: '#1677ff' }} />
-        <span>Bộ lọc:</span>
-      </Space>
-      
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Loại cư dân:</span>
-        <Select
-          style={{ width: 160 }}
-          value={residentTypeFilter}
-          onChange={onResidentTypeFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="OWNER">Chủ hộ</Option>
-          <Option value="FAMILY_MEMBER">Thành viên</Option>
-          <Option value="TENANT">Khách thuê</Option>
-        </Select>
-      </div>
+  const [draftResidentType, setDraftResidentType] = useState(currentResidentTypeFilter);
+  const [draftPrimary, setDraftPrimary] = useState(currentPrimaryFilter);
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Vai trò:</span>
-        <Select
-          style={{ width: 160 }}
-          value={primaryFilter}
-          onChange={onPrimaryFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="primary">Cư dân chính</Option>
-          <Option value="secondary">Cư dân phụ</Option>
-        </Select>
+  useEffect(() => {
+    if (visible) {
+      setDraftResidentType(currentResidentTypeFilter);
+      setDraftPrimary(currentPrimaryFilter);
+    }
+  }, [visible, currentResidentTypeFilter, currentPrimaryFilter]);
+
+  return (
+    <Modal
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16 }}>
+          <FilterOutlined style={{ color: '#1677ff' }} />
+          <span>Bộ lọc tùy chỉnh</span>
+        </div>
+      }
+      open={visible}
+      onCancel={onCancel}
+      onOk={() => {
+        onApply({
+          residentTypeFilter: draftResidentType,
+          primaryFilter: draftPrimary,
+        });
+      }}
+      okText="Áp dụng tùy chỉnh"
+      cancelText="Hủy"
+      destroyOnClose
+      okButtonProps={{
+        style: { borderRadius: 6 }
+      }}
+      cancelButtonProps={{
+        style: { borderRadius: 6 }
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 0 8px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Loại cư dân:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftResidentType}
+            onChange={setDraftResidentType}
+          >
+            <Option value="all">Tất cả</Option>
+            <Option value="OWNER">Chủ hộ</Option>
+            <Option value="FAMILY_MEMBER">Thành viên</Option>
+            <Option value="TENANT">Khách thuê</Option>
+          </Select>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Vai trò:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftPrimary}
+            onChange={setDraftPrimary}
+          >
+            <Option value="all">Tất cả</Option>
+            <Option value="primary">Cư dân chính</Option>
+            <Option value="secondary">Cư dân phụ</Option>
+          </Select>
+        </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

@@ -1,9 +1,10 @@
 import TableStaticData from "@/components/Table/TableStaticData";
 import { IColumn } from "@/components/Table/typing";
 import { useModel } from "@umijs/max";
-import { DeleteOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, AppstoreAddOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, message, Tabs } from 'antd';
+import { DeleteOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, AppstoreAddOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, message, Tabs, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormAmenity from './components/FormAmenity';
 import FilterBar from './components/FilterBar';
 
@@ -44,6 +45,10 @@ const ManagerAmenity = () => {
 	const [searchBooking, setSearchBooking] = useState("");
 	const [statusBooking, setStatusBooking] = useState("all");
 	const [amenityBooking, setAmenityBooking] = useState("all");
+
+	const [activeTab, setActiveTab] = useState("1");
+	const [filterModalVisible, setFilterModalVisible] = useState(false);
+	const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
 	const amenityColumns: IColumn<MAmenity.IRecord>[] = [
 		{
@@ -248,6 +253,36 @@ const ManagerAmenity = () => {
 		handleGetAllAmenityBookings();
 	}, [refreshBooking]);
 
+	useEffect(() => {
+		if (activeTab !== "2") {
+			setPortalContainer(null);
+			return;
+		}
+
+		const findAndInsert = () => {
+			const activePane = document.querySelector('.ant-tabs-tabpane:not(.ant-tabs-tabpane-hidden)');
+			if (!activePane) return;
+			const reloadIcon = activePane.querySelector('.table-base .header .extra .anticon-reload');
+			const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+			if (reloadBtn) {
+				let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-tien-ich-booking');
+				if (!placeholder) {
+					placeholder = document.createElement('span');
+					placeholder.id = 'filter-btn-placeholder-quan-ly-tien-ich-booking';
+					placeholder.style.display = 'inline-flex';
+					placeholder.style.marginRight = '8px';
+					reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+				}
+				setPortalContainer(placeholder);
+			}
+		};
+
+		findAndInsert();
+		const timer = setTimeout(findAndInsert, 500);
+		return () => clearTimeout(timer);
+	}, [activeTab, infoAllAmenityBooking, loadingInfoAllAmenityBooking]);
+
 	const filteredAmenities = useMemo(() => {
 		let data = infoAllAmenity || [];
 		const keyword = searchAmenity.trim().toLowerCase();
@@ -296,6 +331,8 @@ const ManagerAmenity = () => {
 
 		return data;
 	}, [infoAllAmenityBooking, searchBooking, statusBooking, amenityBooking, infoAllUser, infoAllAmenity]);
+
+	const isFilterActive = statusBooking !== "all" || amenityBooking !== "all";
 
 	const items = [
 		{
@@ -352,12 +389,36 @@ const ManagerAmenity = () => {
 						/>
 					</div>
 					
+					{portalContainer && createPortal(
+						<Tooltip title="Bộ lọc tùy chỉnh">
+							<Badge dot={isFilterActive} offset={[-2, 2]}>
+								<Button
+									icon={<FilterOutlined />}
+									onClick={() => setFilterModalVisible(true)}
+									style={{
+										display: 'inline-flex',
+										alignItems: 'center',
+										borderRadius: 6,
+									}}
+								>
+									Bộ lọc
+								</Button>
+							</Badge>
+						</Tooltip>,
+						portalContainer
+					)}
+
 					<FilterBar
+						visible={filterModalVisible}
+						onCancel={() => setFilterModalVisible(false)}
+						onApply={(values) => {
+							setStatusBooking(values.statusFilter);
+							setAmenityBooking(values.amenityFilter);
+							setFilterModalVisible(false);
+						}}
 						statusFilter={statusBooking}
 						amenityFilter={amenityBooking}
 						amenities={infoAllAmenity || []}
-						onStatusFilterChange={setStatusBooking}
-						onAmenityFilterChange={setAmenityBooking}
 					/>
 
 					<TableStaticData
@@ -395,7 +456,7 @@ const ManagerAmenity = () => {
 
 			<Divider style={{ margin: '5px 0 20px' }} />
 
-			<Tabs defaultActiveKey="1" items={items} />
+			<Tabs activeKey={activeTab} onChange={setActiveTab} items={items} />
 		</>
 	);
 };

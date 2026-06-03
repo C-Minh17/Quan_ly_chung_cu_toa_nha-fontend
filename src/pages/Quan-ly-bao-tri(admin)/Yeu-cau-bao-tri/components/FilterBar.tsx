@@ -1,89 +1,118 @@
-import { Select, Space } from 'antd';
+import { Modal, Select } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
 
 const { Option } = Select;
 
 interface Props {
-  statusFilter: string;
-  priorityFilter: string;
-  categoryFilter: string;
-  onStatusFilterChange: (val: string) => void;
-  onPriorityFilterChange: (val: string) => void;
-  onCategoryFilterChange: (val: string) => void;
+  visible: boolean;
+  onCancel: () => void;
+  onApply: (filters: {
+    statusFilter: string;
+    priorityFilter: string;
+    categoryFilter: string;
+  }) => void;
+  currentStatusFilter: string;
+  currentPriorityFilter: string;
+  currentCategoryFilter: string;
 }
 
 const FilterBar = ({
-  statusFilter,
-  priorityFilter,
-  categoryFilter,
-  onStatusFilterChange,
-  onPriorityFilterChange,
-  onCategoryFilterChange,
+  visible,
+  onCancel,
+  onApply,
+  currentStatusFilter,
+  currentPriorityFilter,
+  currentCategoryFilter,
 }: Props) => {
+  const [draftStatus, setDraftStatus] = useState(currentStatusFilter);
+  const [draftPriority, setDraftPriority] = useState(currentPriorityFilter);
+  const [draftCategory, setDraftCategory] = useState(currentCategoryFilter);
+
+  useEffect(() => {
+    if (visible) {
+      setDraftStatus(currentStatusFilter);
+      setDraftPriority(currentPriorityFilter);
+      setDraftCategory(currentCategoryFilter);
+    }
+  }, [visible, currentStatusFilter, currentPriorityFilter, currentCategoryFilter]);
+
   return (
-    <div style={{
-      background: '#f9f9f9',
-      padding: '12px 16px',
-      borderRadius: '8px',
-      border: '1px solid #f0f0f0',
-      marginBottom: 20,
-      display: 'flex',
-      alignItems: 'center',
-      gap: 16,
-      flexWrap: 'wrap'
-    }}>
-      <Space style={{ fontWeight: 500, color: '#595959' }}>
-        <FilterOutlined style={{ color: '#1677ff' }} />
-        <span>Bộ lọc:</span>
-      </Space>
-      
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Hạng mục:</span>
-        <Select
-          style={{ width: 140 }}
-          value={categoryFilter}
-          onChange={onCategoryFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="electrical">Điện</Option>
-          <Option value="plumbing">Nước</Option>
-          <Option value="structure">Kết cấu</Option>
-          <Option value="appliance">Thiết bị</Option>
-          <Option value="other">Khác</Option>
-        </Select>
-      </div>
+    <Modal
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16 }}>
+          <FilterOutlined style={{ color: '#1677ff' }} />
+          <span>Bộ lọc tùy chỉnh</span>
+        </div>
+      }
+      open={visible}
+      onCancel={onCancel}
+      onOk={() => {
+        onApply({
+          statusFilter: draftStatus,
+          priorityFilter: draftPriority,
+          categoryFilter: draftCategory,
+        });
+      }}
+      okText="Áp dụng tùy chỉnh"
+      cancelText="Hủy"
+      destroyOnClose
+      okButtonProps={{
+        style: { borderRadius: 6 }
+      }}
+      cancelButtonProps={{
+        style: { borderRadius: 6 }
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 0 8px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Hạng mục:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftCategory}
+            onChange={setDraftCategory}
+          >
+            <Option value="all">Tất cả</Option>
+            <Option value="electrical">Điện</Option>
+            <Option value="plumbing">Nước</Option>
+            <Option value="structure">Kết cấu</Option>
+            <Option value="appliance">Thiết bị</Option>
+            <Option value="other">Khác</Option>
+          </Select>
+        </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Trạng thái:</span>
-        <Select
-          style={{ width: 150 }}
-          value={statusFilter}
-          onChange={onStatusFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="new">Mới</Option>
-          <Option value="assigned">Đã phân công</Option>
-          <Option value="in_progress">Đang xử lý</Option>
-          <Option value="completed">Hoàn thành</Option>
-          <Option value="closed">Đã đóng</Option>
-        </Select>
-      </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Trạng thái:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftStatus}
+            onChange={setDraftStatus}
+          >
+            <Option value="all">Tất cả</Option>
+            <Option value="new">Mới</Option>
+            <Option value="assigned">Đã phân công</Option>
+            <Option value="in_progress">Đang xử lý</Option>
+            <Option value="completed">Hoàn thành</Option>
+            <Option value="closed">Đã đóng</Option>
+          </Select>
+        </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Ưu tiên:</span>
-        <Select
-          style={{ width: 140 }}
-          value={priorityFilter}
-          onChange={onPriorityFilterChange}
-        >
-          <Option value="all">Tất cả</Option>
-          <Option value="low">Thấp</Option>
-          <Option value="medium">Trung bình</Option>
-          <Option value="high">Cao</Option>
-          <Option value="urgent">Khẩn cấp</Option>
-        </Select>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={{ fontWeight: 500, color: '#262626' }}>Ưu tiên:</span>
+          <Select
+            style={{ width: '100%' }}
+            value={draftPriority}
+            onChange={setDraftPriority}
+          >
+            <Option value="all">Tất cả</Option>
+            <Option value="low">Thấp</Option>
+            <Option value="medium">Trung bình</Option>
+            <Option value="high">Cao</Option>
+            <Option value="urgent">Khẩn cấp</Option>
+          </Select>
+        </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 
