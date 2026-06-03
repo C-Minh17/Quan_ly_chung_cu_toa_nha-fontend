@@ -1,10 +1,11 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useAccess, useModel } from "@umijs/max"
-import { Typography, Select, Row, Col, Button, Tooltip, Popconfirm, Divider } from 'antd';
+import { Typography, Select, Row, Col, Button, Tooltip, Popconfirm, Divider, Input } from 'antd';
 import { DeleteOutlined, EditOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
 import FormUtilityReading from './components/Form';
+import FilterBar from './components/FilterBar';
 
 const { Title } = Typography
 const { Option } = Select;
@@ -29,6 +30,7 @@ const DanhSach = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [record, setRecord] = useState<MUtilityReading.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const access = useAccess()
 
@@ -145,8 +147,19 @@ const DanhSach = () => {
       data = data.filter((item: any) => item.reading_year === Number(year));
     }
 
+    // Search filter
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter((item: any) => {
+        const recorderName = (item?.recorder?.family_name + ' ' + item?.recorder?.given_name) || item?.recorder_by || '';
+        return [item?.apartment?.apartment_code, item?.fee_type?.name, recorderName]
+          .filter(Boolean)
+          .some((val: any) => val.toString().toLowerCase().includes(keyword));
+      });
+    }
+
     return data;
-  }, [infoAllUtilityReading, buildingId, feeTypeId, month, year]);
+  }, [infoAllUtilityReading, buildingId, feeTypeId, month, year, searchKeyword]);
 
   return (
     <>
@@ -170,62 +183,31 @@ const DanhSach = () => {
         </div>
       </div>
 
-      <Divider style={{ margin: '10px 0px' }} />
+      <Divider style={{ margin: '10px 0px 20px' }} />
 
-      <Row gutter={16} style={{ marginBottom: 20 }}>
-        <Col span={6}>
-          <div style={{ marginBottom: 5 }}>Tòa nhà</div>
-          <Select
-            style={{ width: '100%' }}
-            value={buildingId}
-            onChange={(val) => setBuildingId(val)}
-          >
-            <Option value="all">Tất cả</Option>
-            {infoAllBuilding?.map(b => (
-              <Option key={b._id} value={b._id}>{b.name}</Option>
-            ))}
-          </Select>
-        </Col>
-        <Col span={6}>
-          <div style={{ marginBottom: 5 }}>Loại chỉ số</div>
-          <Select
-            style={{ width: '100%' }}
-            value={feeTypeId}
-            onChange={(val) => setFeeTypeId(val)}
-          >
-            <Option value="all">Tất cả</Option>
-            {infoAllFeeType?.map(f => (
-              <Option key={f._id} value={f._id}>{f.name}</Option>
-            ))}
-          </Select>
-        </Col>
-        <Col span={6}>
-          <div style={{ marginBottom: 5 }}>Tháng</div>
-          <Select
-            style={{ width: '100%' }}
-            value={month}
-            onChange={(val) => setMonth(val)}
-          >
-            <Option value="all">Tất cả</Option>
-            {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-              <Option key={m} value={m}>Tháng {m}</Option>
-            ))}
-          </Select>
-        </Col>
-        <Col span={6}>
-          <div style={{ marginBottom: 5 }}>Năm</div>
-          <Select
-            style={{ width: '100%' }}
-            value={year}
-            onChange={(val) => setYear(val)}
-          >
-            <Option value="all">Tất cả</Option>
-            {[2024, 2025, 2026, 2027, 2028].map(y => (
-              <Option key={y} value={y}>{y}</Option>
-            ))}
-          </Select>
-        </Col>
-      </Row>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo căn hộ, loại chỉ số, người ghi..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
+
+      <FilterBar
+        buildingId={buildingId}
+        feeTypeId={feeTypeId}
+        month={month}
+        year={year}
+        buildings={infoAllBuilding || []}
+        feeTypes={infoAllFeeType || []}
+        onBuildingChange={setBuildingId}
+        onFeeTypeChange={setFeeTypeId}
+        onMonthChange={setMonth}
+        onYearChange={setYear}
+      />
 
       <TableStaticData
         columns={columns}

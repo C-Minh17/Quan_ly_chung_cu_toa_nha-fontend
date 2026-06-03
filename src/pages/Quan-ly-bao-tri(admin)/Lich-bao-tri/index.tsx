@@ -1,10 +1,11 @@
 import TableStaticData from '@/components/Table/TableStaticData';
 import { IColumn } from '@/components/Table/typing';
-import { CloseCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DeleteOutlined, EditOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
-import { Button, Popconfirm, Tag, Tooltip, Typography, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, message } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import FormMaintenanceSchedule from '../components/FormSchedule';
+import FilterBar from './components/FilterBar';
 
 const { Title } = Typography;
 
@@ -41,6 +42,9 @@ const MaintenanceSchedulePage = () => {
 	const [showEditSchedule, setShowEditSchedule] = useState(false);
 	const [recordSchedule, setRecordSchedule] = useState<MMaintenanceSchedule.IRecord | {}>({});
 	const [editSchedule, setEditSchedule] = useState(false);
+	const [searchKeyword, setSearchKeyword] = useState("");
+	const [statusFilter, setStatusFilter] = useState("all");
+	const [frequencyFilter, setFrequencyFilter] = useState("all");
 
 	const scheduleColumns: IColumn<MMaintenanceSchedule.IRecord>[] = [
 		{
@@ -143,15 +147,74 @@ const MaintenanceSchedulePage = () => {
 		handleGetAllMaintenanceSchedule();
 	}, [refreshKey]);
 
+	const filteredData = useMemo(() => {
+		let data = infoAllMaintenanceSchedule || [];
+
+		// Filter by status
+		if (statusFilter !== "all") {
+			data = data.filter(item => item.status === statusFilter);
+		}
+
+		// Filter by frequency
+		if (frequencyFilter !== "all") {
+			data = data.filter(item => item.frequency === frequencyFilter);
+		}
+
+		// Search filter
+		const keyword = searchKeyword.trim().toLowerCase();
+		if (keyword) {
+			data = data.filter(item =>
+				[item.title, item.frequency]
+					.filter(Boolean)
+					.some((val: any) => val.toString().toLowerCase().includes(keyword))
+			);
+		}
+
+		return data;
+	}, [infoAllMaintenanceSchedule, searchKeyword, statusFilter, frequencyFilter]);
+
 	return (
 		<>
-			<Title level={2} style={{ marginTop: 10, marginBottom: 24 }}>
-				Lịch bảo trì
-			</Title>
+			<div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+				<div style={{
+					width: 50, height: 50,
+					backgroundColor: '#e6f4ff',
+					borderRadius: 12,
+					display: 'flex', alignItems: 'center', justifyContent: 'center',
+				}}>
+					<CalendarOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+				</div>
+				<div>
+					<Title level={3} style={{ margin: 0 }}>Lịch bảo trì</Title>
+					<div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+						Lên lịch và theo dõi các hoạt động bảo trì định kỳ của tòa nhà
+					</div>
+				</div>
+			</div>
+
+			<Divider style={{ margin: '5px 0 20px' }} />
+
+			<div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+				<Input.Search
+					allowClear
+					placeholder="Tìm kiếm theo tiêu đề lịch bảo trì..."
+					value={searchKeyword}
+					onChange={(e) => setSearchKeyword(e.target.value)}
+					onSearch={setSearchKeyword}
+					style={{ width: 400, maxWidth: '100%' }}
+				/>
+			</div>
+
+			<FilterBar
+				statusFilter={statusFilter}
+				frequencyFilter={frequencyFilter}
+				onStatusFilterChange={setStatusFilter}
+				onFrequencyFilterChange={setFrequencyFilter}
+			/>
 
 			<TableStaticData
 				columns={scheduleColumns}
-				data={infoAllMaintenanceSchedule || []}
+				data={filteredData}
 				loading={loadingInfoAllMaintenanceSchedule}
 				showEdit={showEditSchedule}
 				hasCreate={true}

@@ -4,25 +4,27 @@ import { FilterOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 interface Props {
-  apartmentId: string;
-  status: string;
+  buildingId: string;
+  feeTypeId: string;
   month: number | string;
   year: number | string;
-  apartments: any[];
-  onApartmentChange: (val: string) => void;
-  onStatusChange: (val: string) => void;
+  buildings: any[];
+  feeTypes: any[];
+  onBuildingChange: (val: string) => void;
+  onFeeTypeChange: (val: string) => void;
   onMonthChange: (val: any) => void;
   onYearChange: (val: any) => void;
 }
 
 const FilterBar = ({
-  apartmentId,
-  status,
+  buildingId,
+  feeTypeId,
   month,
   year,
-  apartments,
-  onApartmentChange,
-  onStatusChange,
+  buildings,
+  feeTypes,
+  onBuildingChange,
+  onFeeTypeChange,
   onMonthChange,
   onYearChange,
 }: Props) => {
@@ -44,33 +46,30 @@ const FilterBar = ({
       </Space>
       
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Căn hộ:</span>
+        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Tòa nhà:</span>
         <Select
-          style={{ width: 150 }}
-          value={apartmentId}
-          onChange={onApartmentChange}
-          showSearch
-          optionFilterProp="children"
+          style={{ width: 160 }}
+          value={buildingId}
+          onChange={onBuildingChange}
         >
           <Option value="all">Tất cả</Option>
-          {apartments?.map((a: any) => (
-            <Option key={a._id} value={a._id}>{a.apartment_code}</Option>
+          {buildings?.map(b => (
+            <Option key={b._id} value={b._id}>{b.name}</Option>
           ))}
         </Select>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Trạng thái:</span>
+        <span style={{ fontSize: 13, color: '#8c8c8c' }}>Loại chỉ số:</span>
         <Select
-          style={{ width: 165 }}
-          value={status}
-          onChange={onStatusChange}
+          style={{ width: 160 }}
+          value={feeTypeId}
+          onChange={onFeeTypeChange}
         >
           <Option value="all">Tất cả</Option>
-          <Option value="unpaid">Chưa thanh toán</Option>
-          <Option value="partial">Thanh toán 1 phần</Option>
-          <Option value="paid">Đã thanh toán</Option>
-          <Option value="overdue">Quá hạn</Option>
+          {feeTypes?.map(f => (
+            <Option key={f._id} value={f._id}>{f.name}</Option>
+          ))}
         </Select>
       </div>
 
@@ -106,4 +105,3 @@ const FilterBar = ({
 };
 
 export default FilterBar;
-

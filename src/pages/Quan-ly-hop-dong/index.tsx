@@ -169,7 +169,7 @@ const ManagerContract = () => {
       data = data.filter(item =>
         [item.contract_code, item.apartment?.apartment_code, item.resident_user?.name]
           .filter(Boolean)
-          .some(val => val.toString().toLowerCase().includes(keyword))
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
       );
     }
 

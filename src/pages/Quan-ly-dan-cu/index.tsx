@@ -138,7 +138,7 @@ const ManagerResident = () => {
       data = data.filter(item =>
         [item.user?.name, item.id_card_number, item.apartment?.apartment_code]
           .filter(Boolean)
-          .some(val => val.toString().toLowerCase().includes(keyword))
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
       );
     }
 

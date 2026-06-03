@@ -1,7 +1,7 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useAccess, useModel } from "@umijs/max"
-import { Typography, Button, Tooltip, Popconfirm, Divider, Tag } from 'antd';
+import { Typography, Button, Tooltip, Popconfirm, Divider, Tag, Input } from 'antd';
 import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, DollarOutlined, EyeOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
 import { history } from '@umijs/max';
@@ -34,6 +34,7 @@ const DanhSachHoaDon = () => {
   const [status, setStatus] = useState<string>("all");
   const [month, setMonth] = useState<number | string>("all");
   const [year, setYear] = useState<number | string>("all");
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<MInvoice.IRecord | null>(null);
@@ -162,8 +163,18 @@ const DanhSachHoaDon = () => {
     if (status !== 'all') data = data.filter(item => item.status === status);
     if (month !== 'all') data = data.filter(item => item.billing_month === Number(month));
     if (year !== 'all') data = data.filter(item => item.billing_year === Number(year));
+
+    // Search filter
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter((item: any) =>
+        [item.invoice_code, item.apartment?.apartment_code]
+          .filter(Boolean)
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
+      );
+    }
     return data;
-  }, [infoAllInvoice, apartmentId, status, month, year]);
+  }, [infoAllInvoice, apartmentId, status, month, year, searchKeyword]);
 
   return (
     <>
@@ -185,6 +196,17 @@ const DanhSachHoaDon = () => {
       </div>
 
       <Divider style={{ margin: '10px 0 20px' }} />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo mã hóa đơn, căn hộ..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
 
       <FilterBar
         apartmentId={apartmentId}

@@ -1,10 +1,11 @@
 import TableStaticData from '@/components/Table/TableStaticData';
 import { IColumn } from '@/components/Table/typing';
-import { CloseCircleOutlined, DeleteOutlined, EditOutlined, UserAddOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DeleteOutlined, EditOutlined, UserAddOutlined, ToolOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
-import { Button, Form, Modal, Popconfirm, Select, Tag, Tooltip, Typography, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { Button, Divider, Form, Input, Modal, Popconfirm, Select, Tag, Tooltip, Typography, message } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import FormMaintenanceRequest from '../components/FormRequest';
+import FilterBar from './components/FilterBar';
 
 const { Title } = Typography;
 
@@ -70,6 +71,10 @@ const MaintenanceRequestPage = () => {
 	const [showEditRequest, setShowEditRequest] = useState(false);
 	const [recordRequest, setRecordRequest] = useState<MMaintenanceRequest.IRecord | {}>({});
 	const [editRequest, setEditRequest] = useState(false);
+	const [searchKeyword, setSearchKeyword] = useState("");
+	const [statusFilter, setStatusFilter] = useState("all");
+	const [priorityFilter, setPrimaryFilter] = useState("all");
+	const [categoryFilter, setCategoryFilter] = useState("all");
 
 	const [showAssignModal, setShowAssignModal] = useState(false);
 	const [assignRecord, setAssignRecord] = useState<MMaintenanceRequest.IRecord | null>(null);
@@ -233,15 +238,81 @@ const MaintenanceRequestPage = () => {
 		handleGetInfoAllUser();
 	}, [refreshKey]);
 
+	const filteredData = useMemo(() => {
+		let data = infoAllMaintenanceRequest || [];
+
+		// Filter by status
+		if (statusFilter !== "all") {
+			data = data.filter(item => item.status === statusFilter);
+		}
+
+		// Filter by priority
+		if (priorityFilter !== "all") {
+			data = data.filter(item => item.priority === priorityFilter);
+		}
+
+		// Filter by category
+		if (categoryFilter !== "all") {
+			data = data.filter(item => item.category === categoryFilter);
+		}
+
+		// Search filter
+		const keyword = searchKeyword.trim().toLowerCase();
+		if (keyword) {
+			data = data.filter(item =>
+				[item.title, item.Maintenance_Requests_code]
+					.filter(Boolean)
+					.some((val: any) => val.toString().toLowerCase().includes(keyword))
+			);
+		}
+
+		return data;
+	}, [infoAllMaintenanceRequest, searchKeyword, statusFilter, priorityFilter, categoryFilter]);
+
 	return (
 		<>
-			<Title level={2} style={{ marginTop: 10, marginBottom: 24 }}>
-				Yêu cầu bảo trì
-			</Title>
+			<div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+				<div style={{
+					width: 50, height: 50,
+					backgroundColor: '#e6f4ff',
+					borderRadius: 12,
+					display: 'flex', alignItems: 'center', justifyContent: 'center',
+				}}>
+					<ToolOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+				</div>
+				<div>
+					<Title level={3} style={{ margin: 0 }}>Yêu cầu bảo trì</Title>
+					<div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+						Tiếp nhận, xử lý và phân công các yêu cầu bảo trì từ cư dân
+					</div>
+				</div>
+			</div>
+
+			<Divider style={{ margin: '5px 0 20px' }} />
+
+			<div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+				<Input.Search
+					allowClear
+					placeholder="Tìm kiếm theo mã yêu cầu, tiêu đề..."
+					value={searchKeyword}
+					onChange={(e) => setSearchKeyword(e.target.value)}
+					onSearch={setSearchKeyword}
+					style={{ width: 400, maxWidth: '100%' }}
+				/>
+			</div>
+
+			<FilterBar
+				statusFilter={statusFilter}
+				priorityFilter={priorityFilter}
+				categoryFilter={categoryFilter}
+				onStatusFilterChange={setStatusFilter}
+				onPriorityFilterChange={setPrimaryFilter}
+				onCategoryFilterChange={setCategoryFilter}
+			/>
 
 			<TableStaticData
 				columns={requestColumns}
-				data={infoAllMaintenanceRequest || []}
+				data={filteredData}
 				loading={loadingInfoAllMaintenanceRequest}
 				showEdit={showEditRequest}
 				hasCreate={true}

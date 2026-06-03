@@ -1,10 +1,11 @@
 import TableStaticData from "@/components/Table/TableStaticData";
 import { IColumn } from "@/components/Table/typing";
 import { useModel } from "@umijs/max";
-import { DeleteOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Tag, Tooltip, Typography, message, Tabs } from 'antd';
-import { useEffect, useState } from 'react';
+import { DeleteOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, AppstoreAddOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, message, Tabs } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import FormAmenity from './components/FormAmenity';
+import FilterBar from './components/FilterBar';
 
 const { Title } = Typography;
 
@@ -39,6 +40,10 @@ const ManagerAmenity = () => {
 	const [showEditAmenity, setShowEditAmenity] = useState(false);
 	const [recordAmenity, setRecordAmenity] = useState<MAmenity.IRecord | {}>({});
 	const [editAmenity, setEditAmenity] = useState(false);
+	const [searchAmenity, setSearchAmenity] = useState("");
+	const [searchBooking, setSearchBooking] = useState("");
+	const [statusBooking, setStatusBooking] = useState("all");
+	const [amenityBooking, setAmenityBooking] = useState("all");
 
 	const amenityColumns: IColumn<MAmenity.IRecord>[] = [
 		{
@@ -243,53 +248,153 @@ const ManagerAmenity = () => {
 		handleGetAllAmenityBookings();
 	}, [refreshBooking]);
 
+	const filteredAmenities = useMemo(() => {
+		let data = infoAllAmenity || [];
+		const keyword = searchAmenity.trim().toLowerCase();
+		if (keyword) {
+			data = data.filter(item =>
+				[item.name, item.amenities_code, item.description]
+					.filter(Boolean)
+					.some((val: any) => val.toString().toLowerCase().includes(keyword))
+			);
+		}
+		return data;
+	}, [infoAllAmenity, searchAmenity]);
+
+	const filteredBookings = useMemo(() => {
+		let data = infoAllAmenityBooking || [];
+
+		// Filter by status
+		if (statusBooking !== "all") {
+			data = data.filter(item => item.status === statusBooking);
+		}
+
+		// Filter by amenity
+		if (amenityBooking !== "all") {
+			data = data.filter(item => {
+				const aId = item.amenity_id?._id || item.amenity_id;
+				return aId === amenityBooking;
+			});
+		}
+
+		// Search filter
+		const keyword = searchBooking.trim().toLowerCase();
+		if (keyword) {
+			data = data.filter((item: any) => {
+				const residentUserId = item.resident?.user_id;
+				const residentUser = infoAllUser?.find((u: any) => u._id === residentUserId);
+				const residentName = residentUser?.name || '';
+
+				const amenity = infoAllAmenity?.find(a => a._id === (item.amenity_id?._id || item.amenity_id));
+				const amenityName = amenity?.name || '';
+
+				return [item.amenities_code, residentName, amenityName]
+					.filter(Boolean)
+					.some((val: any) => val.toString().toLowerCase().includes(keyword));
+			});
+		}
+
+		return data;
+	}, [infoAllAmenityBooking, searchBooking, statusBooking, amenityBooking, infoAllUser, infoAllAmenity]);
+
 	const items = [
 		{
 			key: '1',
 			label: 'Danh sách Tiện ích',
 			children: (
-				<TableStaticData
-					columns={amenityColumns}
-					data={infoAllAmenity || []}
-					loading={loadingInfoAllAmenity}
-					showEdit={showEditAmenity}
-					hasCreate={true}
-					onReload={() => handleGetAllAmenities()}
-					Form={FormAmenity}
-					formProps={{
-						initialValues: recordAmenity,
-						setShowEdit: setShowEditAmenity,
-						edit: editAmenity,
-					}}
-					setShowEdit={(val) => {
-						setShowEditAmenity(val);
-						if (!val) { setRecordAmenity({}); setEditAmenity(false); }
-					}}
-					widthDrawer={600}
-					addStt
-				/>
+				<>
+					<div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20, marginTop: 10 }}>
+						<Input.Search
+							allowClear
+							placeholder="Tìm kiếm theo mã, tên tiện ích..."
+							value={searchAmenity}
+							onChange={(e) => setSearchAmenity(e.target.value)}
+							onSearch={setSearchAmenity}
+							style={{ width: 400, maxWidth: '100%' }}
+						/>
+					</div>
+					<TableStaticData
+						columns={amenityColumns}
+						data={filteredAmenities}
+						loading={loadingInfoAllAmenity}
+						showEdit={showEditAmenity}
+						hasCreate={true}
+						onReload={() => handleGetAllAmenities()}
+						Form={FormAmenity}
+						formProps={{
+							initialValues: recordAmenity,
+							setShowEdit: setShowEditAmenity,
+							edit: editAmenity,
+						}}
+						setShowEdit={(val) => {
+							setShowEditAmenity(val);
+							if (!val) { setRecordAmenity({}); setEditAmenity(false); }
+						}}
+						widthDrawer={600}
+						addStt
+					/>
+				</>
 			),
 		},
 		{
 			key: '2',
 			label: 'Quản lý Đặt chỗ',
 			children: (
-				<TableStaticData
-					columns={bookingColumns}
-					data={infoAllAmenityBooking || []}
-					loading={loadingInfoAllAmenityBooking}
-					hasCreate={false}
-					onReload={() => handleGetAllAmenityBookings()}
-					widthDrawer={600}
-					addStt
-				/>
+				<>
+					<div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20, marginTop: 10 }}>
+						<Input.Search
+							allowClear
+							placeholder="Tìm kiếm theo mã đặt chỗ, cư dân, tiện ích..."
+							value={searchBooking}
+							onChange={(e) => setSearchBooking(e.target.value)}
+							onSearch={setSearchBooking}
+							style={{ width: 400, maxWidth: '100%' }}
+						/>
+					</div>
+					
+					<FilterBar
+						statusFilter={statusBooking}
+						amenityFilter={amenityBooking}
+						amenities={infoAllAmenity || []}
+						onStatusFilterChange={setStatusBooking}
+						onAmenityFilterChange={setAmenityBooking}
+					/>
+
+					<TableStaticData
+						columns={bookingColumns}
+						data={filteredBookings}
+						loading={loadingInfoAllAmenityBooking}
+						hasCreate={false}
+						onReload={() => handleGetAllAmenityBookings()}
+						widthDrawer={600}
+						addStt
+					/>
+				</>
 			),
 		},
 	];
 
 	return (
 		<>
-			<Title level={2} style={{ marginTop: 10, marginBottom: 24 }}>Quản lý tiện ích</Title>
+			<div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+				<div style={{
+					width: 50, height: 50,
+					backgroundColor: '#e6f4ff',
+					borderRadius: 12,
+					display: 'flex', alignItems: 'center', justifyContent: 'center',
+				}}>
+					<AppstoreAddOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+				</div>
+				<div>
+					<Title level={3} style={{ margin: 0 }}>Quản lý tiện ích</Title>
+					<div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+						Quản lý danh sách các tiện ích chung và các lượt đặt chỗ của cư dân
+					</div>
+				</div>
+			</div>
+
+			<Divider style={{ margin: '5px 0 20px' }} />
+
 			<Tabs defaultActiveKey="1" items={items} />
 		</>
 	);

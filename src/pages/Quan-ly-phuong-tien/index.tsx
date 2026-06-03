@@ -1,10 +1,11 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Tooltip, Typography, Tag, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { EditOutlined, DeleteOutlined, CarOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, message } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import FormVehicle from "./components/form";
+import FilterBar from "./components/FilterBar";
 
 const { Title } = Typography
 
@@ -20,6 +21,8 @@ const ManagerVehicle = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [record, setRecord] = useState<MVehicle.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [vehicleTypeFilter, setVehicleTypeFilter] = useState("all");
 
   const columns: IColumn<MVehicle.IRecord>[] = [
     {
@@ -120,12 +123,67 @@ const ManagerVehicle = () => {
     handleGetInfoAllVehicle()
   }, [refreshKey])
 
+  const filteredData = useMemo(() => {
+    let data = infoAllVehicle || [];
+
+    // Filter by vehicle type
+    if (vehicleTypeFilter !== "all") {
+      data = data.filter(item => item.vehicle_type === vehicleTypeFilter);
+    }
+
+    // Search filter
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter(item =>
+        [item.license_plate, item.brand, item.card_number, item.resident?.user?.name, item.resident?.apartment?.apartment_code]
+          .filter(Boolean)
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
+      );
+    }
+
+    return data;
+  }, [infoAllVehicle, searchKeyword, vehicleTypeFilter]);
+
   return (
     <>
-      <Title level={2} style={{ marginTop: 10, marginBottom: 40 }}>Quản lý phương tiện</Title>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+        <div style={{
+          width: 50, height: 50,
+          backgroundColor: '#e6f4ff',
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <CarOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+        </div>
+        <div>
+          <Title level={3} style={{ margin: 0 }}>Quản lý phương tiện</Title>
+          <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+            Quản lý thông tin và thẻ xe của các phương tiện trong tòa nhà
+          </div>
+        </div>
+      </div>
+
+      <Divider style={{ margin: '5px 0 20px' }} />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo biển số xe, chủ sở hữu, căn hộ, số thẻ..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
+
+      <FilterBar
+        vehicleTypeFilter={vehicleTypeFilter}
+        onVehicleTypeFilterChange={setVehicleTypeFilter}
+      />
+
       <TableStaticData
         columns={columns}
-        data={infoAllVehicle || []}
+        data={filteredData}
         loading={loadingInfoAllVehicle}
         showEdit={showEdit}
         hasCreate={true}

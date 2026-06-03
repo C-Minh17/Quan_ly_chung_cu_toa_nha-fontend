@@ -141,7 +141,7 @@ const ManagerFloor = () => {
       data = data.filter((item: any) =>
         [item.id, item.description, item.building?.name]
           .filter(Boolean)
-          .some(val => val.toString().toLowerCase().includes(keyword))
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
       );
     }
 
