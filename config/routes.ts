@@ -29,7 +29,7 @@ export default [
 		name: 'Dashboard',
 		component: './TrangChu',
 		icon: 'AppstoreOutlined',
-		// access: "canAccessManager"
+		access: "canAccessManager"
 	},
 	{
 		path: '/quan-ly-tai-khoan',
@@ -158,6 +158,13 @@ export default [
 	},
 
 	// cư dân
+	{
+		path: '/dashboard-resident',
+		name: 'Dashboard',
+		component: './TrangChu',
+		icon: 'AppstoreOutlined',
+		access: "canAccessResident"
+	},
 	{
 		path: '/thong-tin-ca-nhan',
 		name: 'Thông tin cá nhân',

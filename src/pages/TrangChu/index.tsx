@@ -11,7 +11,11 @@ import {
 	Progress,
 	List,
 	Skeleton,
-	message
+	message,
+	Modal,
+	Form,
+	Input,
+	Select
 } from 'antd';
 import {
 	HomeOutlined,
@@ -34,12 +38,16 @@ import {
 	getMaintenanceStatusStats,
 	getUrgentMaintenanceRequests,
 	getOverdueInvoices,
-	getRecentActivities
+	getRecentActivities,
+	sendResidentNotification
 } from '@/services/Dashboard';
 import './components/style.less';
 
 const TrangChu = () => {
 	const [loading, setLoading] = useState<boolean>(true);
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [submittingNotif, setSubmittingNotif] = useState<boolean>(false);
+	const [form] = Form.useForm();
 	const [metrics, setMetrics] = useState<any>(null);
 	const [revenueData, setRevenueData] = useState<any>(null);
 	const [maintenanceStats, setMaintenanceStats] = useState<any>(null);
@@ -100,6 +108,52 @@ const TrangChu = () => {
 
 		fetchData();
 	}, []);
+
+	// Submit notification to backend
+	const handleSendNotification = async (values: any) => {
+		setSubmittingNotif(true);
+		try {
+			const res = await sendResidentNotification({
+				title: values.title,
+				senderName: 'Ban Quản trị',
+				receiverType: 'All', // Match EReceiverType.All
+				type: 'OneSignalService', // Match standard OneSignal notification service
+				content: values.content,
+				description: `Phân loại: ${
+					values.type === 'maintenance' 
+						? 'Bảo trì / Kỹ thuật' 
+						: values.type === 'finance' 
+							? 'Tài chính / Phí dịch vụ' 
+							: values.type === 'alert' 
+								? 'Cảnh báo khẩn cấp' 
+								: 'Thông báo chung'
+				}. Đối tượng: ${
+					values.recipient_type === 'building_a' 
+						? 'Cư dân Tòa A' 
+						: values.recipient_type === 'building_b' 
+							? 'Cư dân Tòa B' 
+							: 'Tất cả cư dân'
+				}`,
+				notificationInternal: false,
+			});
+			if (res?.success) {
+				message.success('Gửi thông báo đến cư dân thành công!');
+				setIsModalOpen(false);
+				form.resetFields();
+				// Optionally refresh activity feed
+				getRecentActivities().then(resAct => {
+					if (resAct?.success) setActivities(resAct.data);
+				});
+			} else {
+				message.error(res?.message || 'Có lỗi xảy ra khi gửi thông báo.');
+			}
+		} catch (error) {
+			console.error('Lỗi gửi thông báo:', error);
+			message.error('Không thể kết nối máy chủ để gửi thông báo.');
+		} finally {
+			setSubmittingNotif(false);
+		}
+	};
 
 	// ApexCharts - Revenue & Expenses Options
 	const revenueChartOptions: any = {
@@ -316,7 +370,7 @@ const TrangChu = () => {
 					<p>{formattedDate} • Xin chào, Ban Quản trị tòa nhà</p>
 				</div>
 				<div className="header-actions">
-					<Button type="primary" icon={<BellOutlined />}>
+					<Button type="primary" icon={<BellOutlined />} onClick={() => setIsModalOpen(true)}>
 						Gửi thông báo cư dân
 					</Button>
 					<Button icon={<CalendarOutlined />}>
@@ -570,6 +624,75 @@ const TrangChu = () => {
 					</Card>
 				</Col>
 			</Row>
+
+			{/* Send Resident Notification Modal */}
+			<Modal
+				title={<strong>Gửi thông báo mới đến cư dân</strong>}
+				open={isModalOpen}
+				onCancel={() => {
+					setIsModalOpen(false);
+					form.resetFields();
+				}}
+				onOk={() => form.submit()}
+				confirmLoading={submittingNotif}
+				okText="Gửi thông báo"
+				cancelText="Hủy"
+				destroyOnClose
+			>
+				<Form
+					form={form}
+					layout="vertical"
+					onFinish={handleSendNotification}
+					initialValues={{
+						type: 'general',
+						recipient_type: 'all'
+					}}
+				>
+					<Form.Item
+						name="title"
+						label="Tiêu đề thông báo"
+						rules={[{ required: true, message: 'Vui lòng nhập tiêu đề thông báo' }]}
+					>
+						<Input placeholder="Nhập tiêu đề (Ví dụ: Thông báo bảo trì bể bơi...)" />
+					</Form.Item>
+
+					<Form.Item
+						name="type"
+						label="Loại thông báo"
+						rules={[{ required: true, message: 'Vui lòng chọn loại thông báo' }]}
+					>
+						<Select placeholder="Chọn loại thông báo">
+							<Select.Option value="general">Thông báo chung</Select.Option>
+							<Select.Option value="maintenance">Bảo trì / Kỹ thuật</Select.Option>
+							<Select.Option value="finance">Tài chính / Phí dịch vụ</Select.Option>
+							<Select.Option value="alert">Cảnh báo khẩn cấp</Select.Option>
+						</Select>
+					</Form.Item>
+
+					<Form.Item
+						name="recipient_type"
+						label="Đối tượng nhận thông báo"
+						rules={[{ required: true, message: 'Vui lòng chọn đối tượng nhận' }]}
+					>
+						<Select placeholder="Chọn đối tượng nhận">
+							<Select.Option value="all">Tất cả cư dân tòa nhà</Select.Option>
+							<Select.Option value="building_a">Chỉ cư dân Tòa A</Select.Option>
+							<Select.Option value="building_b">Chỉ cư dân Tòa B</Select.Option>
+						</Select>
+					</Form.Item>
+
+					<Form.Item
+						name="content"
+						label="Nội dung thông báo"
+						rules={[{ required: true, message: 'Vui lòng nhập nội dung chi tiết' }]}
+					>
+						<Input.TextArea 
+							rows={5} 
+							placeholder="Nhập nội dung chi tiết thông báo..." 
+						/>
+					</Form.Item>
+				</Form>
+			</Modal>
 		</div>
 	);
 };

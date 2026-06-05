@@ -1,5 +1,5 @@
 import axios from "@/utils/axios";
-import { ipRoot } from "@/utils/ip";
+import { ipRoot, ipNotif } from "@/utils/ip";
 
 // 1. API Lấy số liệu các thẻ chỉ số (Dashboard Metrics)
 export const getDashboardMetrics = async () => {
@@ -37,4 +37,9 @@ export const getRecentActivities = async (limit: number = 10) => {
   return axios.get(`${ipRoot}/api/v1/dashboard/activities`, {
     params: { limit }
   }).then(res => res.data);
+};
+
+// 7. API Gửi thông báo đến cư dân (Send notification to residents)
+export const sendResidentNotification = async (payload: any) => {
+  return axios.post(`${ipNotif}/notification`, payload).then(res => res.data);
 };
