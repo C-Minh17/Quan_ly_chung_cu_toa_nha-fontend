@@ -1,11 +1,4 @@
-import {
-  createContract,
-  getContractById,
-  getContracts,
-  getMyContracts,
-  terminateContract,
-  updateContract
-} from "@/services/Contract"
+import { createContract, getContractById, getContracts, getMyContracts, terminateContract, updateContract } from "@/services/Contract"
 import { useState } from "react"
 
 export default () => {

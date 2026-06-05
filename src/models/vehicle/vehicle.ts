@@ -1,12 +1,4 @@
-import {
-  createVehicle,
-  deleteVehicle,
-  getMyVehicles,
-  getVehicleById,
-  getVehicles,
-  updateVehicle,
-  updateVehicleStatus
-} from "@/services/Vehicle"
+import { createVehicle, deleteVehicle, getMyVehicles, getVehicleById, getVehicles, updateVehicle, updateVehicleStatus } from "@/services/Vehicle"
 import { useState } from "react"
 
 export default () => {

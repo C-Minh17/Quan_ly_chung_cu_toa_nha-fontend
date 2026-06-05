@@ -1,34 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-	Row,
-	Col,
-	Card,
-	Table,
-	Tag,
-	Badge,
-	Avatar,
-	Button,
-	Progress,
-	List,
-	Skeleton,
-	Modal,
-	Form,
-	Input,
-	Select
-} from 'antd';
-import {
-	HomeOutlined,
-	TeamOutlined,
-	DollarOutlined,
-	ToolOutlined,
-	ArrowUpOutlined,
-	ArrowDownOutlined,
-	CalendarOutlined,
-	BellOutlined,
-	ClockCircleOutlined,
-	RightOutlined,
-	UserOutlined
-} from '@ant-design/icons';
+import { Row, Col, Card, Table, Tag, Badge, Avatar, Button, Progress, List, Skeleton, Modal, Form, Input, Select } from 'antd';
+import { HomeOutlined, TeamOutlined, DollarOutlined, ToolOutlined, ArrowUpOutlined, ArrowDownOutlined, CalendarOutlined, BellOutlined, ClockCircleOutlined, RightOutlined, UserOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import Chart from 'react-apexcharts';
 import { useModel } from '@umijs/max';
@@ -51,16 +23,13 @@ const TrangChu = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [form] = Form.useForm();
 
-	// Date display
 	const today = new Date();
 	const formattedDate = `Thứ Sáu, ngày ${today.getDate()} tháng ${today.getMonth() + 1} năm ${today.getFullYear()}`;
 
-	// Fetch data from backend APIs
 	useEffect(() => {
 		handleGetAdminData();
 	}, []);
 
-	// Submit notification to backend
 	const handleSendNotificationSubmit = async (values: any) => {
 		const success = await handleSendNotification(values);
 		if (success) {
@@ -69,14 +38,13 @@ const TrangChu = () => {
 		}
 	};
 
-	// ApexCharts - Revenue & Expenses Options
 	const revenueChartOptions: any = {
 		chart: {
 			id: 'revenue-chart',
 			toolbar: { show: false },
 			fontFamily: 'inherit',
 		},
-		colors: ['#3b82f6', '#10b981'], // Ocean Blue & Emerald Green
+		colors: ['#3b82f6', '#10b981'],
 		stroke: {
 			curve: 'smooth',
 			width: [3, 3],
@@ -100,7 +68,6 @@ const TrangChu = () => {
 			labels: {
 				style: { colors: '#64748b', fontWeight: 500 },
 				formatter: (value: number) => {
-					// Dữ liệu từ API trả về dạng VNĐ (ví dụ 120,000,000), chia cho 1,000,000 để vẽ dạng Triệu (M)
 					return `${(value / 1000000).toFixed(0)} M`;
 				}
 			}
@@ -124,7 +91,6 @@ const TrangChu = () => {
 
 	const revenueChartSeries = revenueData?.series || [];
 
-	// ApexCharts - Maintenance Status (Donut)
 	const maintenanceChartOptions: any = {
 		chart: {
 			fontFamily: 'inherit',
@@ -173,7 +139,6 @@ const TrangChu = () => {
 		maintenanceStats?.closed || 0
 	];
 
-	// Table Data: Recent maintenance requests
 	const maintenanceColumns = [
 		{
 			title: 'Căn hộ',
@@ -232,7 +197,6 @@ const TrangChu = () => {
 		}
 	];
 
-	// Table Data: Overdue invoices
 	const invoiceColumns = [
 		{
 			title: 'Căn hộ',
@@ -250,7 +214,6 @@ const TrangChu = () => {
 			dataIndex: 'due_date',
 			key: 'due_date',
 			render: (date: string) => {
-				// Định dạng hiển thị DD/MM/YYYY từ ISO
 				const dateObj = new Date(date);
 				const formatted = isNaN(dateObj.getTime())
 					? date
@@ -277,7 +240,6 @@ const TrangChu = () => {
 
 	return (
 		<div className="dashboard-container">
-			{/* Dashboard Header */}
 			<div className="dashboard-header">
 				<div className="welcome-title">
 					<h1>Tổng quan hệ thống</h1>
@@ -293,7 +255,6 @@ const TrangChu = () => {
 				</div>
 			</div>
 
-			{/* Metric Cards Row */}
 			<Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
 				<Col xs={24} sm={12} md={6}>
 					<Card className="stat-card apartments-card" bordered={false}>
@@ -411,7 +372,6 @@ const TrangChu = () => {
 				</Col>
 			</Row>
 
-			{/* Charts Row */}
 			<Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
 				<Col xs={24} lg={16}>
 					<Card title="Dòng tiền & Thu phí dịch vụ (6 tháng gần đây)" className="chart-card" bordered={false}>
@@ -445,7 +405,6 @@ const TrangChu = () => {
 				</Col>
 			</Row>
 
-			{/* Operational Details Tables */}
 			<Row gutter={[24, 24]}>
 				<Col xs={24} xl={12}>
 					<Card
@@ -492,7 +451,6 @@ const TrangChu = () => {
 				</Col>
 			</Row>
 
-			{/* Recent Activity Log Row */}
 			<Row gutter={[24, 24]} style={{ marginTop: 24 }}>
 				<Col xs={24}>
 					<Card title="Nhật ký hoạt động vận hành gần đây" className="list-card" bordered={false}>
@@ -539,7 +497,6 @@ const TrangChu = () => {
 				</Col>
 			</Row>
 
-			{/* Send Resident Notification Modal */}
 			<Modal
 				title={<strong>Gửi thông báo mới đến cư dân</strong>}
 				open={isModalOpen}
@@ -600,9 +557,9 @@ const TrangChu = () => {
 						label="Nội dung thông báo"
 						rules={[{ required: true, message: 'Vui lòng nhập nội dung chi tiết' }]}
 					>
-						<Input.TextArea 
-							rows={5} 
-							placeholder="Nhập nội dung chi tiết thông báo..." 
+						<Input.TextArea
+							rows={5}
+							placeholder="Nhập nội dung chi tiết thông báo..."
 						/>
 					</Form.Item>
 				</Form>

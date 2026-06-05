@@ -153,12 +153,10 @@ const ManagerVehicle = () => {
   const filteredData = useMemo(() => {
     let data = infoAllVehicle || [];
 
-    // Filter by vehicle type
     if (vehicleTypeFilter !== "all") {
       data = data.filter(item => item.vehicle_type === vehicleTypeFilter);
     }
 
-    // Search filter
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword) {
       data = data.filter(item =>

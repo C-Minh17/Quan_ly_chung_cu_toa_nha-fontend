@@ -180,17 +180,14 @@ const ManagerContract = () => {
   const filteredData = useMemo(() => {
     let data = infoAllContract || [];
 
-    // Filter by status
     if (statusFilter !== "all") {
       data = data.filter(item => item.status === statusFilter);
     }
 
-    // Filter by contract type
     if (contractTypeFilter !== "all") {
       data = data.filter(item => item.contract_type === contractTypeFilter);
     }
 
-    // Search filter
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword) {
       data = data.filter(item =>
@@ -225,7 +222,7 @@ const ManagerContract = () => {
       </div>
 
       <Divider style={{ margin: '5px 0 20px' }} />
-      
+
       <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
         <Input.Search
           allowClear

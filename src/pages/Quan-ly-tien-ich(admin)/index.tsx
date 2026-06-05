@@ -2,7 +2,7 @@ import TableStaticData from "@/components/Table/TableStaticData";
 import { IColumn } from "@/components/Table/typing";
 import { useModel } from "@umijs/max";
 import { DeleteOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, AppstoreAddOutlined, FilterOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, message, Tabs, Badge } from 'antd';
+import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, Tabs, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import FormAmenity from './components/FormAmenity';
@@ -388,7 +388,7 @@ const ManagerAmenity = () => {
 							style={{ width: 400, maxWidth: '100%' }}
 						/>
 					</div>
-					
+
 					{portalContainer && createPortal(
 						<Tooltip title="Bộ lọc tùy chỉnh">
 							<Badge dot={isFilterActive} offset={[-2, 2]}>

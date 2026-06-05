@@ -2,14 +2,7 @@ import FormWaiting from '@/components/Loading/FormWaiting';
 import MyDatePicker from '@/components/MyDatePicker';
 import TinyEditor from '@/components/TinyEditor';
 import UploadFile from '@/components/Upload/UploadFile';
-import {
-	EReceiverType,
-	EVaiTroKhaoSat,
-	LoaiDoiTuongThongBao,
-	mapModuleKeyToSourceType,
-	NotificationType,
-	TenVaiTroKhaoSat,
-} from '@/services/ThongBao/constant';
+import { EReceiverType, EVaiTroKhaoSat, LoaiDoiTuongThongBao, mapModuleKeyToSourceType, NotificationType, TenVaiTroKhaoSat } from '@/services/ThongBao/constant';
 import { type ThongBao } from '@/services/ThongBao/typing';
 import { buildUpLoadFile, buildUpLoadMultiFile } from '@/services/uploadFile';
 import { currentRole } from '@/utils/ip';

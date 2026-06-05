@@ -1,10 +1,6 @@
 import { useModel } from '@umijs/max';
-import {
-  Typography, Divider, Table, Tag, Space, Button
-} from 'antd';
-import {
-  HistoryOutlined, BankOutlined, WalletOutlined, CreditCardOutlined, EyeOutlined
-} from '@ant-design/icons';
+import { Typography, Divider, Tag, Button } from 'antd';
+import { HistoryOutlined, BankOutlined, WalletOutlined, CreditCardOutlined, EyeOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { IColumn } from '@/components/Table/typing';
 import TableStaticData from '@/components/Table/TableStaticData';

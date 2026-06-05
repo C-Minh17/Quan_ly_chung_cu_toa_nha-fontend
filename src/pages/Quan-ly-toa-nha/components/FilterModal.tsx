@@ -12,7 +12,6 @@ interface Props {
 const FilterModal = ({ visible, onCancel, onApply, currentFloorFilter }: Props) => {
   const [draftFloorFilter, setDraftFloorFilter] = useState(currentFloorFilter);
 
-  // Sync draft state with actual filter state when modal opens
   useEffect(() => {
     if (visible) {
       setDraftFloorFilter(currentFloorFilter);

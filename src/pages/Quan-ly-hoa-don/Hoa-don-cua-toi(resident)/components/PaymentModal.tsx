@@ -67,7 +67,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ visible, onClose, record })
             </div>
           </Col>
 
-          {/* Cột thông tin chuyển khoản */}
           <Col xs={24} md={14}>
             <Title level={5} style={{ marginTop: 0 }}>Thông tin người thụ hưởng</Title>
             <Divider style={{ margin: '8px 0 16px 0' }} />

@@ -154,7 +154,6 @@ const ManagerFloor = () => {
   const filteredData = useMemo(() => {
     let data = infoAllFloor || [];
 
-    // Filter by building
     if (buildingFilter !== "all") {
       data = data.filter((item: any) => {
         const bid = item.building?._id || item.building_id;
@@ -162,7 +161,6 @@ const ManagerFloor = () => {
       });
     }
 
-    // Search filter
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword) {
       data = data.filter((item: any) =>
@@ -197,7 +195,7 @@ const ManagerFloor = () => {
       </div>
 
       <Divider style={{ margin: '5px 0 20px' }} />
-      
+
       <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
         <Input.Search
           allowClear

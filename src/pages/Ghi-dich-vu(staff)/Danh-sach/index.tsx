@@ -176,7 +176,6 @@ const DanhSach = () => {
       data = data.filter((item: any) => item.reading_year === Number(year));
     }
 
-    // Search filter
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword) {
       data = data.filter((item: any) => {

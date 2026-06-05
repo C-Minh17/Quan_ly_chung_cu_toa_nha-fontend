@@ -271,22 +271,18 @@ const MaintenanceRequestPage = () => {
 	const filteredData = useMemo(() => {
 		let data = infoAllMaintenanceRequest || [];
 
-		// Filter by status
 		if (statusFilter !== "all") {
 			data = data.filter(item => item.status === statusFilter);
 		}
 
-		// Filter by priority
 		if (priorityFilter !== "all") {
 			data = data.filter(item => item.priority === priorityFilter);
 		}
 
-		// Filter by category
 		if (categoryFilter !== "all") {
 			data = data.filter(item => item.category === categoryFilter);
 		}
 
-		// Search filter
 		const keyword = searchKeyword.trim().toLowerCase();
 		if (keyword) {
 			data = data.filter(item =>

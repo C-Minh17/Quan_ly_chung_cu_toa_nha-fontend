@@ -180,17 +180,14 @@ const MaintenanceSchedulePage = () => {
 	const filteredData = useMemo(() => {
 		let data = infoAllMaintenanceSchedule || [];
 
-		// Filter by status
 		if (statusFilter !== "all") {
 			data = data.filter(item => item.status === statusFilter);
 		}
 
-		// Filter by frequency
 		if (frequencyFilter !== "all") {
 			data = data.filter(item => item.frequency === frequencyFilter);
 		}
 
-		// Search filter
 		const keyword = searchKeyword.trim().toLowerCase();
 		if (keyword) {
 			data = data.filter(item =>

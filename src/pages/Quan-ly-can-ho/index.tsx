@@ -209,17 +209,14 @@ const ManagerApartment = () => {
   const filteredData = useMemo(() => {
     let data = infoAllApartment || [];
 
-    // Filter by building
     if (buildingFilter !== "all") {
       data = data.filter(item => item.building_id === buildingFilter);
     }
 
-    // Filter by status
     if (statusFilter !== "all") {
       data = data.filter(item => item.status === statusFilter);
     }
 
-    // Search filter
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword) {
       data = data.filter(item =>

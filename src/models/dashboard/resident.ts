@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { message } from 'antd';
-import {
-  getResidentMetrics,
-  getResidentBills,
-  getResidentBookings,
-  getResidentMaintenance,
-} from '@/services/Dashboard';
+import { getResidentMetrics, getResidentBills, getResidentBookings, getResidentMaintenance } from '@/services/Dashboard';
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);

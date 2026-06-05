@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import { message } from 'antd';
-import {
-  getDashboardMetrics,
-  getRevenueStats,
-  getMaintenanceStatusStats,
-  getUrgentMaintenanceRequests,
-  getOverdueInvoices,
-  getRecentActivities,
-  sendResidentNotification,
-} from '@/services/Dashboard';
+import { getDashboardMetrics, getRevenueStats, getMaintenanceStatusStats, getUrgentMaintenanceRequests, getOverdueInvoices, getRecentActivities, sendResidentNotification } from '@/services/Dashboard';
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -82,30 +74,27 @@ export default () => {
       const res = await sendResidentNotification({
         title: values.title,
         senderName: 'Ban Quản trị',
-        receiverType: 'All', // Match EReceiverType.All
-        type: 'OneSignalService', // Match standard OneSignal notification service
+        receiverType: 'All',
+        type: 'OneSignalService',
         content: values.content,
-        description: `Phân loại: ${
-          values.type === 'maintenance'
-            ? 'Bảo trì / Kỹ thuật'
-            : values.type === 'finance'
+        description: `Phân loại: ${values.type === 'maintenance'
+          ? 'Bảo trì / Kỹ thuật'
+          : values.type === 'finance'
             ? 'Tài chính / Phí dịch vụ'
             : values.type === 'alert'
-            ? 'Cảnh báo khẩn cấp'
-            : 'Thông báo chung'
-        }. Đối tượng: ${
-          values.recipient_type === 'building_a'
+              ? 'Cảnh báo khẩn cấp'
+              : 'Thông báo chung'
+          }. Đối tượng: ${values.recipient_type === 'building_a'
             ? 'Cư dân Tòa A'
             : values.recipient_type === 'building_b'
-            ? 'Cư dân Tòa B'
-            : 'Tất cả cư dân'
-        }`,
+              ? 'Cư dân Tòa B'
+              : 'Tất cả cư dân'
+          }`,
         notificationInternal: false,
       });
 
       if (res?.success) {
         message.success('Gửi thông báo đến cư dân thành công!');
-        // Refresh activities
         handleGetRecentActivities();
         return true;
       } else {

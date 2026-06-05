@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { message } from 'antd';
-import {
-  getStaffMetrics,
-  getStaffTasks,
-  updateStaffTaskStatus,
-  getStaffRecentLogs,
-} from '@/services/Dashboard';
+import { getStaffMetrics, getStaffTasks, updateStaffTaskStatus, getStaffRecentLogs } from '@/services/Dashboard';
 
 export interface TaskItem {
   id: string;
@@ -66,10 +61,10 @@ export default () => {
         setMetrics((prev: any) =>
           prev
             ? {
-                ...prev,
-                today_tasks_done: completedCount,
-                today_tasks_total: updatedTasks.length,
-              }
+              ...prev,
+              today_tasks_done: completedCount,
+              today_tasks_total: updatedTasks.length,
+            }
             : null,
         );
         message.success('Đã cập nhật trạng thái công việc!');

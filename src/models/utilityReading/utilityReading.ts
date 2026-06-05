@@ -1,10 +1,4 @@
-import {
-  getUtilityReadings,
-  getUtilityReadingById,
-  createUtilityReading,
-  updateUtilityReading,
-  deleteUtilityReading
-} from "@/services/UtilityReading"
+import { getUtilityReadings, getUtilityReadingById, createUtilityReading, updateUtilityReading, deleteUtilityReading } from "@/services/UtilityReading"
 import { useState } from "react"
 
 export default () => {

@@ -1,21 +1,12 @@
 import { useModel } from '@umijs/max';
-import {
-  Typography, Button, Divider, Form, Input, InputNumber,
-  Select, Tag, Table, Space, Alert, Spin, Card, Row, Col,
-  Tooltip, message, Modal, Descriptions, Badge,
-} from 'antd';
-import {
-  SearchOutlined, DollarOutlined, BankOutlined,
-  WalletOutlined, CreditCardOutlined, CheckCircleFilled,
-  ClockCircleOutlined, CloseCircleFilled, ExclamationCircleFilled,
-} from '@ant-design/icons';
+import { Typography, Button, Divider, Form, Input, InputNumber, Select, Tag, Table, Space, Alert, Spin, Card, Row, Col, Tooltip, message, Modal, Descriptions, Badge } from 'antd';
+import { SearchOutlined, DollarOutlined, BankOutlined, WalletOutlined, CreditCardOutlined, CheckCircleFilled, ClockCircleOutlined, CloseCircleFilled, ExclamationCircleFilled } from '@ant-design/icons';
 import { useState } from 'react';
 import LookupForm from './components/LookupForm';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-/* ─────────────────── helpers ─────────────────── */
 const formatVND = (val: number) =>
   `${(val || 0).toLocaleString('vi-VN')} đ`;
 
@@ -48,7 +39,6 @@ const methodIcon: Record<string, React.ReactNode> = {
   vnpay: <CreditCardOutlined />,
 };
 
-/* ─────────────────── component ─────────────────── */
 const ThanhToan = () => {
   const {
     invoiceLookup,
@@ -65,7 +55,6 @@ const ThanhToan = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<any>(null);
 
-  /* ── Lookup ── */
   const onLookup = async (payload: any) => {
     const result = await handleLookupInvoice(payload);
     if (!result) {
@@ -75,7 +64,6 @@ const ThanhToan = () => {
     }
   };
 
-  /* ── Payment submit ── */
   const onPaySubmit = (values: any) => {
     if (!invoiceLookup) return;
 
@@ -119,7 +107,6 @@ const ThanhToan = () => {
     }
   };
 
-  /* ── Reset ── */
   const onReset = () => {
     setInvoiceLookup(null);
     lookupForm.resetFields();
@@ -129,10 +116,8 @@ const ThanhToan = () => {
 
   const isPaid = invoiceLookup?.status === 'paid';
 
-  /* ──────────── render ──────────── */
   return (
     <>
-      {/* ─── Header ─── */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
         <div style={{
           width: 50, height: 50,
@@ -160,7 +145,6 @@ const ThanhToan = () => {
 
       <Divider style={{ margin: '0 0 24px' }} />
 
-      {/* ─── Lookup Form Empty State ─── */}
       {!invoiceLookup && (
         <Card
           style={{
@@ -204,19 +188,15 @@ const ThanhToan = () => {
         </Card>
       )}
 
-      {/* ─── Spinner ─── */}
       {loadingLookup && (
         <div style={{ textAlign: 'center', padding: 40 }}>
           <Spin size="large" />
         </div>
       )}
 
-      {/* ─── Invoice Detail ─── */}
       {invoiceLookup && (
         <Row gutter={24}>
-          {/* LEFT: Invoice info */}
           <Col xs={24} lg={14}>
-            {/* Status banner */}
             {(() => {
               const cfg = statusConfig[invoiceLookup.status] ?? { color: 'blue', icon: null, text: invoiceLookup.status };
               return (
@@ -237,7 +217,6 @@ const ThanhToan = () => {
               );
             })()}
 
-            {/* Summary numbers */}
             <Row gutter={12} style={{ marginBottom: 16 }}>
               {[
                 { label: 'Tổng tiền', val: invoiceLookup.total_amount, color: '#1677ff' },
@@ -255,7 +234,6 @@ const ThanhToan = () => {
               ))}
             </Row>
 
-            {/* Fee detail table */}
             <Card size="small" title="Chi Tiết Khoản Phí" style={{ marginBottom: 16 }}>
               <Table
                 rowKey="_id"
@@ -510,7 +488,6 @@ const ThanhToan = () => {
         )}
       </Modal>
 
-      {/* ─── Lookup Modal ─── */}
       <Modal
         title={
           <Space>

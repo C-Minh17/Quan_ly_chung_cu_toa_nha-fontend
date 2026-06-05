@@ -1,29 +1,6 @@
 import { useEffect } from 'react';
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Tag,
-  Badge,
-  Avatar,
-  Button,
-  Progress,
-  Timeline,
-  Skeleton,
-  Empty
-} from 'antd';
-import {
-  UserOutlined,
-  HomeOutlined,
-  CreditCardOutlined,
-  ToolOutlined,
-  CarOutlined,
-  CalendarOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
-  RightOutlined
-} from '@ant-design/icons';
+import { Row, Col, Card, Table, Tag, Badge, Avatar, Button, Progress, Timeline, Skeleton, Empty } from 'antd';
+import { UserOutlined, HomeOutlined, CreditCardOutlined, ToolOutlined, CarOutlined, CalendarOutlined, ClockCircleOutlined, CheckCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { history, useModel } from 'umi';
 
 const DashboardResident = () => {
@@ -37,17 +14,14 @@ const DashboardResident = () => {
     handleGetResidentData,
   } = useModel('dashboard.resident');
 
-  // Fetch data from backend APIs
   useEffect(() => {
     handleGetResidentData();
   }, []);
 
-  // Format currency helper
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
   };
 
-  // Format ISO date to DD/MM/YYYY
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Chưa xác định';
     const date = new Date(dateString);
@@ -58,7 +32,6 @@ const DashboardResident = () => {
   return (
     <div style={{ padding: '24px', backgroundColor: '#f8fafc', minHeight: '100vh', width: '100%', overflowX: 'hidden', boxSizing: 'border-box' }}>
 
-      {/* Banner chào mừng & Thông tin căn hộ */}
       <div style={{
         background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
         borderRadius: '16px',
@@ -112,9 +85,7 @@ const DashboardResident = () => {
         )}
       </div>
 
-      {/* Grid thẻ thông tin nhanh */}
       <Row gutter={[24, 24]} style={{ marginBottom: '24px' }}>
-        {/* Cột 1: Hóa đơn chưa đóng */}
         <Col xs={24} sm={12} md={6}>
           <Card style={{
             borderRadius: '16px',
@@ -151,7 +122,6 @@ const DashboardResident = () => {
           </Card>
         </Col>
 
-        {/* Cột 2: Yêu cầu sửa chữa */}
         <Col xs={24} sm={12} md={6}>
           <Card style={{
             borderRadius: '16px',
@@ -186,7 +156,6 @@ const DashboardResident = () => {
           </Card>
         </Col>
 
-        {/* Cột 3: Đăng ký tiện ích */}
         <Col xs={24} sm={12} md={6}>
           <Card style={{
             borderRadius: '16px',
@@ -221,7 +190,6 @@ const DashboardResident = () => {
           </Card>
         </Col>
 
-        {/* Cột 4: Hợp đồng căn hộ */}
         <Col xs={24} sm={12} md={6}>
           <Card style={{
             borderRadius: '16px',
@@ -264,9 +232,7 @@ const DashboardResident = () => {
         </Col>
       </Row>
 
-      {/* Chi tiết tài chính & đặt tiện ích */}
       <Row gutter={[24, 24]}>
-        {/* Bảng kê hóa đơn chi tiết */}
         <Col xs={24} lg={16}>
           <Card
             title={<span style={{ fontWeight: 600 }}>Chi tiết phí dịch vụ tháng hiện tại</span>}
@@ -321,9 +287,7 @@ const DashboardResident = () => {
           </Card>
         </Col>
 
-        {/* Cột đặt chỗ tiện ích */}
         <Col xs={24} lg={8}>
-          {/* Lịch hoạt động đặt chỗ */}
           <Card title={<span style={{ fontWeight: 600 }}>Lịch đặt tiện ích sắp tới</span>} style={{
             borderRadius: '16px',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
@@ -364,7 +328,6 @@ const DashboardResident = () => {
         </Col>
       </Row>
 
-      {/* Tiến trình xử lý yêu cầu sửa chữa (Báo hỏng) */}
       <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
         <Col xs={24}>
           <Card title={<span style={{ fontWeight: 600 }}>Theo dõi tiến độ xử lý báo hỏng kỹ thuật</span>} style={{

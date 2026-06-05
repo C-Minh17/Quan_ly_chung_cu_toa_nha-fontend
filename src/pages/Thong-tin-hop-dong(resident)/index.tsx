@@ -1,26 +1,9 @@
 import { useModel } from '@umijs/max';
-import {
-  Card,
-  Descriptions,
-  Tag,
-  Typography,
-  Row,
-  Col,
-  Spin,
-  Empty,
-  Space,
-  Grid,
-  Button
-} from 'antd';
+import { Card, Descriptions, Tag, Typography, Row, Col, Spin, Empty, Space, Grid, Button } from 'antd';
 import type { DescriptionsProps } from 'antd';
 import moment from 'moment';
 import { useEffect } from 'react';
-import {
-  FileTextOutlined,
-  HomeOutlined,
-  FilePdfOutlined,
-  SafetyCertificateOutlined
-} from '@ant-design/icons';
+import { FileTextOutlined, HomeOutlined, FilePdfOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -48,7 +31,6 @@ const ResidentContracts = () => {
     );
   }
 
-  // Handle case where infoMyContracts is null or an empty array
   if (!infoMyContracts || infoMyContracts.length === 0) {
     return (
       <div style={{ padding: '24px' }}>
@@ -194,7 +176,7 @@ const ResidentContracts = () => {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 backgroundColor: '#ffffff',
-                borderTop: '4px solid #1890ff' // Top indicator
+                borderTop: '4px solid #1890ff'
               }}>
                 <Space>
                   <SafetyCertificateOutlined style={{ fontSize: 24, color: '#1890ff' }} />

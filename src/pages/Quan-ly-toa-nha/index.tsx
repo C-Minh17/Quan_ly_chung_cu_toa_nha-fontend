@@ -119,7 +119,6 @@ const ManagerBuilding = () => {
   const filteredData = useMemo(() => {
     let data = infoAllBuilding || [];
 
-    // Search filter
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword) {
       data = data.filter((item) =>
@@ -129,7 +128,6 @@ const ManagerBuilding = () => {
       );
     }
 
-    // Floor filter
     if (floorFilter !== "all") {
       data = data.filter((item) => {
         const floors = item.total_floors || 0;

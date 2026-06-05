@@ -1,11 +1,4 @@
-import {
-  getAllMaintenanceSchedule,
-  getMaintenanceScheduleById,
-  createMaintenanceSchedule,
-  updateMaintenanceSchedule,
-  completeMaintenanceSchedule,
-  deleteMaintenanceSchedule,
-} from "@/services/MaintenanceSchedule"
+import { getAllMaintenanceSchedule, getMaintenanceScheduleById, createMaintenanceSchedule, updateMaintenanceSchedule, completeMaintenanceSchedule, deleteMaintenanceSchedule } from "@/services/MaintenanceSchedule"
 import { useState } from "react"
 
 export default () => {

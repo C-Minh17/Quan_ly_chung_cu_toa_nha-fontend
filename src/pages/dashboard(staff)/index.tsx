@@ -1,29 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-	Row,
-	Col,
-	Card,
-	Table,
-	Tag,
-	Badge,
-	Avatar,
-	Button,
-	Progress,
-	List,
-	Checkbox,
-	Skeleton
-} from 'antd';
-import {
-	HomeOutlined,
-	FileTextOutlined,
-	ToolOutlined,
-	RightOutlined,
-	UnorderedListOutlined,
-	TeamOutlined,
-	BulbOutlined,
-	CheckSquareOutlined,
-	CoffeeOutlined
-} from '@ant-design/icons';
+import { Row, Col, Card, Table, Tag, Badge, Avatar, Button, Progress, List, Checkbox, Skeleton } from 'antd';
+import { HomeOutlined, FileTextOutlined, ToolOutlined, RightOutlined, UnorderedListOutlined, TeamOutlined, BulbOutlined, CheckSquareOutlined, CoffeeOutlined } from '@ant-design/icons';
 import { history, useModel } from 'umi';
 
 const DashboardStaff = () => {
@@ -37,7 +14,6 @@ const DashboardStaff = () => {
 		handleUpdateStaffTaskStatus
 	} = useModel('dashboard.staff');
 
-	// Hover states for dynamic UI experience
 	const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 	const [hoveredShortcut, setHoveredShortcut] = useState<number | null>(null);
 
@@ -45,18 +21,15 @@ const DashboardStaff = () => {
 		handleGetStaffData();
 	}, []);
 
-	// Toggle Task Completion
 	const handleToggleTask = async (id: string, currentStatus: boolean) => {
 		await handleUpdateStaffTaskStatus(id, currentStatus);
 	};
 
-	// Format percentage helper
 	const getPercent = (value: number, total: number) => {
 		if (!total) return 0;
 		return Math.round((value / total) * 100);
 	};
 
-	// Shortcut menu list
 	const shortcuts = [
 		{
 			id: 1,
@@ -105,7 +78,6 @@ const DashboardStaff = () => {
 			overflowX: 'hidden',
 			boxSizing: 'border-box'
 		}}>
-			{/* Banner chào mừng & Thông tin Ca trực */}
 			<div style={{
 				background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
 				borderRadius: '20px',
@@ -150,9 +122,7 @@ const DashboardStaff = () => {
 				)}
 			</div>
 
-			{/* Grid thẻ số liệu thống kê nhanh */}
 			<Row gutter={[24, 24]} style={{ marginBottom: '28px' }}>
-				{/* 1. Ghi số điện nước */}
 				<Col xs={24} sm={12} md={6}>
 					<Card
 						style={{
@@ -202,7 +172,6 @@ const DashboardStaff = () => {
 					</Card>
 				</Col>
 
-				{/* 2. Yêu cầu sửa chữa */}
 				<Col xs={24} sm={12} md={6}>
 					<Card
 						style={{
@@ -245,7 +214,6 @@ const DashboardStaff = () => {
 					</Card>
 				</Col>
 
-				{/* 3. Trạng thái căn hộ */}
 				<Col xs={24} sm={12} md={6}>
 					<Card
 						style={{
@@ -295,7 +263,6 @@ const DashboardStaff = () => {
 					</Card>
 				</Col>
 
-				{/* 4. Tiến độ công việc */}
 				<Col xs={24} sm={12} md={6}>
 					<Card
 						style={{
@@ -341,7 +308,6 @@ const DashboardStaff = () => {
 				</Col>
 			</Row>
 
-			{/* Lối tắt hành động nhanh */}
 			<h3 style={{ fontSize: '18px', fontWeight: 600, color: '#1e293b', marginBottom: '16px' }}>
 				Lối tắt thao tác nhanh
 			</h3>
@@ -394,9 +360,7 @@ const DashboardStaff = () => {
 				})}
 			</Row>
 
-			{/* Bảng tác vụ chi tiết */}
 			<Row gutter={[24, 24]}>
-				{/* 1. Nhật ký ghi số điện nước vừa qua */}
 				<Col xs={24} lg={14}>
 					<Card
 						title={
@@ -468,7 +432,6 @@ const DashboardStaff = () => {
 					</Card>
 				</Col>
 
-				{/* 2. Check-list nhiệm vụ ca trực */}
 				<Col xs={24} lg={10}>
 					<Card
 						title={

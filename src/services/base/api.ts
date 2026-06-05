@@ -1,12 +1,5 @@
 import axios from '@/utils/axios';
-import {
-	ip3,
-	ipNotif,
-	ipRoot,
-	keycloakClientID,
-	keycloakTokenEndpoint,
-	resourceServerClientId,
-} from '@/utils/ip';
+import { ip3, ipNotif, ipRoot, keycloakClientID, keycloakTokenEndpoint, resourceServerClientId } from '@/utils/ip';
 import queryString from 'query-string';
 import type { ESettingKey } from './constant';
 import type { ISetting } from './typing';

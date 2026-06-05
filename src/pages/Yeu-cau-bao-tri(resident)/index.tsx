@@ -45,7 +45,6 @@ const ResidentMaintenance = () => {
   const [recordRequest, setRecordRequest] = useState<MMaintenanceRequest.IRecord | {}>({});
   const [editRequest, setEditRequest] = useState(false);
 
-  // Rating modal state
   const [showRateModal, setShowRateModal] = useState(false);
   const [ratingRecord, setRatingRecord] = useState<MMaintenanceRequest.IRecord | null>(null);
   const [rateForm] = Form.useForm();
@@ -228,7 +227,6 @@ const ResidentMaintenance = () => {
         addStt
       />
 
-      {/* Modal đánh giá dịch vụ */}
       <Modal
         title={
           <span>
