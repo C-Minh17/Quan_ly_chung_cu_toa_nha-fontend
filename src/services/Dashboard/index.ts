@@ -43,3 +43,24 @@ export const getRecentActivities = async (limit: number = 10) => {
 export const sendResidentNotification = async (payload: any) => {
   return axios.post(`${ipNotif}/notification`, payload).then(res => res.data);
 };
+
+// Resident Dashboard APIs (Cư dân)
+// 8. API Lấy thông tin cá nhân & Số liệu thẻ nhanh (Resident Metrics)
+export const getResidentMetrics = async () => {
+  return axios.get(`${ipRoot}/api/v1/resident/dashboard/metrics`).then(res => res.data);
+};
+
+// 9. API Danh sách chi tiết phí dịch vụ tháng hiện tại (Current Bills)
+export const getResidentBills = async () => {
+  return axios.get(`${ipRoot}/api/v1/resident/dashboard/bills`).then(res => res.data);
+};
+
+// 10. API Danh sách đặt tiện ích sắp tới (Upcoming Bookings)
+export const getResidentBookings = async () => {
+  return axios.get(`${ipRoot}/api/v1/resident/dashboard/bookings`).then(res => res.data);
+};
+
+// 11. API Tiến trình xử lý báo hỏng kỹ thuật (Maintenance Requests)
+export const getResidentMaintenance = async () => {
+  return axios.get(`${ipRoot}/api/v1/resident/dashboard/maintenance`).then(res => res.data);
+};

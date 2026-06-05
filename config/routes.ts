@@ -161,7 +161,7 @@ export default [
 	{
 		path: '/dashboard-resident',
 		name: 'Dashboard',
-		component: './TrangChu',
+		component: './dashboard(resident)',
 		icon: 'AppstoreOutlined',
 		access: "canAccessResident"
 	},

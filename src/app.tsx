@@ -103,7 +103,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 
 			if (initialState?.currentUser) {
 				if (location.pathname === '/' || location.pathname === '/user/login') {
-					history.replace('/dashboard');
+					if (access.canAccessResident) {
+						history.replace('/dashboard-resident');
+					} else {
+						history.replace('/dashboard');
+					}
 				} else if (
 					!isUncheckPath &&
 					currentRole &&
