@@ -48,6 +48,7 @@ declare module ThongBao {
 		urlFile?: string[] | null;
 
 		dataPartitionCode: string;
+		notification?: Partial<IRecord>;
 	}
 
 	export interface IThongKe {
@@ -95,10 +96,22 @@ declare module ThongBao {
 	}
 
 	export type TReceiver = {
-		ssoId: string;
-		username: string;
-		fullname: string;
+		_id?: string;
+		ssoId?: string;
+		username?: string;
+		fullname?: string;
+		email?: string;
+		phone?: string;
 		read?: boolean;
+		readAt?: string;
+		createdAt?: string;
+		userId?: {
+			_id: string;
+			name?: string;
+			fullname?: string;
+			email?: string;
+			phone?: string;
+		};
 	};
 
 	export type TNotificationSource = {

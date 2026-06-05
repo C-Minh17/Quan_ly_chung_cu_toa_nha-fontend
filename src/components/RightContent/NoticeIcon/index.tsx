@@ -54,7 +54,7 @@ const NoticeIconView = () => {
 				open={visibleDetail}
 				okButtonProps={{ hidden: true }}
 				cancelText={intl.formatMessage({ id: 'global.button.dong', defaultMessage: 'Đóng' })}
-				title={record?.title || 'Thông báo'}
+				title={(record?.notification ? record.notification.title : record?.title) || 'Thông báo'}
 			>
 				<ViewThongBao
 					record={record}

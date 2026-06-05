@@ -64,12 +64,11 @@ const FormThongBao = (props: any) => {
 			if (receiverType !== EReceiverType.All) values.filter[`id${receiverType}`] = values.danhSachDoiTuong;
 			delete values.danhSachDoiTuong;
 			if (loaiNguoiDung === EReceiverType.User) {
+				values.receiverType = EReceiverType.User;
 				values.userList = [...danhSachNhanSu, ...danhSachSinhVien].map((item) => ({
 					ssoId: item.ssoId,
-					username: item.code,
+					username: item.username || item.code,
 					fullname: item.fullname,
-					email: item.email,
-					email365: item.email365,
 				}));
 				if (!values.userList?.length) {
 					message.warning('Vui lòng chọn người nhận');

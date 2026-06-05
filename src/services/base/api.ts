@@ -57,8 +57,11 @@ export async function getPermission() {
 	});
 }
 
-export async function initOneSignal(payload: { playerId: string }) {
-	return axios.put(`${ipNotif}/one-signal/user`, payload);
+export async function initOneSignal(payload: { playerId: string; deviceType?: string }) {
+	return axios.post(`${ipNotif}/notification/onesignal/init`, {
+		playerId: payload.playerId,
+		deviceType: payload.deviceType || 'Web',
+	});
 }
 
 export async function deleteOneSignal(data: { playerId: any }) {
