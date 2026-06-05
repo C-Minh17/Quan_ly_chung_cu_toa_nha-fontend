@@ -105,6 +105,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 				if (location.pathname === '/' || location.pathname === '/user/login') {
 					if (access.canAccessResident) {
 						history.replace('/dashboard-resident');
+					} else if (access.canAccessStaff) {
+						history.replace('/dashboard-staff');
 					} else {
 						history.replace('/dashboard');
 					}

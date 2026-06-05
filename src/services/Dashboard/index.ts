@@ -64,3 +64,26 @@ export const getResidentBookings = async () => {
 export const getResidentMaintenance = async () => {
   return axios.get(`${ipRoot}/api/v1/resident/dashboard/maintenance`).then(res => res.data);
 };
+
+// Staff Dashboard APIs (Nhân viên)
+// 12. API Lấy thông tin nhân viên & Số liệu thống kê nhanh (Metrics & Info)
+export const getStaffMetrics = async () => {
+  return axios.get(`${ipRoot}/api/v1/staff/dashboard/metrics`).then(res => res.data);
+};
+
+// 13. API Lấy danh sách nhiệm vụ ca trực (Daily Checklist)
+export const getStaffTasks = async () => {
+  return axios.get(`${ipRoot}/api/v1/staff/dashboard/tasks`).then(res => res.data);
+};
+
+// 14. API Cập nhật trạng thái công việc checklist (Toggle Task Status)
+export const updateStaffTaskStatus = async (id: string, completed: boolean) => {
+  return axios.patch(`${ipRoot}/api/v1/staff/dashboard/tasks/${id}`, { completed }).then(res => res.data);
+};
+
+// 15. API Lấy nhật ký ghi chỉ số điện nước gần đây (Recent Recording Logs)
+export const getStaffRecentLogs = async (limit: number = 5) => {
+  return axios.get(`${ipRoot}/api/v1/staff/dashboard/recent-logs`, {
+    params: { limit }
+  }).then(res => res.data);
+};
