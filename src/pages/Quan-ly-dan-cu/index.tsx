@@ -1,6 +1,6 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
-import { useModel } from "@umijs/max"
+import { useAccess, useModel } from "@umijs/max"
 import { DeleteOutlined, EditOutlined, EyeOutlined, TeamOutlined, FilterOutlined } from '@ant-design/icons';
 import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, Modal, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
@@ -23,6 +23,8 @@ const ManagerResident = () => {
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
+  const access = useAccess();
+
   const columns: IColumn<MResident.IRecord>[] = [
     {
       title: "Họ tên",
@@ -31,12 +33,16 @@ const ManagerResident = () => {
       filterType: "string",
       sortable: true,
     },
-    {
-      title: "Số CCCD",
-      dataIndex: "id_card_number",
-      width: 150,
-      filterType: "string",
-    },
+    ...(access.canAccessManager
+      ? [
+        {
+          title: "Số CCCD",
+          dataIndex: "id_card_number",
+          width: 150,
+          filterType: "string",
+        } as IColumn<MResident.IRecord>,
+      ]
+      : []),
     {
       title: "Căn hộ",
       dataIndex: "apartment",
@@ -78,40 +84,44 @@ const ManagerResident = () => {
       fixed: 'right',
       render: (record: MResident.IRecord) => (
         <>
-          <Tooltip title="Chi tiết">
-            <Button
-              onClick={() => {
-                setRecord(record);
-                setShowDetail(true);
-              }}
-              type="link"
-              icon={<EyeOutlined />}
-            />
-          </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              onClick={() => {
-                setRecord(record);
-                setShowEdit(true);
-                setEdit(true);
-              }}
-              type="link"
-              icon={<EditOutlined />}
-            />
-          </Tooltip>
-          <Tooltip title="Xóa">
-            <Popconfirm
-              onConfirm={() => {
-                handleDeleteResident(record._id as string).then(() => {
-                  handleGetInfoAllResident();
-                });
-              }}
-              title="Bạn có chắc chắn muốn xóa cư dân này?"
-              placement="topLeft"
-            >
-              <Button danger type="link" icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
+          {access.canAccessManager && (
+            <>
+              <Tooltip title="Chi tiết">
+                <Button
+                  onClick={() => {
+                    setRecord(record);
+                    setShowDetail(true);
+                  }}
+                  type="link"
+                  icon={<EyeOutlined />}
+                />
+              </Tooltip>
+              <Tooltip title="Chỉnh sửa">
+                <Button
+                  onClick={() => {
+                    setRecord(record);
+                    setShowEdit(true);
+                    setEdit(true);
+                  }}
+                  type="link"
+                  icon={<EditOutlined />}
+                />
+              </Tooltip>
+              <Tooltip title="Xóa">
+                <Popconfirm
+                  onConfirm={() => {
+                    handleDeleteResident(record._id as string).then(() => {
+                      handleGetInfoAllResident();
+                    });
+                  }}
+                  title="Bạn có chắc chắn muốn xóa cư dân này?"
+                  placement="topLeft"
+                >
+                  <Button danger type="link" icon={<DeleteOutlined />} />
+                </Popconfirm>
+              </Tooltip>
+            </>
+          )}
         </>
       ),
     },
@@ -195,7 +205,7 @@ const ManagerResident = () => {
       </div>
 
       <Divider style={{ margin: '5px 0 20px' }} />
-      
+
       <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
         <Input.Search
           allowClear

@@ -1,6 +1,6 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
-import { useModel } from "@umijs/max"
+import { useAccess, useModel } from "@umijs/max"
 import { DeleteOutlined, EditOutlined, EyeOutlined, HomeOutlined, FilterOutlined } from '@ant-design/icons';
 import { Button, Descriptions, Divider, Input, Modal, Popconfirm, Tag, Tooltip, Typography, Badge } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
@@ -11,14 +11,14 @@ import FilterBar from './components/FilterBar';
 const { Title } = Typography
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  'Trống':        { label: 'Trống',        color: 'green' },
-  'vacant':       { label: 'Trống',        color: 'green' },
-  'Đã thuê':      { label: 'Đã thuê',      color: 'blue' },
-  'occupied':     { label: 'Đã thuê',      color: 'blue' },
-  'Đã đặt':       { label: 'Đã đặt',       color: 'gold' },
-  'reserved':     { label: 'Đã đặt',       color: 'gold' },
+  'Trống': { label: 'Trống', color: 'green' },
+  'vacant': { label: 'Trống', color: 'green' },
+  'Đã thuê': { label: 'Đã thuê', color: 'blue' },
+  'occupied': { label: 'Đã thuê', color: 'blue' },
+  'Đã đặt': { label: 'Đã đặt', color: 'gold' },
+  'reserved': { label: 'Đã đặt', color: 'gold' },
   'Đang bảo trì': { label: 'Đang bảo trì', color: 'volcano' },
-  'maintenance':  { label: 'Đang bảo trì', color: 'volcano' },
+  'maintenance': { label: 'Đang bảo trì', color: 'volcano' },
 };
 
 const ManagerApartment = () => {
@@ -41,6 +41,8 @@ const ManagerApartment = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [portalContainer, setPortalContainer] = useState<Element | null>(null);
+
+  const access = useAccess();
 
   const columns: IColumn<MApartment.IRecord>[] = [
     {
@@ -132,36 +134,41 @@ const ManagerApartment = () => {
               onClick={() => setDetailRecord(record)}
             />
           </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              type="link"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setRecord({
-                  ...record,
-                  floor_id: (record as any)?.floor?._id || record.floor_id,
-                  building_id: record.building_id
-                    || (record as any)?.floor?.building?._id
-                    || (record as any)?.floor?.building_id,
-                });
-                setShowEdit(true);
-                setEdit(true);
-              }}
-            />
-          </Tooltip>
-          <Tooltip title="Xóa">
-            <Popconfirm
-              title="Bạn có chắc chắn muốn xóa căn hộ này?"
-              placement="topLeft"
-              onConfirm={() => {
-                handleDeleteApartment(record._id as string).then(() => {
-                  handleGetInfoAllApartment();
-                });
-              }}
-            >
-              <Button danger type="link" icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
+          {access.canAccessManager && (
+            <>
+              <Tooltip title="Chỉnh sửa">
+                <Button
+                  type="link"
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    setRecord({
+                      ...record,
+                      floor_id: (record as any)?.floor?._id || record.floor_id,
+                      building_id: record.building_id
+                        || (record as any)?.floor?.building?._id
+                        || (record as any)?.floor?.building_id,
+                    });
+                    setShowEdit(true);
+                    setEdit(true);
+                  }}
+                />
+              </Tooltip>
+              <Tooltip title="Xóa">
+                <Popconfirm
+                  title="Bạn có chắc chắn muốn xóa căn hộ này?"
+                  placement="topLeft"
+                  onConfirm={() => {
+                    handleDeleteApartment(record._id as string).then(() => {
+                      handleGetInfoAllApartment();
+                    });
+                  }}
+                >
+                  <Button danger type="link" icon={<DeleteOutlined />} />
+                </Popconfirm>
+              </Tooltip>
+            </>
+          )
+          }
         </>
       ),
     },
@@ -245,7 +252,7 @@ const ManagerApartment = () => {
       </div>
 
       <Divider style={{ margin: '5px 0 20px' }} />
-      
+
       <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
         <Input.Search
           allowClear

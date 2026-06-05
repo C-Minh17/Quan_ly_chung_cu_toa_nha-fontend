@@ -224,6 +224,27 @@ export default [
 
 	// nhân viên
 	{
+		path: '/dashboard-staff',
+		name: 'Dashboard',
+		component: './dashboard(staff)',
+		icon: 'AppstoreOutlined',
+		access: "canAccessStaff"
+	},
+	{
+		path: '/danh-sach-can-ho',
+		name: 'Danh sách căn hộ',
+		component: './Quan-ly-can-ho',
+		icon: 'HomeOutlined',
+		access: "canAccessStaff"
+	},
+	{
+		path: '/thong-tin-dan-cu',
+		name: 'Thông tin dân cư',
+		component: './Quan-ly-dan-cu',
+		icon: 'UserOutlined',
+		access: "canAccessStaff"
+	},
+	{
 		path: '/ghi-dich-vu',
 		name: 'Ghi dịch vụ',
 		icon: 'FileTextOutlined',
