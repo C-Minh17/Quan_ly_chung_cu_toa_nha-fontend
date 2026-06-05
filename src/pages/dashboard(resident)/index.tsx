@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   Row,
   Col,
@@ -11,7 +11,6 @@ import {
   Progress,
   Timeline,
   Skeleton,
-  message,
   Empty
 } from 'antd';
 import {
@@ -25,56 +24,22 @@ import {
   CheckCircleOutlined,
   RightOutlined
 } from '@ant-design/icons';
-import {
-  getResidentMetrics,
-  getResidentBills,
-  getResidentBookings,
-  getResidentMaintenance
-} from '@/services/Dashboard';
-import { history } from 'umi';
+import { history, useModel } from 'umi';
 
 const DashboardResident = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [residentInfo, setResidentInfo] = useState<any>(null);
-  const [metrics, setMetrics] = useState<any>(null);
-  const [bills, setBills] = useState<any[]>([]);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [maintenance, setMaintenance] = useState<any[]>([]);
+  const {
+    loading,
+    residentInfo,
+    metrics,
+    bills,
+    bookings,
+    maintenance,
+    handleGetResidentData,
+  } = useModel('dashboard.resident');
 
   // Fetch data from backend APIs
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [resMetrics, resBills, resBookings, resMaint] = await Promise.allSettled([
-          getResidentMetrics(),
-          getResidentBills(),
-          getResidentBookings(),
-          getResidentMaintenance()
-        ]);
-
-        if (resMetrics.status === 'fulfilled' && resMetrics.value?.success) {
-          setResidentInfo(resMetrics.value.data.resident_info);
-          setMetrics(resMetrics.value.data.metrics);
-        }
-        if (resBills.status === 'fulfilled' && resBills.value?.success) {
-          setBills(resBills.value.data);
-        }
-        if (resBookings.status === 'fulfilled' && resBookings.value?.success) {
-          setBookings(resBookings.value.data);
-        }
-        if (resMaint.status === 'fulfilled' && resMaint.value?.success) {
-          setMaintenance(resMaint.value.data);
-        }
-      } catch (error) {
-        console.error('Lỗi khi tải dữ liệu Dashboard Cư dân:', error);
-        message.error('Không thể kết nối máy chủ để tải dữ liệu thống kê.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    handleGetResidentData();
   }, []);
 
   // Format currency helper

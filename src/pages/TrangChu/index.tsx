@@ -11,7 +11,6 @@ import {
 	Progress,
 	List,
 	Skeleton,
-	message,
 	Modal,
 	Form,
 	Input,
@@ -32,28 +31,25 @@ import {
 } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import Chart from 'react-apexcharts';
-import {
-	getDashboardMetrics,
-	getRevenueStats,
-	getMaintenanceStatusStats,
-	getUrgentMaintenanceRequests,
-	getOverdueInvoices,
-	getRecentActivities,
-	sendResidentNotification
-} from '@/services/Dashboard';
+import { useModel } from '@umijs/max';
 import './components/style.less';
 
 const TrangChu = () => {
-	const [loading, setLoading] = useState<boolean>(true);
+	const {
+		loading,
+		metrics,
+		revenueData,
+		maintenanceStats,
+		urgentRequests,
+		overdueInvoices,
+		activities,
+		submittingNotif,
+		handleGetAdminData,
+		handleSendNotification,
+	} = useModel('dashboard.admin');
+
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [submittingNotif, setSubmittingNotif] = useState<boolean>(false);
 	const [form] = Form.useForm();
-	const [metrics, setMetrics] = useState<any>(null);
-	const [revenueData, setRevenueData] = useState<any>(null);
-	const [maintenanceStats, setMaintenanceStats] = useState<any>(null);
-	const [urgentRequests, setUrgentRequests] = useState<any[]>([]);
-	const [overdueInvoices, setOverdueInvoices] = useState<any[]>([]);
-	const [activities, setActivities] = useState<any[]>([]);
 
 	// Date display
 	const today = new Date();
@@ -61,97 +57,15 @@ const TrangChu = () => {
 
 	// Fetch data from backend APIs
 	useEffect(() => {
-		const fetchData = async () => {
-			setLoading(true);
-			try {
-				const [
-					resMetrics,
-					resRevenue,
-					resMaintStats,
-					resUrgent,
-					resOverdue,
-					resActivities
-				] = await Promise.allSettled([
-					getDashboardMetrics(),
-					getRevenueStats(),
-					getMaintenanceStatusStats(),
-					getUrgentMaintenanceRequests(),
-					getOverdueInvoices(),
-					getRecentActivities()
-				]);
-
-				if (resMetrics.status === 'fulfilled' && resMetrics.value?.success) {
-					setMetrics(resMetrics.value.data);
-				}
-				if (resRevenue.status === 'fulfilled' && resRevenue.value?.success) {
-					setRevenueData(resRevenue.value.data);
-				}
-				if (resMaintStats.status === 'fulfilled' && resMaintStats.value?.success) {
-					setMaintenanceStats(resMaintStats.value.data);
-				}
-				if (resUrgent.status === 'fulfilled' && resUrgent.value?.success) {
-					setUrgentRequests(resUrgent.value.data);
-				}
-				if (resOverdue.status === 'fulfilled' && resOverdue.value?.success) {
-					setOverdueInvoices(resOverdue.value.data);
-				}
-				if (resActivities.status === 'fulfilled' && resActivities.value?.success) {
-					setActivities(resActivities.value.data);
-				}
-			} catch (error) {
-				console.error('Lỗi khi tải dữ liệu Dashboard:', error);
-				message.error('Không thể kết nối máy chủ để tải dữ liệu thống kê.');
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchData();
+		handleGetAdminData();
 	}, []);
 
 	// Submit notification to backend
-	const handleSendNotification = async (values: any) => {
-		setSubmittingNotif(true);
-		try {
-			const res = await sendResidentNotification({
-				title: values.title,
-				senderName: 'Ban Quản trị',
-				receiverType: 'All', // Match EReceiverType.All
-				type: 'OneSignalService', // Match standard OneSignal notification service
-				content: values.content,
-				description: `Phân loại: ${
-					values.type === 'maintenance' 
-						? 'Bảo trì / Kỹ thuật' 
-						: values.type === 'finance' 
-							? 'Tài chính / Phí dịch vụ' 
-							: values.type === 'alert' 
-								? 'Cảnh báo khẩn cấp' 
-								: 'Thông báo chung'
-				}. Đối tượng: ${
-					values.recipient_type === 'building_a' 
-						? 'Cư dân Tòa A' 
-						: values.recipient_type === 'building_b' 
-							? 'Cư dân Tòa B' 
-							: 'Tất cả cư dân'
-				}`,
-				notificationInternal: false,
-			});
-			if (res?.success) {
-				message.success('Gửi thông báo đến cư dân thành công!');
-				setIsModalOpen(false);
-				form.resetFields();
-				// Optionally refresh activity feed
-				getRecentActivities().then(resAct => {
-					if (resAct?.success) setActivities(resAct.data);
-				});
-			} else {
-				message.error(res?.message || 'Có lỗi xảy ra khi gửi thông báo.');
-			}
-		} catch (error) {
-			console.error('Lỗi gửi thông báo:', error);
-			message.error('Không thể kết nối máy chủ để gửi thông báo.');
-		} finally {
-			setSubmittingNotif(false);
+	const handleSendNotificationSubmit = async (values: any) => {
+		const success = await handleSendNotification(values);
+		if (success) {
+			setIsModalOpen(false);
+			form.resetFields();
 		}
 	};
 
@@ -642,7 +556,7 @@ const TrangChu = () => {
 				<Form
 					form={form}
 					layout="vertical"
-					onFinish={handleSendNotification}
+					onFinish={handleSendNotificationSubmit}
 					initialValues={{
 						type: 'general',
 						recipient_type: 'all'

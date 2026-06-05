@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	Row,
 	Col,
@@ -11,8 +11,7 @@ import {
 	Progress,
 	List,
 	Checkbox,
-	Skeleton,
-	message
+	Skeleton
 } from 'antd';
 import {
 	HomeOutlined,
@@ -25,94 +24,30 @@ import {
 	CheckSquareOutlined,
 	CoffeeOutlined
 } from '@ant-design/icons';
-import { history } from 'umi';
-import {
-	getStaffMetrics,
-	getStaffTasks,
-	updateStaffTaskStatus,
-	getStaffRecentLogs
-} from '@/services/Dashboard';
-
-interface TaskItem {
-	id: string;
-	text: string;
-	completed: boolean;
-	priority: 'high' | 'medium' | 'low';
-	category: string;
-}
+import { history, useModel } from 'umi';
 
 const DashboardStaff = () => {
-	const [loading, setLoading] = useState<boolean>(true);
-
-	const [staffInfo, setStaffInfo] = useState<any>(null);
-	const [metrics, setMetrics] = useState<any>(null);
-	const [tasks, setTasks] = useState<TaskItem[]>([]);
-	const [recentLogs, setRecentLogs] = useState<any[]>([]);
+	const {
+		loading,
+		staffInfo,
+		metrics,
+		tasks,
+		recentLogs,
+		handleGetStaffData,
+		handleUpdateStaffTaskStatus
+	} = useModel('dashboard.staff');
 
 	// Hover states for dynamic UI experience
 	const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 	const [hoveredShortcut, setHoveredShortcut] = useState<number | null>(null);
 
 	useEffect(() => {
-		const fetchData = async () => {
-			setLoading(true);
-			try {
-				const [resMetrics, resTasks, resLogs] = await Promise.allSettled([
-					getStaffMetrics(),
-					getStaffTasks(),
-					getStaffRecentLogs()
-				]);
-
-				if (resMetrics.status === 'fulfilled' && resMetrics.value?.success) {
-					setStaffInfo(resMetrics.value.data.staff_info);
-					setMetrics(resMetrics.value.data.metrics);
-				}
-				if (resTasks.status === 'fulfilled' && resTasks.value?.success) {
-					setTasks(resTasks.value.data);
-				}
-				if (resLogs.status === 'fulfilled' && resLogs.value?.success) {
-					setRecentLogs(resLogs.value.data);
-				}
-			} catch (error) {
-				console.error('Lỗi khi tải dữ liệu Dashboard Nhân viên:', error);
-				message.error('Không thể kết nối máy chủ để tải dữ liệu thống kê.');
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchData();
+		handleGetStaffData();
 	}, []);
 
 	// Toggle Task Completion
 	const handleToggleTask = async (id: string, currentStatus: boolean) => {
-		const nextStatus = !currentStatus;
-		try {
-			const res = await updateStaffTaskStatus(id, nextStatus);
-			if (res?.success) {
-				const updatedTasks = tasks.map(task => {
-					if (task.id === id) {
-						return { ...task, completed: nextStatus };
-					}
-					return task;
-				});
-				setTasks(updatedTasks);
-				
-				const completedCount = updatedTasks.filter(t => t.completed).length;
-				setMetrics((prev: any) => prev ? {
-					...prev,
-					today_tasks_done: completedCount,
-					today_tasks_total: updatedTasks.length
-				} : null);
-
-				message.success('Đã cập nhật trạng thái công việc!');
-			} else {
-				message.error(res?.message || 'Không thể cập nhật trạng thái công việc.');
-			}
-		} catch (error) {
-			console.error('Lỗi khi cập nhật trạng thái công việc:', error);
-			message.error('Đã xảy ra lỗi khi kết nối máy chủ.');
-		}
+		await handleUpdateStaffTaskStatus(id, currentStatus);
 	};
 
 	// Format percentage helper
