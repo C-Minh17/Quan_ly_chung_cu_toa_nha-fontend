@@ -61,7 +61,7 @@ const FormFloor = (props: Props) => {
         layout="vertical"
       >
         <Row gutter={16}>
-          <Col span={12}>
+          <Col span={24}>
             <Form.Item
               name="building_id"
               label="Tòa nhà"
@@ -71,7 +71,7 @@ const FormFloor = (props: Props) => {
             </Form.Item>
           </Col>
 
-          <Col span={12}>
+          {/* <Col span={12}>
             <Form.Item
               name="floor_number"
               label="Số thứ tự tầng"
@@ -79,7 +79,7 @@ const FormFloor = (props: Props) => {
             >
               <InputNumber style={{ width: '100%' }} placeholder="Ví dụ: 1" min={1} />
             </Form.Item>
-          </Col>
+          </Col> */}
 
           <Col span={24}>
             <Form.Item name="description" label="Mô tả / Ghi chú">
