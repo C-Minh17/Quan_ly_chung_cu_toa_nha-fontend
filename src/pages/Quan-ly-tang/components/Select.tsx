@@ -37,7 +37,7 @@ const SelectFloor = (props: {
           options={infoAllFloor?.map((item: MFloor.IRecord) => ({
             key: item._id,
             value: item._id,
-            label: item.name ? `${item.name}` : `Tầng ${item.floor_number}`,
+            label: `Tầng ${item.floor_number}`,
           }))}
           showSearch
           optionFilterProp='label'

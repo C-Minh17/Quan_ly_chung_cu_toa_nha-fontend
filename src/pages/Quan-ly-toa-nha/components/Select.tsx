@@ -9,8 +9,9 @@ const SelectBuilding = (props: {
   onChange?: (val: string | null) => void;
   multiple?: boolean;
   hasCreate?: boolean;
+  disabled?: boolean;
 }) => {
-  const { value, onChange, multiple, hasCreate } = props;
+  const { value, onChange, multiple, hasCreate, disabled } = props;
   const { infoAllBuilding, handleGetInfoAllBuilding } = useModel('building.building');
 
   const [visibleForm, setVisibleForm] = useState(false);
@@ -29,11 +30,12 @@ const SelectBuilding = (props: {
 
   return (
     <div style={{ display: 'flex', gap: 8, width: '100%' }}>
-      <div className={hasCreate !== false ? 'width-select-custom' : 'fullWidth'}>
+      <div className={hasCreate !== false && !disabled ? 'width-select-custom' : 'fullWidth'}>
         <Select
           mode={multiple ? 'multiple' : undefined}
           value={value}
           onChange={onChange}
+          disabled={disabled}
           options={infoAllBuilding?.map((item: MBuilding.IRecord) => ({
             key: item._id,
             value: item._id,
@@ -46,7 +48,7 @@ const SelectBuilding = (props: {
         />
       </div>
 
-      {hasCreate !== false ? (
+      {hasCreate !== false && !disabled ? (
         <>
           <Button icon={<PlusOutlined />} onClick={onAddNew} />
           <Modal
