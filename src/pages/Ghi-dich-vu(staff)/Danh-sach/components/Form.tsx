@@ -31,7 +31,6 @@ const FormUtilityReading = (props: Props) => {
 
   useEffect(() => {
     if (initialValues && Object.keys(initialValues).length > 0) {
-      // Map back populated fields to IDs for Select components
       const formVals = {
         ...initialValues,
         apartment_id: initialValues.apartment?._id || initialValues.apartment_id,
@@ -188,7 +187,7 @@ const FormUtilityReading = (props: Props) => {
             htmlType="submit"
             loading={loadingInfoUtilityReading}
             icon={<SaveOutlined />}
-            style={{ backgroundColor: '#2f3032', borderColor: '#434343' }} 
+            style={{ backgroundColor: '#2f3032', borderColor: '#434343' }}
           >
             Lưu chỉ số
           </Button>
