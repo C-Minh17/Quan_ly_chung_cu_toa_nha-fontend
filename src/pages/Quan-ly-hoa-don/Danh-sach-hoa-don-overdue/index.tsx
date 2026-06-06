@@ -1,9 +1,10 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useAccess, useModel } from "@umijs/max"
-import { Typography, Button, Tooltip, Popconfirm, Divider, Tag } from 'antd';
-import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, EyeOutlined } from '@ant-design/icons';
+import { Typography, Button, Tooltip, Popconfirm, Divider, Tag, Badge } from 'antd';
+import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, EyeOutlined, FilterOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import FilterBar from './components/FilterBar';
 import DetailModal from '../Danh-sach-hoa-don/components/DetailModal';
 
@@ -32,6 +33,8 @@ const DanhSachHoaDonOverdue = () => {
   const [apartmentId, setApartmentId] = useState<string>("all");
   const [month, setMonth] = useState<number | string>("all");
   const [year, setYear] = useState<number | string>("all");
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<MInvoice.IRecord | null>(null);
@@ -42,6 +45,29 @@ const DanhSachHoaDonOverdue = () => {
     handleGetOverdueInvoices();
     if (handleGetInfoAllApartment) handleGetInfoAllApartment();
   }, [refreshKey]);
+
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-hoa-don-overdue');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-hoa-don-overdue';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllInvoice, loadingInfoAllInvoice]);
 
   const columns: IColumn<MInvoice.IRecord>[] = [
     {
@@ -140,6 +166,10 @@ const DanhSachHoaDonOverdue = () => {
     },
   ];
 
+  const isFilterActive = useMemo(() => {
+    return apartmentId !== "all" || month !== "all" || year !== "all";
+  }, [apartmentId, month, year]);
+
   const filteredData = useMemo(() => {
     let data = infoAllInvoice || [];
     if (apartmentId !== 'all') {
@@ -173,14 +203,40 @@ const DanhSachHoaDonOverdue = () => {
 
       <Divider style={{ margin: '10px 0 20px' }} />
 
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => {
+                setFilterModalVisible(true);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
       <FilterBar
-        apartmentId={apartmentId}
-        month={month}
-        year={year}
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(vals) => {
+          setApartmentId(vals.apartmentId);
+          setMonth(vals.month);
+          setYear(vals.year);
+          setFilterModalVisible(false);
+        }}
+        currentApartmentId={apartmentId}
+        currentMonth={month}
+        currentYear={year}
         apartments={infoAllApartment || []}
-        onApartmentChange={setApartmentId}
-        onMonthChange={setMonth}
-        onYearChange={setYear}
       />
 
       <TableStaticData

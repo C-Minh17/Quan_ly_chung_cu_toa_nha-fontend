@@ -1,23 +1,9 @@
 import { useModel } from '@umijs/max';
-import {
-  List,
-  Card,
-  Descriptions,
-  Tag,
-  Typography,
-  Spin,
-  Empty,
-  Space,
-  Grid
-} from 'antd';
+import { List, Card, Descriptions, Tag, Typography, Spin, Empty, Space, Grid } from 'antd';
 import type { DescriptionsProps } from 'antd';
 import moment from 'moment';
 import { useEffect } from 'react';
-import {
-  CarOutlined,
-  IdcardOutlined,
-  SafetyCertificateOutlined
-} from '@ant-design/icons';
+import { CarOutlined, IdcardOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;

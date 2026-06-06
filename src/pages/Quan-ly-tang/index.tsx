@@ -1,10 +1,12 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { AppstoreOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Badge, Button, Modal, Popconfirm, Space, Tag, Tooltip, Typography, Tabs } from 'antd';
-import { useEffect, useState } from 'react';
+import { AppstoreOutlined, DeleteOutlined, EditOutlined, FilterOutlined } from '@ant-design/icons';
+import { Badge, Button, Divider, Input, Modal, Popconfirm, Space, Tag, Tooltip, Typography } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormFloor from './components/Form';
+import FilterBar from './components/FilterBar';
 
 const { Title } = Typography
 
@@ -34,7 +36,11 @@ const ManagerFloor = () => {
   const [edit, setEdit] = useState(false);
   const [showLayout, setShowLayout] = useState(false);
   const [layoutFloorName, setLayoutFloorName] = useState('');
-  const [activeTab, setActiveTab] = useState<string>('');
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [buildingFilter, setBuildingFilter] = useState("all");
+
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const columns: IColumn<MFloor.IRecord>[] = [
     {
@@ -80,6 +86,7 @@ const ManagerFloor = () => {
               type="link"
               icon={<AppstoreOutlined />}
               onClick={() => {
+                setLayoutFloorName(record.id || '');
                 handleGetFloorLayout(record._id as string).then(() => setShowLayout(true));
               }}
             />
@@ -122,30 +129,124 @@ const ManagerFloor = () => {
   }, [refreshKey])
 
   useEffect(() => {
-    if (infoAllBuilding && infoAllBuilding.length > 0 && !activeTab) {
-      setActiveTab(infoAllBuilding[0]._id as string);
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-tang');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-quan-ly-tang';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllFloor, loadingInfoAllFloor]);
+
+  const filteredData = useMemo(() => {
+    let data = infoAllFloor || [];
+
+    if (buildingFilter !== "all") {
+      data = data.filter((item: any) => {
+        const bid = item.building?._id || item.building_id;
+        return bid === buildingFilter;
+      });
     }
-  }, [infoAllBuilding]);
 
-  const filteredFloors = infoAllFloor?.filter(f => {
-    const bid = (f as any).building?._id || f.building_id;
-    return bid === activeTab;
-  }) || [];
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter((item: any) =>
+        [item.id, item.description, item.building?.name]
+          .filter(Boolean)
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
+      );
+    }
 
-  const tabItems = infoAllBuilding?.map(b => ({
-    key: b._id as string,
-    label: b.name,
-    children: activeTab === (b._id as string) ? (
+    return data;
+  }, [infoAllFloor, searchKeyword, buildingFilter]);
+
+  const isFilterActive = buildingFilter !== "all";
+
+  return (
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+        <div style={{
+          width: 50, height: 50,
+          backgroundColor: '#e6f4ff',
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <AppstoreOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+        </div>
+        <div>
+          <Title level={3} style={{ margin: 0 }}>Quản lý tầng</Title>
+          <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+            Quản lý danh sách các tầng trong các tòa nhà
+          </div>
+        </div>
+      </div>
+
+      <Divider style={{ margin: '5px 0 20px' }} />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo mã tầng, mô tả..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
+
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => setFilterModalVisible(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
+      <FilterBar
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(values) => {
+          setBuildingFilter(values.buildingFilter);
+          setFilterModalVisible(false);
+        }}
+        buildingFilter={buildingFilter}
+        buildings={infoAllBuilding || []}
+      />
+
       <TableStaticData
         columns={columns}
-        data={infoAllFloor?.filter((f: any) => (f.building?._id || f.building_id) === (b._id as string)) || []}
+        data={filteredData}
         loading={loadingInfoAllFloor}
         showEdit={showEdit}
         hasCreate={true}
         onReload={() => handleGetInfoAllFloor()}
         Form={FormFloor}
         formProps={{
-          initialValues: Object.keys(record).length > 0 ? record : { building_id: activeTab },
+          initialValues: Object.keys(record).length > 0 ? record : { building_id: buildingFilter !== 'all' ? buildingFilter : undefined },
           setShowEdit: setShowEdit,
           edit: edit,
         }}
@@ -158,18 +259,6 @@ const ManagerFloor = () => {
         }}
         widthDrawer={600}
         addStt
-      />
-    ) : null
-  })) || [];
-
-  return (
-    <>
-      <Title level={2} style={{ marginTop: 10, marginBottom: 20 }}>Quản lý tầng</Title>
-      
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        items={tabItems}
       />
 
       <Modal

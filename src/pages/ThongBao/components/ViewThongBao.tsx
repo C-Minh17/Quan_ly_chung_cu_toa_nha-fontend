@@ -11,6 +11,9 @@ import './style.less';
 
 const ViewThongBao = (props: { record?: ThongBao.IRecord; afterViewDetail?: () => void; hideCard?: boolean }) => {
 	const { record, afterViewDetail, hideCard } = props;
+	const notif = record?.notification ? record.notification : record;
+	const metadata = record?.metadata || notif?.metadata;
+	const displayCreatedAt = record?.createdAt || notif?.createdAt;
 
 	const redirectNotif = () => {
 		const urlMap: Record<EModuleKey, string> = {
@@ -28,19 +31,19 @@ const ViewThongBao = (props: { record?: ThongBao.IRecord; afterViewDetail?: () =
 			[EModuleKey.VBCC]: '',
 		};
 
-		const sourceType = mapModuleKey[record?.metadata?.sourceType as ESourceTypeNotification];
-		const sourceModule = mapModuleKey[record?.metadata?.phanHe as ESourceTypeNotification];
+		const sourceType = mapModuleKey[metadata?.sourceType as ESourceTypeNotification];
+		const sourceModule = mapModuleKey[metadata?.phanHe as ESourceTypeNotification];
 
-		const pathWeb = record?.metadata?.pathWeb?.replace(/^\/+/, '');
+		const pathWeb = metadata?.pathWeb?.replace(/^\/+/, '');
 
 		if (sourceType === currentRole) {
 			if (afterViewDetail) afterViewDetail();
-			if (record?.metadata?.pathWeb) {
+			if (metadata?.pathWeb) {
 				history.push(`${pathWeb}`);
 			}
 		} else {
 			const baseUrl = urlMap[sourceModule as EModuleKey];
-			if (baseUrl && record?.metadata?.pathWeb) {
+			if (baseUrl && metadata?.pathWeb) {
 				window.location.href = `${baseUrl}${pathWeb}`;
 			}
 		}
@@ -49,22 +52,22 @@ const ViewThongBao = (props: { record?: ThongBao.IRecord; afterViewDetail?: () =
 	const content = (
 		<>
 			<Card.Meta
-				avatar={record?.imageUrl ? <Avatar src={record?.imageUrl} size='large' /> : false}
+				avatar={notif?.imageUrl ? <Avatar src={notif?.imageUrl} size='large' /> : false}
 				description={
 					<>
-						<div style={{ marginBottom: 8 }}>{record?.description}</div>
-						<UserOutlined /> {record?.senderName ?? ''} <Divider type='vertical' />
-						<CalendarOutlined /> {dayjs(record?.createdAt).format('HH:mm DD/MM/YYYY')}
+						<div style={{ marginBottom: 8 }}>{notif?.description}</div>
+						<UserOutlined /> {notif?.senderName ?? ''} <Divider type='vertical' />
+						<CalendarOutlined /> {dayjs(displayCreatedAt).format('HH:mm DD/MM/YYYY')}
 					</>
 				}
 			/>
 			<br />
-			<div dangerouslySetInnerHTML={{ __html: record?.content ?? '' }} className='notif-content' />
+			<div dangerouslySetInnerHTML={{ __html: notif?.content ?? '' }} className='notif-content' />
 			<Row style={{ marginTop: 12 }} gutter={[12, 12]}>
-				{record?.taiLieuDinhKem?.length ? (
+				{notif?.taiLieuDinhKem?.length ? (
 					<>
 						<Col span={24}>Tệp đính kèm: </Col>
-						{record?.taiLieuDinhKem?.map((item) => (
+						{notif?.taiLieuDinhKem?.map((item) => (
 							<Col span={24} key={item}>
 								<a href={item} target='_blank' rel='noreferrer'>
 									{getNameFile(item)}
@@ -74,14 +77,14 @@ const ViewThongBao = (props: { record?: ThongBao.IRecord; afterViewDetail?: () =
 					</>
 				) : null}
 
-				{record?.thoiGianHieuLuc ? (
+				{notif?.thoiGianHieuLuc ? (
 					<Col span={24}>
 						Hiệu lực thông báo:{' '}
-						<b style={{ color: 'red' }}>{dayjs(record?.thoiGianHieuLuc).format('DD/MM/YYYY')}</b>{' '}
+						<b style={{ color: 'red' }}>{dayjs(notif?.thoiGianHieuLuc).format('DD/MM/YYYY')}</b>{' '}
 					</Col>
 				) : null}
 
-				{record?.metadata?.pathWeb && record?.metadata?.phanHe ? (
+				{metadata?.pathWeb && metadata?.phanHe ? (
 					<Col span={24}>
 						<Button type='primary' onClick={() => redirectNotif()}>
 							Xem chi tiết
@@ -93,7 +96,7 @@ const ViewThongBao = (props: { record?: ThongBao.IRecord; afterViewDetail?: () =
 	);
 
 	if (hideCard) return content;
-	return <Card title={record?.title}>{content}</Card>;
+	return <Card title={notif?.title}>{content}</Card>;
 };
 
 export default ViewThongBao;

@@ -1,33 +1,9 @@
 import { useModel } from '@umijs/max';
-import {
-  Card,
-  Descriptions,
-  Avatar,
-  Tag,
-  Typography,
-  Row,
-  Col,
-  Image,
-  Spin,
-  Empty,
-  Divider,
-  Space,
-  Grid,
-} from 'antd';
+import { Card, Descriptions, Avatar, Tag, Typography, Row, Col, Image, Spin, Empty, Divider, Space, Grid } from 'antd';
 import type { DescriptionsProps } from 'antd';
 import moment from 'moment';
 import { useEffect } from 'react';
-import {
-  UserOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  IdcardOutlined,
-  HomeOutlined,
-  CalendarOutlined,
-  EnvironmentOutlined,
-  CrownOutlined,
-  SafetyCertificateOutlined,
-} from '@ant-design/icons';
+import { UserOutlined, PhoneOutlined, MailOutlined, IdcardOutlined, HomeOutlined, CalendarOutlined, EnvironmentOutlined, CrownOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import residentBg from '@/assets/resident_profile_bg.png';
 import avatarDF from '@/assets/default_avatar.png';
 
@@ -194,7 +170,7 @@ const ResidentProfile = () => {
     {
       key: 'floor_name',
       label: 'Tầng',
-      children: infoMeResident?.apartment?.floor?.id || '-',
+      children: infoMeResident?.apartment?.floor?.floor_number || '-',
     },
     {
       key: '1',
@@ -286,7 +262,7 @@ const ResidentProfile = () => {
                       <Text><MailOutlined /> {infoMeResident?.user?.email}</Text>
                     </Col>
                     <Col>
-                      <Text><EnvironmentOutlined /> {infoMeResident?.apartment?.apartment_code} - {infoMeResident?.apartment?.floor?.name || 'Tầng ...'}</Text>
+                      <Text><EnvironmentOutlined /> {infoMeResident?.apartment?.apartment_code} - {infoMeResident?.apartment?.floor?.floor_number !== undefined ? `Tầng ${infoMeResident.apartment.floor.floor_number}` : 'Tầng ...'}</Text>
                     </Col>
                   </Row>
                 </div>

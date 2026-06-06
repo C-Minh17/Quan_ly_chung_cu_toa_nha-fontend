@@ -61,25 +61,27 @@ const FormFloor = (props: Props) => {
         layout="vertical"
       >
         <Row gutter={16}>
-          <Form.Item
-            name="building_id"
-            hidden={true}
-          >
-            <Input />
-          </Form.Item>
+          <Col span={24}>
+            <Form.Item
+              name="building_id"
+              label="Tòa nhà"
+              rules={[{ required: true, message: 'Vui lòng chọn tòa nhà!' }]}
+            >
+              <SelectBuilding hasCreate={false} disabled={edit} />
+            </Form.Item>
+          </Col>
 
-          {edit && (
-            <Col span={12}>
-              <Form.Item
-                name="floor_number"
-                label="Số thứ tự tầng"
-              >
-                <InputNumber style={{ width: '100%' }} placeholder="Ví dụ: 1" min={1} />
-              </Form.Item>
-            </Col>
-          )}
+          {/* <Col span={12}>
+            <Form.Item
+              name="floor_number"
+              label="Số thứ tự tầng"
+              rules={[{ required: true, message: 'Vui lòng nhập số thứ tự tầng!' }]}
+            >
+              <InputNumber style={{ width: '100%' }} placeholder="Ví dụ: 1" min={1} />
+            </Form.Item>
+          </Col> */}
 
-          <Col span={edit ? 12 : 24}>
+          <Col span={24}>
             <Form.Item name="description" label="Mô tả / Ghi chú">
               <Input.TextArea rows={3} placeholder="Mô tả về tầng" />
             </Form.Item>

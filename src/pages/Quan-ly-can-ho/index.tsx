@@ -1,22 +1,24 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
-import { useModel } from "@umijs/max"
-import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { Button, Descriptions, Modal, Popconfirm, Tag, Tooltip, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useAccess, useModel } from "@umijs/max"
+import { DeleteOutlined, EditOutlined, EyeOutlined, HomeOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Divider, Input, Modal, Popconfirm, Tag, Tooltip, Typography, Badge } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormApartment from './components/Form';
+import FilterBar from './components/FilterBar';
 
 const { Title } = Typography
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  'Trống':        { label: 'Trống',        color: 'green' },
-  'vacant':       { label: 'Trống',        color: 'green' },
-  'Đã thuê':      { label: 'Đã thuê',      color: 'blue' },
-  'occupied':     { label: 'Đã thuê',      color: 'blue' },
-  'Đã đặt':       { label: 'Đã đặt',       color: 'gold' },
-  'reserved':     { label: 'Đã đặt',       color: 'gold' },
+  'Trống': { label: 'Trống', color: 'green' },
+  'vacant': { label: 'Trống', color: 'green' },
+  'Đã thuê': { label: 'Đã thuê', color: 'blue' },
+  'occupied': { label: 'Đã thuê', color: 'blue' },
+  'Đã đặt': { label: 'Đã đặt', color: 'gold' },
+  'reserved': { label: 'Đã đặt', color: 'gold' },
   'Đang bảo trì': { label: 'Đang bảo trì', color: 'volcano' },
-  'maintenance':  { label: 'Đang bảo trì', color: 'volcano' },
+  'maintenance': { label: 'Đang bảo trì', color: 'volcano' },
 };
 
 const ManagerApartment = () => {
@@ -34,6 +36,13 @@ const ManagerApartment = () => {
   const [record, setRecord] = useState<MApartment.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
   const [detailRecord, setDetailRecord] = useState<MApartment.IRecord | null>(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [buildingFilter, setBuildingFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
+
+  const access = useAccess();
 
   const columns: IColumn<MApartment.IRecord>[] = [
     {
@@ -125,36 +134,41 @@ const ManagerApartment = () => {
               onClick={() => setDetailRecord(record)}
             />
           </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              type="link"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setRecord({
-                  ...record,
-                  floor_id: (record as any)?.floor?._id || record.floor_id,
-                  building_id: record.building_id
-                    || (record as any)?.floor?.building?._id
-                    || (record as any)?.floor?.building_id,
-                });
-                setShowEdit(true);
-                setEdit(true);
-              }}
-            />
-          </Tooltip>
-          <Tooltip title="Xóa">
-            <Popconfirm
-              title="Bạn có chắc chắn muốn xóa căn hộ này?"
-              placement="topLeft"
-              onConfirm={() => {
-                handleDeleteApartment(record._id as string).then(() => {
-                  handleGetInfoAllApartment();
-                });
-              }}
-            >
-              <Button danger type="link" icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
+          {access.canAccessManager && (
+            <>
+              <Tooltip title="Chỉnh sửa">
+                <Button
+                  type="link"
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    setRecord({
+                      ...record,
+                      floor_id: (record as any)?.floor?._id || record.floor_id,
+                      building_id: record.building_id
+                        || (record as any)?.floor?.building?._id
+                        || (record as any)?.floor?.building_id,
+                    });
+                    setShowEdit(true);
+                    setEdit(true);
+                  }}
+                />
+              </Tooltip>
+              <Tooltip title="Xóa">
+                <Popconfirm
+                  title="Bạn có chắc chắn muốn xóa căn hộ này?"
+                  placement="topLeft"
+                  onConfirm={() => {
+                    handleDeleteApartment(record._id as string).then(() => {
+                      handleGetInfoAllApartment();
+                    });
+                  }}
+                >
+                  <Button danger type="link" icon={<DeleteOutlined />} />
+                </Popconfirm>
+              </Tooltip>
+            </>
+          )
+          }
         </>
       ),
     },
@@ -165,12 +179,125 @@ const ManagerApartment = () => {
     handleGetInfoAllBuilding();
   }, [refreshKey])
 
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-can-ho');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-quan-ly-can-ho';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllApartment, loadingInfoAllApartment]);
+
+  const isFilterActive = useMemo(() => {
+    return buildingFilter !== "all" || statusFilter !== "all";
+  }, [buildingFilter, statusFilter]);
+
+  const filteredData = useMemo(() => {
+    let data = infoAllApartment || [];
+
+    if (buildingFilter !== "all") {
+      data = data.filter(item => item.building_id === buildingFilter);
+    }
+
+    if (statusFilter !== "all") {
+      data = data.filter(item => item.status === statusFilter);
+    }
+
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter(item =>
+        [item.apartment_code, item.apartment_type]
+          .filter(Boolean)
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
+      );
+    }
+
+    return data;
+  }, [infoAllApartment, searchKeyword, buildingFilter, statusFilter]);
+
   return (
     <>
-      <Title level={2} style={{ marginTop: 10, marginBottom: 40 }}>Quản lý căn hộ</Title>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+        <div style={{
+          width: 50, height: 50,
+          backgroundColor: '#e6f4ff',
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <HomeOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+        </div>
+        <div>
+          <Title level={3} style={{ margin: 0 }}>Quản lý căn hộ</Title>
+          <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+            Quản lý danh sách và trạng thái các căn hộ
+          </div>
+        </div>
+      </div>
+
+      <Divider style={{ margin: '5px 0 20px' }} />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo mã căn hộ, loại căn hộ..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
+
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => {
+                setFilterModalVisible(true);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
+      <FilterBar
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(vals) => {
+          setBuildingFilter(vals.buildingFilter);
+          setStatusFilter(vals.statusFilter);
+          setFilterModalVisible(false);
+        }}
+        currentBuildingFilter={buildingFilter}
+        currentStatusFilter={statusFilter}
+        buildings={infoAllBuilding || []}
+      />
+
       <TableStaticData
         columns={columns}
-        data={infoAllApartment || []}
+        data={filteredData}
         loading={loadingInfoAllApartment}
         showEdit={showEdit}
         hasCreate={true}

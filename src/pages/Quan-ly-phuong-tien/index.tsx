@@ -1,10 +1,12 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useModel } from "@umijs/max"
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Tooltip, Typography, Tag, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { EditOutlined, DeleteOutlined, CarOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, message, Badge } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormVehicle from "./components/form";
+import FilterBar from "./components/FilterBar";
 
 const { Title } = Typography
 
@@ -20,6 +22,11 @@ const ManagerVehicle = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [record, setRecord] = useState<MVehicle.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [vehicleTypeFilter, setVehicleTypeFilter] = useState("all");
+
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const columns: IColumn<MVehicle.IRecord>[] = [
     {
@@ -120,12 +127,114 @@ const ManagerVehicle = () => {
     handleGetInfoAllVehicle()
   }, [refreshKey])
 
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-phuong-tien');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-quan-ly-phuong-tien';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllVehicle, loadingInfoAllVehicle]);
+
+  const filteredData = useMemo(() => {
+    let data = infoAllVehicle || [];
+
+    if (vehicleTypeFilter !== "all") {
+      data = data.filter(item => item.vehicle_type === vehicleTypeFilter);
+    }
+
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter(item =>
+        [item.license_plate, item.brand, item.card_number, item.resident?.user?.name, item.resident?.apartment?.apartment_code]
+          .filter(Boolean)
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
+      );
+    }
+
+    return data;
+  }, [infoAllVehicle, searchKeyword, vehicleTypeFilter]);
+
+  const isFilterActive = vehicleTypeFilter !== "all";
+
   return (
     <>
-      <Title level={2} style={{ marginTop: 10, marginBottom: 40 }}>Quản lý phương tiện</Title>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+        <div style={{
+          width: 50, height: 50,
+          backgroundColor: '#e6f4ff',
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <CarOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+        </div>
+        <div>
+          <Title level={3} style={{ margin: 0 }}>Quản lý phương tiện</Title>
+          <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+            Quản lý thông tin và thẻ xe của các phương tiện trong tòa nhà
+          </div>
+        </div>
+      </div>
+
+      <Divider style={{ margin: '5px 0 20px' }} />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo biển số xe, chủ sở hữu, căn hộ, số thẻ..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
+
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => setFilterModalVisible(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
+      <FilterBar
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(values) => {
+          setVehicleTypeFilter(values.vehicleTypeFilter);
+          setFilterModalVisible(false);
+        }}
+        vehicleTypeFilter={vehicleTypeFilter}
+      />
+
       <TableStaticData
         columns={columns}
-        data={infoAllVehicle || []}
+        data={filteredData}
         loading={loadingInfoAllVehicle}
         showEdit={showEdit}
         hasCreate={true}

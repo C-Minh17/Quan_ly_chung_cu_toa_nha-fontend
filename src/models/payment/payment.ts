@@ -1,10 +1,4 @@
-import {
-  lookupInvoice,
-  createPayment,
-  getMyPayments,
-  getAllPayments,
-  getPaymentsByInvoice,
-} from "@/services/Payment"
+import { lookupInvoice, createPayment, getMyPayments, getAllPayments, getPaymentsByInvoice } from "@/services/Payment"
 import { useState } from "react"
 
 export default () => {
@@ -17,7 +11,6 @@ export default () => {
   const [loadingPayments, setLoadingPayments] = useState<boolean>(false)
   const [submittingPayment, setSubmittingPayment] = useState<boolean>(false)
 
-  /** Tra cứu hóa đơn để thanh toán */
   const handleLookupInvoice = async (data: {
     invoice_code?: string
     apartment_id?: string
@@ -41,7 +34,6 @@ export default () => {
     }
   }
 
-  /** Tạo thanh toán */
   const handleCreatePayment = async (data: {
     invoice_id: string
     amount: number
@@ -53,7 +45,6 @@ export default () => {
     try {
       const res = await createPayment(data)
       if (res?.success) {
-        // Cập nhật lại invoice sau khi thanh toán thành công
         if (invoiceLookup) {
           const newPaidAmount = invoiceLookup.paid_amount + data.amount
           const newRemaining = invoiceLookup.remaining - data.amount
@@ -76,7 +67,6 @@ export default () => {
     }
   }
 
-  /** Lấy lịch sử thanh toán của cư dân */
   const handleGetMyPayments = async () => {
     setLoadingPayments(true)
     try {
@@ -90,7 +80,6 @@ export default () => {
     }
   }
 
-  /** Lấy tất cả thanh toán (admin) */
   const handleGetAllPayments = async (params?: any) => {
     setLoadingPayments(true)
     try {
@@ -104,7 +93,6 @@ export default () => {
     }
   }
 
-  /** Lấy thanh toán theo hóa đơn */
   const handleGetPaymentsByInvoice = async (invoiceId: string) => {
     setLoadingPayments(true)
     try {

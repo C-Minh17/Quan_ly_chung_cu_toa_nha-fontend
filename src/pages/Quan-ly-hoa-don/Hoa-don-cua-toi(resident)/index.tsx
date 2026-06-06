@@ -1,10 +1,9 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
-import { useAccess, useModel } from "@umijs/max"
+import { useModel } from "@umijs/max"
 import { Typography, Button, Tooltip, Divider, Tag, Select, Row, Col } from 'antd';
 import { FilePdfOutlined, FileTextOutlined, DollarOutlined, EyeOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
-import { history } from '@umijs/max';
 import DetailModal from '../Danh-sach-hoa-don/components/DetailModal';
 import PaymentModal from './components/PaymentModal';
 

@@ -1,9 +1,10 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
 import { useAccess, useModel } from "@umijs/max"
-import { Typography, Button, Tooltip, Popconfirm, Divider, Tag } from 'antd';
-import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, DollarOutlined, EyeOutlined } from '@ant-design/icons';
+import { Typography, Button, Tooltip, Popconfirm, Divider, Tag, Input, Badge } from 'antd';
+import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, DollarOutlined, EyeOutlined, FilterOutlined } from '@ant-design/icons';
 import { useEffect, useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { history } from '@umijs/max';
 import FilterBar from './components/FilterBar';
 import DetailModal from './components/DetailModal';
@@ -34,9 +35,13 @@ const DanhSachHoaDon = () => {
   const [status, setStatus] = useState<string>("all");
   const [month, setMonth] = useState<number | string>("all");
   const [year, setYear] = useState<number | string>("all");
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<MInvoice.IRecord | null>(null);
+
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
 
   const access = useAccess();
 
@@ -44,6 +49,29 @@ const DanhSachHoaDon = () => {
     handleGetInfoAllInvoice();
     if (handleGetInfoAllApartment) handleGetInfoAllApartment();
   }, [refreshKey]);
+
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-danh-sach-hoa-don');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-danh-sach-hoa-don';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllInvoice, loadingInfoAllInvoice]);
 
   const columns: IColumn<MInvoice.IRecord>[] = [
     {
@@ -162,8 +190,20 @@ const DanhSachHoaDon = () => {
     if (status !== 'all') data = data.filter(item => item.status === status);
     if (month !== 'all') data = data.filter(item => item.billing_month === Number(month));
     if (year !== 'all') data = data.filter(item => item.billing_year === Number(year));
+
+    // Search filter
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter((item: any) =>
+        [item.invoice_code, item.apartment?.apartment_code]
+          .filter(Boolean)
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
+      );
+    }
     return data;
-  }, [infoAllInvoice, apartmentId, status, month, year]);
+  }, [infoAllInvoice, apartmentId, status, month, year, searchKeyword]);
+
+  const isFilterActive = apartmentId !== 'all' || status !== 'all' || month !== 'all' || year !== 'all';
 
   return (
     <>
@@ -186,16 +226,51 @@ const DanhSachHoaDon = () => {
 
       <Divider style={{ margin: '10px 0 20px' }} />
 
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo mã hóa đơn, căn hộ..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
+
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => setFilterModalVisible(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
       <FilterBar
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(values) => {
+          setApartmentId(values.apartmentId);
+          setStatus(values.status);
+          setMonth(values.month);
+          setYear(values.year);
+          setFilterModalVisible(false);
+        }}
         apartmentId={apartmentId}
         status={status}
         month={month}
         year={year}
         apartments={infoAllApartment || []}
-        onApartmentChange={setApartmentId}
-        onStatusChange={setStatus}
-        onMonthChange={setMonth}
-        onYearChange={setYear}
       />
 
       <TableStaticData

@@ -29,7 +29,7 @@ export default [
 		name: 'Dashboard',
 		component: './TrangChu',
 		icon: 'AppstoreOutlined',
-		// access: "canAccessManager"
+		access: "canAccessManager"
 	},
 	{
 		path: '/quan-ly-tai-khoan',
@@ -115,6 +115,13 @@ export default [
 		],
 	},
 	{
+		path: '/quan-ly-loai-phi',
+		name: 'Quản lý loại phí',
+		component: './Quan-ly-loai-phi',
+		icon: 'CarOutlined',
+		access: "canAccessManager"
+	},
+	{
 		path: '/quan-ly-phuong-tien',
 		name: 'Quản lý phương tiện',
 		component: './Quan-ly-phuong-tien',
@@ -125,13 +132,22 @@ export default [
 	{
 		path: '/quan-ly-bao-tri-admin',
 		name: 'Quản lý bảo trì',
-		component: './Quan-ly-bao-tri(admin)',
 		icon: 'ToolOutlined',
-		path: '/quan-ly-loai-phi',
-		name: 'Quản lý loại phí',
-		component: './Quan-ly-loai-phi',
-		icon: 'FileTextOutlined',
-		access: "canAccessManager"
+		access: "canAccessManager",
+		routes: [
+			{
+				path: '/quan-ly-bao-tri-admin/yeu-cau-bao-tri',
+				name: 'Yêu cầu bảo trì',
+				component: './Quan-ly-bao-tri(admin)/Yeu-cau-bao-tri',
+				access: "canAccessManager",
+			},
+			{
+				path: '/quan-ly-bao-tri-admin/lich-bao-tri',
+				name: 'Lịch bảo trì',
+				component: './Quan-ly-bao-tri(admin)/Lich-bao-tri',
+				access: "canAccessManager",
+			},
+		],
 	},
 	{
 		path: '/quan-ly-tien-ich',
@@ -142,6 +158,13 @@ export default [
 	},
 
 	// cư dân
+	{
+		path: '/dashboard-resident',
+		name: 'Dashboard',
+		component: './dashboard(resident)',
+		icon: 'AppstoreOutlined',
+		access: "canAccessResident"
+	},
 	{
 		path: '/thong-tin-ca-nhan',
 		name: 'Thông tin cá nhân',
@@ -201,6 +224,27 @@ export default [
 
 	// nhân viên
 	{
+		path: '/dashboard-staff',
+		name: 'Dashboard',
+		component: './dashboard(staff)',
+		icon: 'AppstoreOutlined',
+		access: "canAccessStaff"
+	},
+	{
+		path: '/danh-sach-can-ho',
+		name: 'Danh sách căn hộ',
+		component: './Quan-ly-can-ho',
+		icon: 'HomeOutlined',
+		access: "canAccessStaff"
+	},
+	{
+		path: '/thong-tin-dan-cu',
+		name: 'Thông tin dân cư',
+		component: './Quan-ly-dan-cu',
+		icon: 'UserOutlined',
+		access: "canAccessStaff"
+	},
+	{
 		path: '/ghi-dich-vu',
 		name: 'Ghi dịch vụ',
 		icon: 'FileTextOutlined',
@@ -219,6 +263,13 @@ export default [
 				icon: 'FileTextOutlined',
 			},
 		],
+	},
+	{
+		path: '/lich-bao-tri-staff',
+		name: 'Lịch bảo trì',
+		component: './Lich-bao-tri(staff)',
+		icon: 'ToolOutlined',
+		access: "canAccessStaff",
 	},
 
 	// DANH MUC HE THONG

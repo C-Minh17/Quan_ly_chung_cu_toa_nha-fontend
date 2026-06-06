@@ -1,13 +1,13 @@
 import TableStaticData from "@/components/Table/TableStaticData"
 import { IColumn } from "@/components/Table/typing"
-import { useModel } from "@umijs/max"
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Tooltip, Typography, Tag } from 'antd';
-import { useEffect, useState } from 'react';
+import { useAccess, useModel } from "@umijs/max"
+import { DeleteOutlined, EditOutlined, EyeOutlined, TeamOutlined, FilterOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Popconfirm, Tooltip, Typography, Tag, Modal, Badge } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import FormResident from './components/Form';
+import FilterBar from './components/FilterBar';
 import DetailResident from './components/Detail';
-import { EyeOutlined } from '@ant-design/icons';
-import { Modal } from 'antd';
 
 const { Title } = Typography
 
@@ -17,6 +17,13 @@ const ManagerResident = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [record, setRecord] = useState<MResident.IRecord | {}>({});
   const [edit, setEdit] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [residentTypeFilter, setResidentTypeFilter] = useState("all");
+  const [primaryFilter, setPrimaryFilter] = useState("all");
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [portalContainer, setPortalContainer] = useState<Element | null>(null);
+
+  const access = useAccess();
 
   const columns: IColumn<MResident.IRecord>[] = [
     {
@@ -26,12 +33,16 @@ const ManagerResident = () => {
       filterType: "string",
       sortable: true,
     },
-    {
-      title: "Số CCCD",
-      dataIndex: "id_card_number",
-      width: 150,
-      filterType: "string",
-    },
+    ...(access.canAccessManager
+      ? [
+        {
+          title: "Số CCCD",
+          dataIndex: "id_card_number",
+          width: 150,
+          filterType: "string",
+        } as IColumn<MResident.IRecord>,
+      ]
+      : []),
     {
       title: "Căn hộ",
       dataIndex: "apartment",
@@ -73,40 +84,44 @@ const ManagerResident = () => {
       fixed: 'right',
       render: (record: MResident.IRecord) => (
         <>
-          <Tooltip title="Chi tiết">
-            <Button
-              onClick={() => {
-                setRecord(record);
-                setShowDetail(true);
-              }}
-              type="link"
-              icon={<EyeOutlined />}
-            />
-          </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              onClick={() => {
-                setRecord(record);
-                setShowEdit(true);
-                setEdit(true);
-              }}
-              type="link"
-              icon={<EditOutlined />}
-            />
-          </Tooltip>
-          <Tooltip title="Xóa">
-            <Popconfirm
-              onConfirm={() => {
-                handleDeleteResident(record._id as string).then(() => {
-                  handleGetInfoAllResident();
-                });
-              }}
-              title="Bạn có chắc chắn muốn xóa cư dân này?"
-              placement="topLeft"
-            >
-              <Button danger type="link" icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
+          {access.canAccessManager && (
+            <>
+              <Tooltip title="Chi tiết">
+                <Button
+                  onClick={() => {
+                    setRecord(record);
+                    setShowDetail(true);
+                  }}
+                  type="link"
+                  icon={<EyeOutlined />}
+                />
+              </Tooltip>
+              <Tooltip title="Chỉnh sửa">
+                <Button
+                  onClick={() => {
+                    setRecord(record);
+                    setShowEdit(true);
+                    setEdit(true);
+                  }}
+                  type="link"
+                  icon={<EditOutlined />}
+                />
+              </Tooltip>
+              <Tooltip title="Xóa">
+                <Popconfirm
+                  onConfirm={() => {
+                    handleDeleteResident(record._id as string).then(() => {
+                      handleGetInfoAllResident();
+                    });
+                  }}
+                  title="Bạn có chắc chắn muốn xóa cư dân này?"
+                  placement="topLeft"
+                >
+                  <Button danger type="link" icon={<DeleteOutlined />} />
+                </Popconfirm>
+              </Tooltip>
+            </>
+          )}
         </>
       ),
     },
@@ -116,12 +131,128 @@ const ManagerResident = () => {
     handleGetInfoAllResident()
   }, [refreshKey])
 
+  useEffect(() => {
+    const findAndInsert = () => {
+      const reloadIcon = document.querySelector('.table-base .header .extra .anticon-reload');
+      const reloadBtn = reloadIcon?.closest('button') || reloadIcon?.closest('.ant-btn');
+
+      if (reloadBtn) {
+        let placeholder = document.getElementById('filter-btn-placeholder-quan-ly-dan-cu');
+        if (!placeholder) {
+          placeholder = document.createElement('span');
+          placeholder.id = 'filter-btn-placeholder-quan-ly-dan-cu';
+          placeholder.style.display = 'inline-flex';
+          placeholder.style.marginRight = '8px';
+          reloadBtn.parentNode?.insertBefore(placeholder, reloadBtn);
+        }
+        setPortalContainer(placeholder);
+      }
+    };
+
+    findAndInsert();
+    const timer = setTimeout(findAndInsert, 500);
+    return () => clearTimeout(timer);
+  }, [infoAllResident, loadingInfoAllResident]);
+
+  const isFilterActive = useMemo(() => {
+    return residentTypeFilter !== "all" || primaryFilter !== "all";
+  }, [residentTypeFilter, primaryFilter]);
+
+  const filteredData = useMemo(() => {
+    let data = infoAllResident || [];
+
+    // Filter by resident type
+    if (residentTypeFilter !== "all") {
+      data = data.filter(item => item.resident_type === residentTypeFilter);
+    }
+
+    // Filter by primary status
+    if (primaryFilter !== "all") {
+      const isPrimaryVal = primaryFilter === "primary";
+      data = data.filter(item => !!item.is_primary === isPrimaryVal);
+    }
+
+    // Search filter
+    const keyword = searchKeyword.trim().toLowerCase();
+    if (keyword) {
+      data = data.filter(item =>
+        [item.user?.name, item.id_card_number, item.apartment?.apartment_code]
+          .filter(Boolean)
+          .some((val: any) => val.toString().toLowerCase().includes(keyword))
+      );
+    }
+
+    return data;
+  }, [infoAllResident, searchKeyword, residentTypeFilter, primaryFilter]);
+
   return (
     <>
-      <Title level={2} style={{ marginTop: 10, marginBottom: 40 }}>Quản lý dân cư</Title>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24, gap: 16 }}>
+        <div style={{
+          width: 50, height: 50,
+          backgroundColor: '#e6f4ff',
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <TeamOutlined style={{ fontSize: 22, color: '#1677ff' }} />
+        </div>
+        <div>
+          <Title level={3} style={{ margin: 0 }}>Quản lý dân cư</Title>
+          <div style={{ color: '#8c8c8c', fontSize: 14, marginTop: 4 }}>
+            Quản lý thông tin cư trú và cư dân trong tòa nhà
+          </div>
+        </div>
+      </div>
+
+      <Divider style={{ margin: '5px 0 20px' }} />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 20 }}>
+        <Input.Search
+          allowClear
+          placeholder="Tìm kiếm theo họ tên, số CCCD, căn hộ..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onSearch={setSearchKeyword}
+          style={{ width: 400, maxWidth: '100%' }}
+        />
+      </div>
+
+      {portalContainer && createPortal(
+        <Tooltip title="Bộ lọc tùy chỉnh">
+          <Badge dot={isFilterActive} offset={[-2, 2]}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => {
+                setFilterModalVisible(true);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                borderRadius: 6,
+              }}
+            >
+              Bộ lọc
+            </Button>
+          </Badge>
+        </Tooltip>,
+        portalContainer
+      )}
+
+      <FilterBar
+        visible={filterModalVisible}
+        onCancel={() => setFilterModalVisible(false)}
+        onApply={(vals) => {
+          setResidentTypeFilter(vals.residentTypeFilter);
+          setPrimaryFilter(vals.primaryFilter);
+          setFilterModalVisible(false);
+        }}
+        currentResidentTypeFilter={residentTypeFilter}
+        currentPrimaryFilter={primaryFilter}
+      />
+
       <TableStaticData
         columns={columns}
-        data={infoAllResident || []}
+        data={filteredData}
         loading={loadingInfoAllResident}
         showEdit={showEdit}
         hasCreate={true}

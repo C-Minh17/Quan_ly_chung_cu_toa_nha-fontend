@@ -57,18 +57,19 @@ const NoticeList: React.FC<NoticeIconTabProps> = ({
 						dataSource={danhSach}
 						renderItem={(item) => {
 							const itemCls = classNames(styles.item, { [styles.read]: !item.read });
-							const leftIcon = item.imageUrl ? <Avatar className={styles.avatar} src={item.imageUrl} /> : null;
+							const notif = item.notification ? item.notification : item;
+							const leftIcon = notif.imageUrl ? <Avatar className={styles.avatar} src={notif.imageUrl} /> : null;
 
 							return (
 								<List.Item className={itemCls} key={item._id} onClick={() => onItemClick(item)}>
 									<List.Item.Meta
 										className={styles.meta}
 										avatar={leftIcon}
-										title={<div className={styles.title}>{item.title}</div>}
+										title={<div className={styles.title}>{notif.title}</div>}
 										description={
 											<>
-												<div className={styles.description}>{item.description}</div>
-												<div className={styles.datetime}>{dayjs(item.createdAt).fromNow()}</div>
+												<div className={styles.description}>{notif.description}</div>
+												<div className={styles.datetime}>{dayjs(item.createdAt || notif.createdAt).fromNow()}</div>
 											</>
 										}
 									/>

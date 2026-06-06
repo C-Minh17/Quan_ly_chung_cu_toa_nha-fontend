@@ -2,14 +2,7 @@ import FormWaiting from '@/components/Loading/FormWaiting';
 import MyDatePicker from '@/components/MyDatePicker';
 import TinyEditor from '@/components/TinyEditor';
 import UploadFile from '@/components/Upload/UploadFile';
-import {
-	EReceiverType,
-	EVaiTroKhaoSat,
-	LoaiDoiTuongThongBao,
-	mapModuleKeyToSourceType,
-	NotificationType,
-	TenVaiTroKhaoSat,
-} from '@/services/ThongBao/constant';
+import { EReceiverType, EVaiTroKhaoSat, LoaiDoiTuongThongBao, mapModuleKeyToSourceType, NotificationType, TenVaiTroKhaoSat } from '@/services/ThongBao/constant';
 import { type ThongBao } from '@/services/ThongBao/typing';
 import { buildUpLoadFile, buildUpLoadMultiFile } from '@/services/uploadFile';
 import { currentRole } from '@/utils/ip';
@@ -64,12 +57,11 @@ const FormThongBao = (props: any) => {
 			if (receiverType !== EReceiverType.All) values.filter[`id${receiverType}`] = values.danhSachDoiTuong;
 			delete values.danhSachDoiTuong;
 			if (loaiNguoiDung === EReceiverType.User) {
+				values.receiverType = EReceiverType.User;
 				values.userList = [...danhSachNhanSu, ...danhSachSinhVien].map((item) => ({
 					ssoId: item.ssoId,
-					username: item.code,
+					username: item.username || item.code,
 					fullname: item.fullname,
-					email: item.email,
-					email365: item.email365,
 				}));
 				if (!values.userList?.length) {
 					message.warning('Vui lòng chọn người nhận');

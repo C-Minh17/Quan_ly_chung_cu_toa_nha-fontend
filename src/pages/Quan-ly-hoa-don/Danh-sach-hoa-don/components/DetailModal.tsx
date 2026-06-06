@@ -117,7 +117,8 @@ const DetailModal: React.FC<DetailModalProps> = ({ visible, onClose, record }) =
               <Descriptions.Item label="Mã căn hộ">{record.apartment.apartment_code || '—'}</Descriptions.Item>
               <Descriptions.Item label="Diện tích">{record.apartment.area ? `${record.apartment.area} m²` : '—'}</Descriptions.Item>
               <Descriptions.Item label="Số hợp đồng">{record.apartment.contract_number || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Giá thuê"><Text strong>{formatVND(record.apartment.price || 0)}</Text></Descriptions.Item>
+              <Descriptions.Item label="Giá bán"><Text strong>{formatVND(record.apartment.price || 0)}</Text></Descriptions.Item>
+              <Descriptions.Item label="Giá thuê"><Text strong>{formatVND(record?.rental_amount || 0)}</Text></Descriptions.Item>
             </Descriptions>
           )}
 

@@ -1,10 +1,6 @@
 import { useModel } from '@umijs/max';
-import {
-  Typography, Tag, Row, Col, Card, Modal, Descriptions, Button
-} from 'antd';
-import {
-  HistoryOutlined, BankOutlined, WalletOutlined, CreditCardOutlined, EyeOutlined
-} from '@ant-design/icons';
+import { Typography, Tag, Row, Col, Card, Button } from 'antd';
+import { HistoryOutlined, BankOutlined, WalletOutlined, CreditCardOutlined, EyeOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { IColumn } from '@/components/Table/typing';
 import TableStaticData from '@/components/Table/TableStaticData';
@@ -129,7 +125,6 @@ const LichSuThanhToanAdmin = () => {
     },
   ];
 
-  // Filter payments based on selected invoice code
   const filteredPayments = selectedInvoiceCode
     ? allPayments?.filter((payment: any) => {
       const code = payment.invoice?.invoice_code || payment.invoice_id;

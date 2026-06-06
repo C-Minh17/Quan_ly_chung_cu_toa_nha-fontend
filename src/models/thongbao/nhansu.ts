@@ -12,7 +12,6 @@ export default () => {
 	const [limit, setLimit] = useState<number>(10);
 	const [total, setTotal] = useState<number>(0);
 	const [filters, setFilters] = useState<TFilter<ThongBao.IUser>[]>([
-		// Nên để mặc đinh trang thái nhân sự là Đang làm việc
 	]);
 
 	const getModel = async (danhSachDoiTuong?: Record<string, string[]>): Promise<ThongBao.IUser[]> => {

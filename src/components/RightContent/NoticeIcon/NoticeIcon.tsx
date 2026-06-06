@@ -78,8 +78,7 @@ const NoticeIcon: React.FC<NoticeIconProps> = ({
 				</div>
 			}
 			trigger={['click']}
-			// open={visible}
-			open={false}
+			open={visible}
 			onOpenChange={(open) => setVisible(open)}
 		>
 			<Tooltip title={intl.formatMessage({ id: 'app.header.notice', defaultMessage: 'Thông báo' })} placement='bottom'>

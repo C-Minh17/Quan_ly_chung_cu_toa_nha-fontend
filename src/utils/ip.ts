@@ -9,9 +9,9 @@ const ip3 = ipRoot;
 // console.log('IP3:', ip3);
 
 // Ip khác
-const ipNotif = ipRoot + 'notification'; // ip dev
-const ipSlink = ipRoot + 'slink'; // ip dev
-const ipCore = ipRoot + 'core'; // ip dev
+const ipNotif = ipRoot; // ip dev
+const ipSlink = ipRoot + '/slink'; // ip dev
+const ipCore = ipRoot + '/core'; // ip dev
 
 const ipUser = ipRoot + '/user';
 const ipResident = ipRoot + '/residents';

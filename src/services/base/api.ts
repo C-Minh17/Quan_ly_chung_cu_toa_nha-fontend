@@ -1,12 +1,5 @@
 import axios from '@/utils/axios';
-import {
-	ip3,
-	ipNotif,
-	ipRoot,
-	keycloakClientID,
-	keycloakTokenEndpoint,
-	resourceServerClientId,
-} from '@/utils/ip';
+import { ip3, ipNotif, ipRoot, keycloakClientID, keycloakTokenEndpoint, resourceServerClientId } from '@/utils/ip';
 import queryString from 'query-string';
 import type { ESettingKey } from './constant';
 import type { ISetting } from './typing';
@@ -57,8 +50,11 @@ export async function getPermission() {
 	});
 }
 
-export async function initOneSignal(payload: { playerId: string }) {
-	return axios.put(`${ipNotif}/one-signal/user`, payload);
+export async function initOneSignal(payload: { playerId: string; deviceType?: string }) {
+	return axios.post(`${ipNotif}/notification/onesignal/init`, {
+		playerId: payload.playerId,
+		deviceType: payload.deviceType || 'Web',
+	});
 }
 
 export async function deleteOneSignal(data: { playerId: any }) {

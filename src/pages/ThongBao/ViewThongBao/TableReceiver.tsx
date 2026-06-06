@@ -5,6 +5,7 @@ import { Select, Tag } from 'antd';
 import { useModel } from 'umi';
 import { thongKeNotificationNguoiNhan } from '@/services/ThongBao';
 import { useEffect, useState } from 'react';
+import dayjs from '@/utils/dayjs';
 
 const TableReceiverThongBao = (props: { record?: ThongBao.IRecord }) => {
 	const { page, limit, getModel } = useModel('thongbao.receiver');
@@ -28,16 +29,25 @@ const TableReceiverThongBao = (props: { record?: ThongBao.IRecord }) => {
 	};
 	const columns: IColumn<ThongBao.TReceiver>[] = [
 		{
-			title: 'Mã giảng viên / sinh viên',
-			dataIndex: 'username',
-			width: 150,
-			filterType: 'string',
-		},
-		{
 			title: 'Họ tên',
 			dataIndex: 'fullname',
 			width: 180,
 			filterType: 'string',
+			render: (val, rec) => rec?.userId?.name || rec?.userId?.fullname || rec?.fullname || '-',
+		},
+		{
+			title: 'Email',
+			dataIndex: 'email',
+			width: 180,
+			filterType: 'string',
+			render: (val, rec) => rec?.userId?.email || rec?.email || '-',
+		},
+		{
+			title: 'Số điện thoại',
+			dataIndex: 'phone',
+			width: 120,
+			filterType: 'string',
+			render: (val, rec) => rec?.userId?.phone || rec?.phone || '-',
 		},
 		{
 			title: 'Trạng thái',
@@ -47,6 +57,13 @@ const TableReceiverThongBao = (props: { record?: ThongBao.IRecord }) => {
 			render: (val) => {
 				return <>{val ? <Tag color={'green'}>Đã đọc</Tag> : <Tag color={'red'}>Chưa đọc</Tag>}</>;
 			},
+		},
+		{
+			title: 'Thời gian đọc',
+			dataIndex: 'readAt',
+			width: 150,
+			align: 'center',
+			render: (val, rec) => (rec?.read && rec?.readAt ? dayjs(rec.readAt).format('HH:mm DD/MM/YYYY') : '-'),
 		},
 	];
 
