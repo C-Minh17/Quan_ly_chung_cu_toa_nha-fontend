@@ -47,10 +47,11 @@ const ManagerBuilding = () => {
     {
       title: "Mã tòa nhà",
       align: "center",
-      dataIndex: "_id",
-      width: 200,
+      dataIndex: "id",
+      width: 150,
       filterType: "string",
       sortable: true,
+      render: (val) => val ? `B${val}` : '—',
     },
     {
       title: "Tên tòa nhà",
@@ -122,7 +123,7 @@ const ManagerBuilding = () => {
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword) {
       data = data.filter((item) =>
-        [item._id, item.name, item.address, item.description]
+        [item.id, item.name, item.address, item.description]
           .filter(Boolean)
           .some((value) => value?.toString().toLowerCase().includes(keyword))
       );
