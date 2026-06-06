@@ -9,8 +9,9 @@ const SelectApartment = (props: {
   onChange?: (val: string | null) => void;
   multiple?: boolean;
   hasCreate?: boolean;
+  onlyVacant?: boolean;
 }) => {
-  const { value, onChange, multiple, hasCreate } = props;
+  const { value, onChange, multiple, hasCreate, onlyVacant } = props;
   const { infoAllApartment, handleGetInfoAllApartment } = useModel('apartment.apartment');
 
   const [visibleForm, setVisibleForm] = useState(false);
@@ -27,6 +28,12 @@ const SelectApartment = (props: {
     setVisibleForm(true);
   };
 
+  const filteredApartments = onlyVacant
+    ? infoAllApartment?.filter(
+      (item: MApartment.IRecord) => item.status === 'vacant' || item.status === 'Trống',
+    )
+    : infoAllApartment;
+
   return (
     <div style={{ display: 'flex', gap: 8, width: '100%' }}>
       <div className={hasCreate !== false ? 'width-select-custom' : 'fullWidth'}>
@@ -34,14 +41,14 @@ const SelectApartment = (props: {
           mode={multiple ? 'multiple' : undefined}
           value={value}
           onChange={onChange}
-          options={infoAllApartment?.map((item: MApartment.IRecord) => ({
+          options={filteredApartments?.map((item: MApartment.IRecord) => ({
             key: item._id,
             value: item._id,
             label: item.apartment_code || item._id,
           }))}
           showSearch
           optionFilterProp='label'
-          placeholder='Chọn căn hộ'
+          placeholder={onlyVacant ? 'Chọn căn hộ trống' : 'Chọn căn hộ'}
           style={{ width: '100%' }}
         />
       </div>

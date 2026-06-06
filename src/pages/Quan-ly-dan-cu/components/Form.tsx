@@ -87,6 +87,7 @@ const FormResident = (props: Props) => {
                 onChange={(val) => form.setFieldsValue({ apartment_id: val })}
                 multiple={false}
                 hasCreate={true}
+                onlyVacant={true}
               />
             </Form.Item>
           </Col>
