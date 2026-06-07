@@ -16,7 +16,6 @@ import news from '../../assets/new6.gif';
 import { kiemTraPhanVung } from '../../utils/constants';
 import Form from './components/Form';
 import CardFormThongBaoTuyChinh from './ThongBaoTuyChinh/CardForm';
-import ViewThongBao from './ViewThongBao/CardView';
 import TableReceiverThongBao from './ViewThongBao/TableReceiver';
 
 const CardThongBao = (props: { notiType: NotificationType; activeKey: string }) => {

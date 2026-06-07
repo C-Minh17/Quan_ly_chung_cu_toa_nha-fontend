@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
+import { useModel } from '@umijs/max';
 import { Button, Modal, Select } from 'antd';
 import { useEffect, useState } from 'react';
-import { useModel } from '@umijs/max';
 import FormResident from './Form';
 
 const SelectResident = (props: {

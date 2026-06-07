@@ -1,6 +1,6 @@
+import { CopyOutlined, QrcodeOutlined } from '@ant-design/icons';
+import { Alert, Col, Divider, message, Modal, Row, Space, Typography } from 'antd';
 import React from 'react';
-import { Modal, Typography, Row, Col, Alert, Space, Divider, message } from 'antd';
-import { QrcodeOutlined, CopyOutlined } from '@ant-design/icons';
 
 const { Text, Title } = Typography;
 

@@ -1,12 +1,12 @@
 import TableStaticData from "@/components/Table/TableStaticData";
 import { IColumn } from "@/components/Table/typing";
+import { AppstoreAddOutlined, CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, EditOutlined, FilterOutlined } from '@ant-design/icons';
 import { useModel } from "@umijs/max";
-import { DeleteOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, AppstoreAddOutlined, FilterOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, Tabs, Badge } from 'antd';
+import { Badge, Button, Divider, Input, Popconfirm, Tabs, Tag, Tooltip, Typography } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import FormAmenity from './components/FormAmenity';
 import FilterBar from './components/FilterBar';
+import FormAmenity from './components/FormAmenity';
 
 const { Title } = Typography;
 

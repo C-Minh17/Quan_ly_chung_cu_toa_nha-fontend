@@ -1,7 +1,7 @@
+import { EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
 import { Button, Card, Col, Form, Input, InputNumber, message, Row, Select, Typography } from 'antd';
-import { EditOutlined, SaveOutlined } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 const { Title } = Typography;
 

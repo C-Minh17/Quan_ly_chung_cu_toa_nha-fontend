@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Row, Col, Card, Table, Tag, Badge, Avatar, Button, Progress, List, Skeleton, Modal, Form, Input, Select } from 'antd';
-import { HomeOutlined, TeamOutlined, DollarOutlined, ToolOutlined, ArrowUpOutlined, ArrowDownOutlined, CalendarOutlined, BellOutlined, ClockCircleOutlined, RightOutlined, UserOutlined } from '@ant-design/icons';
-import CountUp from 'react-countup';
-import Chart from 'react-apexcharts';
+import { ArrowDownOutlined, ArrowUpOutlined, BellOutlined, CalendarOutlined, ClockCircleOutlined, DollarOutlined, HomeOutlined, RightOutlined, TeamOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
+import { Avatar, Badge, Button, Card, Col, Form, Input, List, Modal, Progress, Row, Select, Skeleton, Table, Tag } from 'antd';
+import { useEffect, useState } from 'react';
+import Chart from 'react-apexcharts';
+import CountUp from 'react-countup';
 import './components/style.less';
 
 const TrangChu = () => {

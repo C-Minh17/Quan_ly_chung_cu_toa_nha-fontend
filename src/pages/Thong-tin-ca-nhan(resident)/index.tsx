@@ -1,11 +1,11 @@
+import avatarDF from '@/assets/default_avatar.png';
+import residentBg from '@/assets/resident_profile_bg.png';
+import { CalendarOutlined, CrownOutlined, EnvironmentOutlined, HomeOutlined, IdcardOutlined, MailOutlined, PhoneOutlined, SafetyCertificateOutlined, UserOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
-import { Card, Descriptions, Avatar, Tag, Typography, Row, Col, Image, Spin, Empty, Divider, Space, Grid } from 'antd';
 import type { DescriptionsProps } from 'antd';
+import { Avatar, Card, Col, Descriptions, Divider, Empty, Grid, Image, Row, Space, Spin, Tag, Typography } from 'antd';
 import moment from 'moment';
 import { useEffect } from 'react';
-import { UserOutlined, PhoneOutlined, MailOutlined, IdcardOutlined, HomeOutlined, CalendarOutlined, EnvironmentOutlined, CrownOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
-import residentBg from '@/assets/resident_profile_bg.png';
-import avatarDF from '@/assets/default_avatar.png';
 
 
 const { Title, Text } = Typography;

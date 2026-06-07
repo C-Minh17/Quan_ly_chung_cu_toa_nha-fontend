@@ -1,6 +1,6 @@
-import React from 'react';
-import { Modal, Descriptions, Button, Tag, Typography, Table, Divider } from 'antd';
 import { FileTextOutlined } from '@ant-design/icons';
+import { Button, Descriptions, Divider, Modal, Table, Tag, Typography } from 'antd';
+import React from 'react';
 
 const { Text } = Typography;
 

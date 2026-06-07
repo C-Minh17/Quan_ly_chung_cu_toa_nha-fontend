@@ -1,6 +1,6 @@
+import { BulbOutlined, CheckSquareOutlined, CoffeeOutlined, FileTextOutlined, HomeOutlined, RightOutlined, TeamOutlined, ToolOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Button, Card, Checkbox, Col, List, Progress, Row, Skeleton, Table, Tag } from 'antd';
 import { useEffect, useState } from 'react';
-import { Row, Col, Card, Table, Tag, Badge, Avatar, Button, Progress, List, Checkbox, Skeleton } from 'antd';
-import { HomeOutlined, FileTextOutlined, ToolOutlined, RightOutlined, UnorderedListOutlined, TeamOutlined, BulbOutlined, CheckSquareOutlined, CoffeeOutlined } from '@ant-design/icons';
 import { history, useModel } from 'umi';
 
 const DashboardStaff = () => {

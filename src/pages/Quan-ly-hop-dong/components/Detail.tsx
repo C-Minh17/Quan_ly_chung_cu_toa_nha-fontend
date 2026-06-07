@@ -1,6 +1,6 @@
-import { Descriptions, Tag, Typography, Button, Divider, Row, Col } from 'antd';
-import moment from 'moment';
 import { FileTextOutlined } from '@ant-design/icons';
+import { Button, Col, Descriptions, Divider, Row, Tag, Typography } from 'antd';
+import moment from 'moment';
 
 const { Title } = Typography;
 

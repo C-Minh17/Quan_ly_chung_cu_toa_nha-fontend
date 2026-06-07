@@ -1,7 +1,7 @@
-import { Button, Card, Col, Form, Input, Row } from 'antd';
-import { useModel } from 'umi';
-import { useEffect } from 'react';
 import rules from '@/utils/rules';
+import { Button, Card, Col, Form, Input, Row } from 'antd';
+import { useEffect } from 'react';
+import { useModel } from 'umi';
 const { TextArea } = Input;
 
 const FormTags = () => {

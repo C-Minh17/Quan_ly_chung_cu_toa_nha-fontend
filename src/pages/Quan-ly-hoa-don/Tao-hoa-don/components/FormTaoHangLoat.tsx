@@ -1,6 +1,6 @@
-import { useModel } from "@umijs/max"
-import { Form, Select, Button, Card, message } from 'antd';
 import { ThunderboltOutlined } from '@ant-design/icons';
+import { useModel } from "@umijs/max";
+import { Button, Card, Form, message, Select } from 'antd';
 import { useEffect } from 'react';
 
 const { Option } = Select;

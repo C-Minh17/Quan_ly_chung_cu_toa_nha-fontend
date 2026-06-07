@@ -1,7 +1,7 @@
+import SelectResident from '@/pages/Quan-ly-dan-cu/components/Select';
 import { useModel } from '@umijs/max';
 import { Button, Card, Col, Form, Input, message, Row, Select } from 'antd';
 import { useEffect } from 'react';
-import SelectResident from '@/pages/Quan-ly-dan-cu/components/Select';
 
 interface Props {
   initialValues?: MVehicle.IRecord;

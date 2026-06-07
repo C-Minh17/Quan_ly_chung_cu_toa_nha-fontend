@@ -1,7 +1,7 @@
 import TableStaticData from "@/components/Table/TableStaticData";
 import { IColumn } from "@/components/Table/typing";
+import { CloseCircleOutlined, DeleteOutlined, EditOutlined, StarOutlined } from '@ant-design/icons';
 import { useModel } from "@umijs/max";
-import { DeleteOutlined, EditOutlined, CloseCircleOutlined, StarOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Modal, Popconfirm, Rate, Tag, Tooltip, Typography, message } from 'antd';
 import { useEffect, useState } from 'react';
 import FormMaintenanceRequest from './components/FormRequest';

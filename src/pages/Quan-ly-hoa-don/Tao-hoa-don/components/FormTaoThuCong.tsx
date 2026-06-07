@@ -1,6 +1,6 @@
-import { useModel } from "@umijs/max"
-import { Form, Select, Button, InputNumber, Divider, Card, Row, Col, message } from 'antd';
-import { PlusOutlined, FileAddOutlined } from '@ant-design/icons';
+import { FileAddOutlined, PlusOutlined } from '@ant-design/icons';
+import { useModel } from "@umijs/max";
+import { Button, Card, Col, Divider, Form, InputNumber, message, Row, Select } from 'antd';
 import { useEffect, useState } from 'react';
 
 const { Option } = Select;

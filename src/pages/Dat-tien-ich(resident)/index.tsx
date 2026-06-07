@@ -1,8 +1,8 @@
 import TableStaticData from "@/components/Table/TableStaticData";
 import { IColumn } from "@/components/Table/typing";
+import { CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useModel } from "@umijs/max";
-import { DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Tag, Tooltip, Typography, message } from 'antd';
+import { Button, Popconfirm, Tag, Tooltip, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import FormBooking from './components/FormBooking';
 

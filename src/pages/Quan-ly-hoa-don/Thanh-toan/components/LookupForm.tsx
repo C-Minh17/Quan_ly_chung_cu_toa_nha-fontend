@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Form, Button, Row, Col, Select, InputNumber, Space } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
 import SelectApartment from '@/pages/Quan-ly-can-ho/components/Select';
 import SelectInvoice from '@/pages/Quan-ly-hoa-don/Danh-sach-hoa-don/components/Select';
+import { SearchOutlined } from '@ant-design/icons';
+import { Button, Col, Form, InputNumber, Row, Select, Space } from 'antd';
+import React, { useState } from 'react';
 
 const { Option } = Select;
 

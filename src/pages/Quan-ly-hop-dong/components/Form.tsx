@@ -1,11 +1,11 @@
+import MyDatePicker from '@/components/MyDatePicker';
+import UploadFile from '@/components/Upload/UploadFile';
+import SelectApartment from '@/pages/Quan-ly-can-ho/components/Select';
+import SelectResident from '@/pages/Quan-ly-dan-cu/components/Select';
+import { buildUpLoadFile } from '@/services/uploadFile';
 import { useModel } from '@umijs/max';
 import { Button, Card, Col, Form, Input, InputNumber, message, Row, Select } from 'antd';
-import UploadFile from '@/components/Upload/UploadFile';
-import { buildUpLoadFile } from '@/services/uploadFile';
 import { useEffect } from 'react';
-import MyDatePicker from '@/components/MyDatePicker';
-import SelectResident from '@/pages/Quan-ly-dan-cu/components/Select';
-import SelectApartment from '@/pages/Quan-ly-can-ho/components/Select';
 
 interface Props {
   initialValues?: MContract.IRecord;

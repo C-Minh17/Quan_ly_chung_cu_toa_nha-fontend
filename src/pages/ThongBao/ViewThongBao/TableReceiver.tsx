@@ -1,11 +1,11 @@
 import TableBase from '@/components/Table';
 import type { IColumn } from '@/components/Table/typing';
-import type { ThongBao } from '@/services/ThongBao/typing';
-import { Select, Tag } from 'antd';
-import { useModel } from 'umi';
 import { thongKeNotificationNguoiNhan } from '@/services/ThongBao';
-import { useEffect, useState } from 'react';
+import type { ThongBao } from '@/services/ThongBao/typing';
 import dayjs from '@/utils/dayjs';
+import { Select, Tag } from 'antd';
+import { useEffect, useState } from 'react';
+import { useModel } from 'umi';
 
 const TableReceiverThongBao = (props: { record?: ThongBao.IRecord }) => {
 	const { page, limit, getModel } = useModel('thongbao.receiver');

@@ -1,8 +1,8 @@
 import ButtonExtend from '@/components/Table/ButtonExtend';
 import TableStaticData from '@/components/Table/TableStaticData';
 import type { IColumn } from '@/components/Table/typing';
-import { type ThongBao } from '@/services/ThongBao/typing';
 import { EVaiTroKhaoSat } from '@/services/ThongBao/constant';
+import { type ThongBao } from '@/services/ThongBao/typing';
 import { CloseOutlined } from '@ant-design/icons';
 
 const GroupTagUsers = (props: {

@@ -1,7 +1,6 @@
 import { useModel } from '@umijs/max';
-import { Button, Card, Col, Form, Input, InputNumber, message, Row, Switch } from 'antd';
+import { Button, Card, Col, Form, Input, InputNumber, message, Row, Select, SelectProps, Switch } from 'antd';
 import { useEffect } from 'react';
-import { Select, SelectProps } from 'antd';
 
 
 interface Props {

@@ -1,6 +1,6 @@
 import SelectBuilding from '@/pages/Quan-ly-toa-nha/components/Select';
 import { useModel } from '@umijs/max';
-import { Button, Card, Col, Form, Input, InputNumber, message, Row } from 'antd';
+import { Button, Card, Col, Form, Input, message, Row } from 'antd';
 import { useEffect } from 'react';
 
 interface Props {

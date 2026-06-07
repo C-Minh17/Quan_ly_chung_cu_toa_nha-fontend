@@ -1,13 +1,12 @@
-import TableStaticData from "@/components/Table/TableStaticData"
-import { IColumn } from "@/components/Table/typing"
-import { useAccess, useModel } from "@umijs/max"
-import { Typography, Button, Tooltip, Popconfirm, Divider, Tag, Input, Badge } from 'antd';
-import { DeleteOutlined, FilePdfOutlined, FileTextOutlined, DollarOutlined, EyeOutlined, FilterOutlined } from '@ant-design/icons';
-import { useEffect, useState, useMemo } from 'react';
+import TableStaticData from "@/components/Table/TableStaticData";
+import { IColumn } from "@/components/Table/typing";
+import { DeleteOutlined, DollarOutlined, EyeOutlined, FilePdfOutlined, FileTextOutlined, FilterOutlined } from '@ant-design/icons';
+import { history, useAccess, useModel } from "@umijs/max";
+import { Badge, Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { history } from '@umijs/max';
-import FilterBar from './components/FilterBar';
 import DetailModal from './components/DetailModal';
+import FilterBar from './components/FilterBar';
 
 const { Title } = Typography;
 

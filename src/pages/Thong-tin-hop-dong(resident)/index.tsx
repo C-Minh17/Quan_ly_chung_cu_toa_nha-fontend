@@ -1,9 +1,9 @@
+import { FilePdfOutlined, FileTextOutlined, HomeOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
-import { Card, Descriptions, Tag, Typography, Row, Col, Spin, Empty, Space, Grid, Button } from 'antd';
 import type { DescriptionsProps } from 'antd';
+import { Button, Card, Col, Descriptions, Empty, Grid, Row, Space, Spin, Tag, Typography } from 'antd';
 import moment from 'moment';
 import { useEffect } from 'react';
-import { FileTextOutlined, HomeOutlined, FilePdfOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;

@@ -1,6 +1,6 @@
+import { CheckCircleOutlined, ReloadOutlined, SaveOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
 import { Button, Col, Divider, Form, InputNumber, message, Row, Select, Spin, Table, Tag, Tooltip, Typography } from 'antd';
-import { CheckCircleOutlined, ReloadOutlined, SaveOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useEffect, useMemo, useState } from 'react';
 
 const { Title, Text } = Typography;

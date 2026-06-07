@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
+import { history, useModel } from '@umijs/max';
 import { Button, Select } from 'antd';
 import { useEffect } from 'react';
-import { useModel, history } from '@umijs/max';
 
 const SelectInvoice = (props: {
   value?: string | null;

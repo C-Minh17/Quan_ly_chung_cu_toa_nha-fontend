@@ -1,5 +1,5 @@
+import { Button, Result } from 'antd';
 import { Link } from 'umi';
-import { Result, Button } from 'antd';
 
 const ServerError = () => (
   <Result

@@ -1,9 +1,9 @@
-import TableStaticData from "@/components/Table/TableStaticData"
-import { IColumn } from "@/components/Table/typing"
-import { useModel } from "@umijs/max"
-import { Typography, Button, Tooltip, Divider, Tag, Select, Row, Col } from 'antd';
-import { FilePdfOutlined, FileTextOutlined, DollarOutlined, EyeOutlined } from '@ant-design/icons';
-import { useEffect, useState, useMemo } from 'react';
+import TableStaticData from "@/components/Table/TableStaticData";
+import { IColumn } from "@/components/Table/typing";
+import { DollarOutlined, EyeOutlined, FilePdfOutlined, FileTextOutlined } from '@ant-design/icons';
+import { useModel } from "@umijs/max";
+import { Button, Col, Divider, Row, Select, Tag, Tooltip, Typography } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import DetailModal from '../Danh-sach-hoa-don/components/DetailModal';
 import PaymentModal from './components/PaymentModal';
 

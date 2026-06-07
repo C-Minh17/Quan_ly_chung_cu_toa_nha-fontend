@@ -1,6 +1,6 @@
+import { CalendarOutlined, CarOutlined, CheckCircleOutlined, ClockCircleOutlined, CreditCardOutlined, HomeOutlined, RightOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Button, Card, Col, Empty, Progress, Row, Skeleton, Table, Tag, Timeline } from 'antd';
 import { useEffect } from 'react';
-import { Row, Col, Card, Table, Tag, Badge, Avatar, Button, Progress, Timeline, Skeleton, Empty } from 'antd';
-import { UserOutlined, HomeOutlined, CreditCardOutlined, ToolOutlined, CarOutlined, CalendarOutlined, ClockCircleOutlined, CheckCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { history, useModel } from 'umi';
 
 const DashboardResident = () => {

@@ -1,8 +1,8 @@
 import TableStaticData from '@/components/Table/TableStaticData';
 import { IColumn } from '@/components/Table/typing';
-import { CloseCircleOutlined, DeleteOutlined, EditOutlined, CalendarOutlined, FilterOutlined } from '@ant-design/icons';
+import { CalendarOutlined, CloseCircleOutlined, DeleteOutlined, EditOutlined, FilterOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
-import { Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, message, Badge } from 'antd';
+import { Badge, Button, Divider, Input, Popconfirm, Tag, Tooltip, Typography, message } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import FormMaintenanceSchedule from '../components/FormSchedule';

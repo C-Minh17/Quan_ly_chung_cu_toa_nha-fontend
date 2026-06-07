@@ -1,10 +1,10 @@
-import { useModel } from '@umijs/max';
-import { Typography, Tag, Row, Col, Card, Button } from 'antd';
-import { HistoryOutlined, BankOutlined, WalletOutlined, CreditCardOutlined, EyeOutlined } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
-import { IColumn } from '@/components/Table/typing';
 import TableStaticData from '@/components/Table/TableStaticData';
+import { IColumn } from '@/components/Table/typing';
 import SelectInvoice from '@/pages/Quan-ly-hoa-don/Danh-sach-hoa-don/components/Select';
+import { BankOutlined, CreditCardOutlined, EyeOutlined, HistoryOutlined, WalletOutlined } from '@ant-design/icons';
+import { useModel } from '@umijs/max';
+import { Button, Card, Col, Row, Tag, Typography } from 'antd';
+import { useEffect, useState } from 'react';
 import DetailModal from './components/DetailModal';
 
 const { Title, Text } = Typography;

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Modal, Descriptions, Button, Tag, Typography } from 'antd';
-import { EyeOutlined, BankOutlined, WalletOutlined, CreditCardOutlined } from '@ant-design/icons';
+import { BankOutlined, CreditCardOutlined, EyeOutlined, WalletOutlined } from '@ant-design/icons';
 import { useAccess } from '@umijs/max';
+import { Button, Descriptions, Modal, Tag, Typography } from 'antd';
+import React from 'react';
 
 const { Text } = Typography;
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import { getAllMaintenanceRequest, updateMaintenanceRequestStatus } from '@/services/MaintenanceRequest';
 import { completeMaintenanceSchedule, getMaintenanceScheduleByEmployee } from '@/services/MaintenanceSchedule';
-import { CalendarOutlined, CheckCircleOutlined, ClockCircleOutlined, ReloadOutlined, SearchOutlined, ToolOutlined } from '@ant-design/icons';
+import { CalendarOutlined, CheckCircleOutlined, ReloadOutlined, SearchOutlined, ToolOutlined } from '@ant-design/icons';
 import { useModel } from '@umijs/max';
 import { Badge, Button, Input, Popconfirm, Select, Table, Tag, Tooltip, Typography, message } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 
 const { Title, Text } = Typography;
 const { Option } = Select;

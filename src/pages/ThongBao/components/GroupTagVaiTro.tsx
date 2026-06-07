@@ -1,6 +1,5 @@
-import { TenVaiTroKhaoSat, EVaiTroKhaoSat } from '@/services/ThongBao/constant';
+import { EVaiTroKhaoSat, TenVaiTroKhaoSat } from '@/services/ThongBao/constant';
 import { Space, Tag } from 'antd';
-import _ from 'lodash';
 const { CheckableTag } = Tag;
 
 const GroupTagVaiTro = (props: {

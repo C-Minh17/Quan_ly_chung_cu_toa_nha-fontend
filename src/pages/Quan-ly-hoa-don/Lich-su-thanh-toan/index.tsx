@@ -1,9 +1,9 @@
-import { useModel } from '@umijs/max';
-import { Typography, Divider, Tag, Button } from 'antd';
-import { HistoryOutlined, BankOutlined, WalletOutlined, CreditCardOutlined, EyeOutlined } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
-import { IColumn } from '@/components/Table/typing';
 import TableStaticData from '@/components/Table/TableStaticData';
+import { IColumn } from '@/components/Table/typing';
+import { BankOutlined, CreditCardOutlined, EyeOutlined, HistoryOutlined, WalletOutlined } from '@ant-design/icons';
+import { useModel } from '@umijs/max';
+import { Button, Divider, Tag, Typography } from 'antd';
+import { useEffect, useState } from 'react';
 import DetailModal from '../Lich-su-thanh-toan-admin/components/DetailModal';
 
 const { Title, Text } = Typography;
