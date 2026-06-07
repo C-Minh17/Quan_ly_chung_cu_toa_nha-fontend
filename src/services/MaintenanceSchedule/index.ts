@@ -18,3 +18,6 @@ export const completeMaintenanceSchedule = async (id: string, status: string = '
 
 export const deleteMaintenanceSchedule = async (id: string) =>
   axios.delete(`${ipMaintenanceSchedule}/${id}`).then(res => res.data)
+
+export const getMaintenanceScheduleByEmployee = async (employeeId: string) =>
+  axios.get(`${ipMaintenanceSchedule}/employee/${employeeId}`).then(res => res.data)

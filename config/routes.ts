@@ -264,6 +264,13 @@ export default [
 			},
 		],
 	},
+	{
+		path: '/lich-bao-tri-staff',
+		name: 'Lịch bảo trì',
+		component: './Lich-bao-tri(staff)',
+		icon: 'ToolOutlined',
+		access: "canAccessStaff",
+	},
 
 	// DANH MUC HE THONG
 	// {
