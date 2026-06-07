@@ -47,7 +47,7 @@ const ManagerBuilding = () => {
     {
       title: "Mã tòa nhà",
       align: "center",
-      dataIndex: "id",
+      dataIndex: "_id",
       width: 150,
       filterType: "string",
       sortable: true,
@@ -123,7 +123,7 @@ const ManagerBuilding = () => {
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword) {
       data = data.filter((item) =>
-        [item.id, item.name, item.address, item.description]
+        [item._id, item.name, item.address, item.description]
           .filter(Boolean)
           .some((value) => value?.toString().toLowerCase().includes(keyword))
       );
