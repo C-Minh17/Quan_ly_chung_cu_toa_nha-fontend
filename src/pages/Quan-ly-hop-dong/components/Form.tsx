@@ -46,7 +46,7 @@ const FormContract = (props: Props) => {
         const res = await handleCreateContract(payload);
         if (res) {
           message.success('Thêm mới hợp đồng thành công');
-        }  
+        }
       }
       form.resetFields();
       setShowEdit?.(false);

@@ -358,7 +358,7 @@ const MaintenanceRequestPage = () => {
 					setFilterModalVisible(false);
 				}}
 				currentStatusFilter={statusFilter}
-				currentPriorityFilter={priorityFilter}
+			currentPriorityFilter={priorityFilter}
 				currentCategoryFilter={categoryFilter}
 			/>
 
@@ -374,6 +374,10 @@ const MaintenanceRequestPage = () => {
 					initialValues: recordRequest,
 					setShowEdit: setShowEditRequest,
 					edit: editRequest,
+				}}
+				onClickAdd={() => {
+					setRecordRequest({});
+					setEditRequest(false);
 				}}
 				setShowEdit={(val) => {
 					setShowEditRequest(val);

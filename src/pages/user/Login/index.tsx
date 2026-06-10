@@ -6,7 +6,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Tabs, message } from 'antd';
 import React, { useState } from 'react';
 // import Recaptcha from 'react-recaptcha';
-import { history, useIntl, useModel } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from './index.less';
 
 const Login: React.FC = () => {
@@ -54,7 +54,9 @@ const Login: React.FC = () => {
 			defaultMessage: 'success',
 		});
 		message.success(defaultloginSuccessMessage);
-		history.push('/dashboard');
+		setTimeout(() => {
+			window.location.href = '/';
+		}, 1000);
 	};
 
 	const handleSubmit = async (values: { login: string; password: string }) => {
@@ -102,9 +104,7 @@ const Login: React.FC = () => {
 								<div style={{ fontSize: 28, fontWeight: 600, color: '#fff', lineHeight: '1.5' }}>
 									HỆ THỐNG QUẢN LÝ TÒA NHÀ
 								</div>
-								<div style={{ fontSize: 18, fontWeight: 600, color: '#fff', lineHeight: '1.5' }}>
-									SmartBuilding
-								</div>
+								<div style={{ fontSize: 18, fontWeight: 600, color: '#fff', lineHeight: '1.5' }}>SmartBuilding</div>
 							</div>
 						</div>
 					</div>

@@ -232,6 +232,8 @@ export type TableStaticProps = Pick<
 
 	showEdit?: boolean;
 	setShowEdit?: (vi: boolean) => void;
+	/** Callback khi nhấn nút Thêm mới, dùng để reset record/edit state ở parent */
+	onClickAdd?: () => void;
 
 	hasCreate?: boolean;
 	hasTotal?: boolean;

@@ -275,6 +275,10 @@ const DanhSach = () => {
           setShowEdit: setShowEdit,
           edit: edit,
         }}
+        onClickAdd={() => {
+          setRecord({});
+          setEdit(false);
+        }}
         setShowEdit={(val) => {
           setShowEdit(val);
           if (!val) {

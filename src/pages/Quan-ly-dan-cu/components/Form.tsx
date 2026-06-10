@@ -16,12 +16,20 @@ interface Props {
 const FormResident = (props: Props) => {
   const { initialValues, setShowEdit, edit } = props;
   const { handleUpdateResident, loadingInfoResident, handleCreateResident } = useModel('resident.resident');
-  const { infoAllUser, handleGetInfoAllUser } = useModel('user.user');
+  const { handleGetInfoAllUser } = useModel('user.user');
   const [form] = Form.useForm();
 
   useEffect(() => {
     handleGetInfoAllUser();
   }, []);
+
+  useEffect(() => {
+    if (initialValues && Object.keys(initialValues).length > 0) {
+      form.setFieldsValue(initialValues);
+    } else {
+      form.resetFields();
+    }
+  }, [initialValues]);
 
   const onSubmit = async (values: any) => {
     try {

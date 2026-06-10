@@ -35,7 +35,7 @@ const FormVehicle = (props: Props) => {
         const res = await handleCreateVehicle(values);
         if (res) {
           message.success('Thêm mới phương tiện thành công');
-        }  
+        }
       }
       form.resetFields();
       setShowEdit?.(false);

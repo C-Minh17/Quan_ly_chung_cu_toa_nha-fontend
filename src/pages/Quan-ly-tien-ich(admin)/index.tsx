@@ -363,6 +363,10 @@ const ManagerAmenity = () => {
 							setShowEdit: setShowEditAmenity,
 							edit: editAmenity,
 						}}
+						onClickAdd={() => {
+							setRecordAmenity({});
+							setEditAmenity(false);
+						}}
 						setShowEdit={(val) => {
 							setShowEditAmenity(val);
 							if (!val) { setRecordAmenity({}); setEditAmenity(false); }

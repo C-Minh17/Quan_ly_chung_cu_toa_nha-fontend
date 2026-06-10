@@ -278,6 +278,10 @@ const MaintenanceSchedulePage = () => {
 					setShowEdit: setShowEditSchedule,
 					edit: editSchedule,
 				}}
+				onClickAdd={() => {
+					setRecordSchedule({});
+					setEditSchedule(false);
+				}}
 				setShowEdit={(val) => {
 					setShowEditSchedule(val);
 					if (!val) {

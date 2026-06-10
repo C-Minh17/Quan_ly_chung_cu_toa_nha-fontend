@@ -249,9 +249,6 @@ const TrangChu = () => {
 					<Button type="primary" icon={<BellOutlined />} onClick={() => setIsModalOpen(true)}>
 						Gửi thông báo cư dân
 					</Button>
-					<Button icon={<CalendarOutlined />}>
-						Lịch làm việc
-					</Button>
 				</div>
 			</div>
 
