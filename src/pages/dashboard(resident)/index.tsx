@@ -224,7 +224,7 @@ const DashboardResident = () => {
                 />
                 <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '12px', color: '#64748b' }}>Hợp đồng sở hữu</span>
-                  <Button size="small" type="link" style={{ padding: 0 }}>Xem hợp đồng</Button>
+                  <Button size="small" type="link" style={{ padding: 0 }} onClick={() => history.push('/thong-tin-hop-dong')}>Xem hợp đồng</Button>
                 </div>
               </>
             )}

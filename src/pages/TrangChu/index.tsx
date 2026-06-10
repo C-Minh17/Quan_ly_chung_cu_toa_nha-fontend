@@ -1,5 +1,5 @@
 import { ArrowDownOutlined, ArrowUpOutlined, BellOutlined, CalendarOutlined, ClockCircleOutlined, DollarOutlined, HomeOutlined, RightOutlined, TeamOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons';
-import { useModel } from '@umijs/max';
+import { history, useModel } from '@umijs/max';
 import { Avatar, Badge, Button, Card, Col, Form, Input, List, Modal, Progress, Row, Select, Skeleton, Table, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
@@ -409,7 +409,7 @@ const TrangChu = () => {
 						className="list-card"
 						bordered={false}
 						extra={
-							<Button type="link" size="small" icon={<RightOutlined />} iconPosition="end">
+							<Button type="link" size="small" icon={<RightOutlined />} iconPosition="end" onClick={() => history.push('/quan-ly-bao-tri-admin/yeu-cau-bao-tri')}>
 								Tất cả yêu cầu
 							</Button>
 						}
@@ -431,7 +431,7 @@ const TrangChu = () => {
 						className="list-card"
 						bordered={false}
 						extra={
-							<Button type="link" size="small" icon={<RightOutlined />} iconPosition="end">
+							<Button type="link" size="small" icon={<RightOutlined />} iconPosition="end" onClick={() => history.push('/quan-ly-hoa-don/danh-sach')}>
 								Tất cả hóa đơn
 							</Button>
 						}
